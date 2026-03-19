@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | The Bird Job</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Clash+Display:wght@400;500;600;700&family=Bricolage+Grotesque:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --bg: #07070e;
+            --surface: #0f111d;
+            --panel: #141728;
+            --panel-2: #1a1e33;
+            --line: rgba(255, 255, 255, 0.1);
+            --line-soft: rgba(255, 255, 255, 0.06);
+            --text: rgba(255, 255, 255, 0.93);
+            --muted: rgba(255, 255, 255, 0.62);
+            --muted-soft: rgba(255, 255, 255, 0.4);
+            --accent: #ff6b2b;
+            --accent-2: #ffb347;
+            --blue: #60a5fa;
+            --green: #34d399;
+            --danger: #f87171;
+            --shadow: 0 28px 72px rgba(0, 0, 0, 0.5);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: "Bricolage Grotesque", sans-serif;
+            color: var(--text);
+            background: var(--bg);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        a { color: inherit; text-decoration: none; }
+
+        .glow {
+            position: fixed;
+            border-radius: 999px;
+            filter: blur(130px);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .g1 { width: 480px; height: 480px; background: rgba(255, 107, 43, 0.12); top: -200px; right: -170px; }
+        .g2 { width: 420px; height: 420px; background: rgba(96, 165, 250, 0.1); bottom: -170px; left: -180px; }
+
+        .auth-page {
+            position: relative;
+            z-index: 1;
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .auth-shell {
+            width: min(1140px, 100%);
+            border-radius: 26px;
+            border: 1px solid var(--line-soft);
+            background: linear-gradient(165deg, var(--panel), #101322 72%);
+            box-shadow: var(--shadow);
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            overflow: hidden;
+        }
+
+        .auth-left {
+            border-right: 1px solid var(--line-soft);
+            padding: 34px;
+            background:
+                radial-gradient(circle at 84% -2%, rgba(255, 107, 43, 0.27), transparent 48%),
+                linear-gradient(160deg, rgba(255, 107, 43, 0.11), rgba(255, 179, 71, 0.06));
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            gap: 20px;
+        }
+
+        .brand {
+            display: inline-flex;
+            align-items: center;
+            gap: 11px;
+            font-family: "Clash Display", sans-serif;
+            font-size: 28px;
+            letter-spacing: -0.6px;
+        }
+
+        .brand strong { color: var(--accent); }
+
+        .brand-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            display: grid;
+            place-items: center;
+            color: white;
+            background: linear-gradient(135deg, var(--accent), var(--accent-2));
+            box-shadow: 0 12px 28px rgba(255, 107, 43, 0.34);
+        }
+
+        .left-title {
+            font-family: "Clash Display", sans-serif;
+            font-size: clamp(34px, 4vw, 48px);
+            line-height: 1;
+            letter-spacing: -1.2px;
+            margin: 14px 0 10px;
+        }
+
+        .left-sub {
+            color: var(--muted);
+            font-size: 15px;
+            line-height: 1.75;
+            max-width: 440px;
+        }
+
+        .feature-list {
+            list-style: none;
+            display: grid;
+            gap: 10px;
+            margin-top: 16px;
+        }
+
+        .feature-list li {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        .feature-list i {
+            color: var(--green);
+            width: 18px;
+            text-align: center;
+        }
+
+        .role-preview {
+            border: 1px solid var(--line);
+            border-radius: 16px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 14px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .preview-card {
+            border-radius: 12px;
+            border: 1px solid var(--line-soft);
+            background: rgba(255, 255, 255, 0.05);
+            padding: 12px;
+            text-align: center;
+            font-size: 13px;
+        }
+
+        .preview-card i {
+            font-size: 18px;
+            margin-bottom: 7px;
+            color: var(--accent-2);
+            display: block;
+        }
+
+        .auth-right {
+            padding: 34px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .mobile-brand {
+            display: none;
+            margin-bottom: 16px;
+        }
+
+        .mobile-brand .brand {
+            font-size: 24px;
+        }
+
+        .auth-right h1 {
+            font-family: "Clash Display", sans-serif;
+            font-size: 40px;
+            line-height: 1;
+            letter-spacing: -1px;
+            margin-bottom: 8px;
+        }
+
+        .auth-sub {
+            color: var(--muted);
+            font-size: 14px;
+            margin-bottom: 16px;
+        }
+
+        .flash-stack {
+            display: grid;
+            gap: 8px;
+            margin-bottom: 14px;
+        }
+
+        .flash-item {
+            border-radius: 12px;
+            padding: 10px 12px;
+            font-size: 13px;
+            border: 1px solid transparent;
+        }
+
+        .flash-error {
+            background: rgba(248, 113, 113, 0.14);
+            border-color: rgba(248, 113, 113, 0.26);
+            color: #ffd1d1;
+        }
+
+        .flash-success {
+            background: rgba(52, 211, 153, 0.14);
+            border-color: rgba(52, 211, 153, 0.26);
+            color: #cbffe8;
+        }
+
+        .role-switch {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .role-btn {
+            border: 1px solid var(--line);
+            border-radius: 11px;
+            background: rgba(255, 255, 255, 0.04);
+            color: var(--muted);
+            padding: 10px 12px;
+            font-family: inherit;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 7px;
+            transition: all 0.2s ease;
+        }
+
+        .role-btn.active {
+            background: linear-gradient(135deg, rgba(255, 107, 43, 0.22), rgba(255, 179, 71, 0.14));
+            color: white;
+            border-color: rgba(255, 107, 43, 0.4);
+        }
+
+        .role-btn:hover:not(.active) {
+            color: white;
+            border-color: rgba(255, 255, 255, 0.22);
+        }
+
+        .form-stack {
+            display: grid;
+            gap: 11px;
+            margin-bottom: 12px;
+        }
+
+        .field-label {
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+            color: var(--muted-soft);
+            margin-bottom: 4px;
+            display: block;
+        }
+
+        .field {
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.04);
+            height: 46px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 0 12px;
+        }
+
+        .field i { color: var(--muted-soft); font-size: 13px; }
+
+        .field input {
+            border: none;
+            outline: none;
+            background: transparent;
+            color: var(--text);
+            width: 100%;
+            font-family: inherit;
+            font-size: 14px;
+        }
+
+        .field input::placeholder { color: var(--muted-soft); }
+
+        .pw-toggle {
+            border: none;
+            background: transparent;
+            color: var(--muted-soft);
+            cursor: pointer;
+            width: 22px;
+        }
+
+        .meta-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+            font-size: 13px;
+            color: var(--muted);
+        }
+
+        .meta-row label {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+        }
+
+        .meta-row input[type="checkbox"] { accent-color: var(--accent); }
+
+        .meta-row a {
+            color: var(--accent-2);
+            font-weight: 600;
+        }
+
+        .meta-row a:hover { color: white; }
+
+        .submit-btn {
+            width: 100%;
+            padding: 12px 14px;
+            border-radius: 12px;
+            border: none;
+            color: white;
+            font-family: inherit;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            background: linear-gradient(135deg, var(--accent), var(--accent-2));
+            transition: all 0.2s ease;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 12px 28px rgba(255, 107, 43, 0.34);
+        }
+
+        .divider {
+            margin: 14px 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--muted-soft);
+            font-size: 12px;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: "";
+            height: 1px;
+            flex: 1;
+            background: var(--line);
+        }
+
+        .social-stack {
+            display: grid;
+            gap: 8px;
+            margin-bottom: 14px;
+        }
+
+        .social-btn {
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.04);
+            color: var(--text);
+            height: 46px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 9px;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .social-btn:hover {
+            border-color: rgba(255, 255, 255, 0.24);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .signup-note {
+            text-align: center;
+            font-size: 13px;
+            color: var(--muted);
+        }
+
+        .signup-note a {
+            color: var(--accent-2);
+            font-weight: 700;
+        }
+
+        .signup-note a:hover { color: white; }
+
+        @media (max-width: 980px) {
+            .auth-shell { grid-template-columns: 1fr; }
+            .auth-left { display: none; }
+            .mobile-brand { display: block; }
+        }
+
+        @media (max-width: 560px) {
+            .auth-page { padding: 10px; }
+            .auth-right { padding: 18px; }
+            .auth-right h1 { font-size: 32px; }
+            .role-switch { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="glow g1"></div>
+    <div class="glow g2"></div>
+
+    <main class="auth-page">
+        <section class="auth-shell">
+            <aside class="auth-left">
+                <div>
+                    <a href="/" class="brand">
+                        <span class="brand-icon"><i class="fa-solid fa-feather-pointed"></i></span>
+                        <span>The Bird <strong>Job</strong></span>
+                    </a>
+                    <h2 class="left-title">Sign in and continue your hiring journey.</h2>
+                    <p class="left-sub">
+                        Access your premium dashboard, manage applications, and move faster with AI-powered insights.
+                    </p>
+                    <ul class="feature-list">
+                        <li><i class="fa-solid fa-check"></i> AI-powered resume analysis</li>
+                        <li><i class="fa-solid fa-check"></i> Verified skill certifications</li>
+                        <li><i class="fa-solid fa-check"></i> Smart candidate-employer matching</li>
+                    </ul>
+                </div>
+
+                <div class="role-preview">
+                    <article class="preview-card">
+                        <i class="fa-solid fa-user-graduate"></i>
+                        <strong>Job Seeker</strong>
+                    </article>
+                    <article class="preview-card">
+                        <i class="fa-solid fa-briefcase"></i>
+                        <strong>Employer</strong>
+                    </article>
+                </div>
+            </aside>
+
+            <section class="auth-right">
+                <div class="mobile-brand">
+                    <a href="/" class="brand">
+                        <span class="brand-icon"><i class="fa-solid fa-feather-pointed"></i></span>
+                        <span>The Bird <strong>Job</strong></span>
+                    </a>
+                </div>
+
+                <h1>Sign In</h1>
+                <p class="auth-sub">Enter your credentials to access your dashboard.</p>
+
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        <div class="flash-stack">
+                            {% for category, message in messages %}
+                                <div class="flash-item {% if category == 'error' %}flash-error{% else %}flash-success{% endif %}">
+                                    {{ message }}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                {% endwith %}
+
+                <div class="role-switch">
+                    <button type="button" id="jobseeker-btn" class="role-btn active" data-role="jobseeker">
+                        <i class="fa-solid fa-user-graduate"></i>
+                        <span>Job Seeker</span>
+                    </button>
+                    <button type="button" id="employer-btn" class="role-btn" data-role="employer">
+                        <i class="fa-solid fa-briefcase"></i>
+                        <span>Employer</span>
+                    </button>
+                </div>
+
+                <form action="{{ url_for('login') }}" method="POST">
+                    <input type="hidden" id="role-input" name="role" value="jobseeker">
+
+                    <div class="form-stack">
+                        <div>
+                            <label class="field-label">Email Address</label>
+                            <div class="field">
+                                <i class="fa-solid fa-envelope"></i>
+                                <input type="email" name="email" placeholder="you@example.com" required>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="field-label">Password</label>
+                            <div class="field">
+                                <i class="fa-solid fa-lock"></i>
+                                <input type="password" id="password-input" name="password" placeholder="Enter your password" required>
+                                <button type="button" id="pw-toggle" class="pw-toggle" aria-label="Toggle password visibility">
+                                    <i id="pw-icon" class="fa-solid fa-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="meta-row">
+                        <label>
+                            <input type="checkbox" name="remember">
+                            <span>Remember me</span>
+                        </label>
+                        <a href="/forgot-password">Forgot password?</a>
+                    </div>
+
+                    <button type="submit" class="submit-btn">Sign In</button>
+                </form>
+
+                <div class="divider">or continue with</div>
+
+                <div class="social-stack">
+                    <a id="google-btn" href="/auth/google?role=jobseeker" class="social-btn">
+                        <i class="fa-brands fa-google" style="color:#ea4335"></i>
+                        <span>Continue with Google</span>
+                    </a>
+                    <a id="linkedin-btn" href="/auth/linkedin?role=jobseeker" class="social-btn">
+                        <i class="fa-brands fa-linkedin" style="color:#0a66c2"></i>
+                        <span>Continue with LinkedIn</span>
+                    </a>
+                    <a id="phone-btn" href="/auth/phone?role=jobseeker" class="social-btn">
+                        <i class="fa-solid fa-phone" style="color:#16a34a"></i>
+                        <span>Continue with Phone</span>
+                    </a>
+                </div>
+
+                <p class="signup-note">
+                    Do not have an account?
+                    <a href="/signup">Sign Up</a>
+                </p>
+            </section>
+        </section>
+    </main>
+
+    <script>
+        const roleButtons = document.querySelectorAll(".role-btn");
+        const roleInput = document.getElementById("role-input");
+        const googleBtn = document.getElementById("google-btn");
+        const linkedinBtn = document.getElementById("linkedin-btn");
+        const phoneBtn = document.getElementById("phone-btn");
+        const passwordInput = document.getElementById("password-input");
+        const passwordToggle = document.getElementById("pw-toggle");
+        const passwordIcon = document.getElementById("pw-icon");
+
+        function updateSocialLinks(role) {
+            if (googleBtn) googleBtn.href = "/auth/google?role=" + role;
+            if (linkedinBtn) linkedinBtn.href = "/auth/linkedin?role=" + role;
+            if (phoneBtn) phoneBtn.href = "/auth/phone?role=" + role;
+        }
+
+        roleButtons.forEach((button) => {
+            button.addEventListener("click", function () {
+                roleButtons.forEach((b) => b.classList.remove("active"));
+                this.classList.add("active");
+                const selectedRole = this.dataset.role;
+                roleInput.value = selectedRole;
+                updateSocialLinks(selectedRole);
+            });
+        });
+
+        passwordToggle.addEventListener("click", () => {
+            const isHidden = passwordInput.type === "password";
+            passwordInput.type = isHidden ? "text" : "password";
+            passwordIcon.className = isHidden ? "fa-solid fa-eye-slash" : "fa-solid fa-eye";
+        });
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const defaultRole = roleInput.value || "jobseeker";
+            updateSocialLinks(defaultRole);
+        });
+    </script>
+</body>
+</html>

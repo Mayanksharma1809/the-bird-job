@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python Skill Test | The Bird Job</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="bg-gray-50 flex flex-col items-center justify-center min-h-screen p-4">
+
+    <div class="w-full max-w-4xl flex items-center justify-between mb-8 pb-4 border-b border-gray-200">
+        <div class="flex items-center gap-3">
+            <div class="bg-blue-600 p-2 rounded-xl shadow-md">
+                <i class="fas fa-dove text-white text-2xl"></i>
+            </div>
+            <h1 class="text-2xl font-bold text-gray-800">Python Basics <span class="text-blue-600">Skill Test</span></h1>
+        </div>
+        
+        <div class="flex items-center gap-3 bg-red-50 p-3 rounded-xl border border-red-200 shadow-sm">
+            <i class="fas fa-clock text-red-600 text-xl"></i>
+            <div class="text-lg font-bold text-red-700" id="timer">15:00</div>
+            <span class="text-xs text-red-500 font-medium">Time Left</span>
+        </div>
+    </div>
+
+    <div class="bg-white p-8 rounded-2xl shadow-xl w-full max-w-4xl border border-gray-100">
+        
+        <div class="flex items-center justify-between mb-8">
+            <span class="text-sm font-semibold text-gray-500">Question <span class="text-blue-600 font-bold" id="current-question-num">1</span> of <span class="text-gray-700 font-bold">10</span></span>
+            <div class="w-2/3 bg-gray-100 rounded-full h-2.5 shadow-inner">
+                <div class="bg-blue-600 h-2.5 rounded-full transition-all duration-300" style="width: 10%"></div>
+            </div>
+        </div>
+
+        <div class="mb-10">
+            <h2 class="text-xl font-semibold text-gray-900 leading-snug" id="question-text">
+                Which of the following is the correct syntax to create a list in Python?
+            </h2>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-10" id="options-container">
+            <label class="option-label flex items-center gap-4 p-5 border-2 border-gray-200 rounded-2xl cursor-pointer hover:border-blue-200 hover:bg-blue-50 transition-all duration-200">
+                <input type="radio" name="answer" value="a" class="w-5 h-5 text-blue-600 border-gray-300 focus:ring-blue-500">
+                <span class="text-gray-700 font-medium text-lg">A) my_list = (1, 2, 3)</span>
+            </label>
+            
+            <label class="option-label flex items-center gap-4 p-5 border-2 border-gray-200 rounded-2xl cursor-pointer hover:border-blue-200 hover:bg-blue-50 transition-all duration-200">
+                <input type="radio" name="answer" value="b" class="w-5 h-5 text-blue-600 border-gray-300 focus:ring-blue-500">
+                <span class="text-gray-700 font-medium text-lg">B) my_list = [1, 2, 3]</span>
+            </label>
+
+            <label class="option-label flex items-center gap-4 p-5 border-2 border-gray-200 rounded-2xl cursor-pointer hover:border-blue-200 hover:bg-blue-50 transition-all duration-200">
+                <input type="radio" name="answer" value="c" class="w-5 h-5 text-blue-600 border-gray-300 focus:ring-blue-500">
+                <span class="text-gray-700 font-medium text-lg">C) my_list = {1, 2, 3}</span>
+            </label>
+
+            <label class="option-label flex items-center gap-4 p-5 border-2 border-gray-200 rounded-2xl cursor-pointer hover:border-blue-200 hover:bg-blue-50 transition-all duration-200">
+                <input type="radio" name="answer" value="d" class="w-5 h-5 text-blue-600 border-gray-300 focus:ring-blue-500">
+                <span class="text-gray-700 font-medium text-lg">D) my_list = <1, 2, 3></span>
+            </label>
+        </div>
+
+        <div class="flex items-center justify-between pt-6 border-t border-gray-100">
+            <button class="flex items-center gap-2 text-blue-600 font-semibold px-6 py-2 rounded-xl hover:bg-blue-50 transition">
+                <i class="fas fa-arrow-left"></i> Previous Question
+            </button>
+            <button class="flex items-center gap-2 bg-blue-600 text-white font-bold px-8 py-3 rounded-xl hover:bg-blue-700 shadow-md transform active:scale-95 transition">
+                Next Question <i class="fas fa-arrow-right"></i>
+            </button>
+        </div>
+
+    </div>
+
+    <div id="cheating-modal" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center p-4 z-50 hidden">
+        <div class="bg-white p-8 rounded-2xl shadow-2xl max-w-sm text-center">
+            <i class="fas fa-exclamation-triangle text-yellow-500 text-6xl mb-6"></i>
+            <h3 class="text-2xl font-bold text-gray-900 mb-2">Tab Switch Detected!</h3>
+            <p class="text-gray-600 mb-6">Changing tabs during the test is not allowed. This is your first and final warning.</p>
+            <button onclick="closeModal()" class="w-full bg-yellow-600 text-white font-bold py-3 rounded-xl hover:bg-yellow-700 transition">
+                Continue Test
+            </button>
+        </div>
+    </div>
+
+</body>
+</html>

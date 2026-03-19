@@ -1,0 +1,646 @@
+﻿<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Candidate Dashboard | The Bird Job</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Clash+Display:wght@400;500;600;700&family=Bricolage+Grotesque:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg: #07070e;
+            --surface: #0e0f1a;
+            --panel: #131422;
+            --panel-2: #181a2b;
+            --border: rgba(255, 255, 255, 0.1);
+            --border-soft: rgba(255, 255, 255, 0.06);
+            --text: rgba(255, 255, 255, 0.92);
+            --muted: rgba(255, 255, 255, 0.62);
+            --muted-soft: rgba(255, 255, 255, 0.44);
+            --accent: #ff6b2b;
+            --accent-2: #ffb347;
+            --blue: #60a5fa;
+            --green: #34d399;
+            --purple: #a78bfa;
+            --danger: #f87171;
+            --shadow: 0 22px 70px rgba(0, 0, 0, 0.38);
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
+        body { font-family: "Bricolage Grotesque", sans-serif; background: var(--bg); color: var(--text); overflow-x: hidden; }
+        a { color: inherit; text-decoration: none; }
+
+        .glow { position: fixed; border-radius: 999px; filter: blur(130px); pointer-events: none; z-index: 0; }
+        .g1 { width: 520px; height: 520px; background: rgba(255, 107, 43, 0.1); top: -220px; right: -160px; }
+        .g2 { width: 460px; height: 460px; background: rgba(96, 165, 250, 0.09); top: 40vh; left: -210px; }
+        .g3 { width: 420px; height: 420px; background: rgba(167, 139, 250, 0.08); bottom: -220px; right: 10%; }
+
+        .top-nav {
+            position: fixed; top: 0; left: 0; right: 0; height: 74px;
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0 28px;
+            background: rgba(7, 7, 14, 0.9);
+            border-bottom: 1px solid var(--border-soft);
+            backdrop-filter: blur(20px); z-index: 120;
+        }
+        .brand { display: inline-flex; align-items: center; gap: 11px; font-family: "Clash Display", sans-serif; font-size: 22px; font-weight: 600; letter-spacing: -0.5px; }
+        .brand strong { color: var(--accent); font-weight: 700; }
+        .brand-mark { width: 36px; height: 36px; border-radius: 11px; display: inline-flex; align-items: center; justify-content: center; color: white; background: linear-gradient(135deg, var(--accent), var(--accent-2)); box-shadow: 0 10px 30px rgba(255, 107, 43, 0.35); }
+        .nav-links { display: flex; gap: 8px; }
+        .nav-pill { border: 1px solid var(--border); background: rgba(255, 255, 255, 0.02); color: var(--muted); font-size: 13px; font-weight: 500; padding: 8px 14px; border-radius: 10px; transition: all 0.2s ease; }
+        .nav-pill:hover { color: white; border-color: rgba(255, 255, 255, 0.2); transform: translateY(-1px); }
+        .nav-pill.active { color: white; background: linear-gradient(135deg, rgba(255, 107, 43, 0.25), rgba(255, 179, 71, 0.12)); border-color: rgba(255, 107, 43, 0.35); }
+        .nav-actions { display: flex; align-items: center; gap: 12px; }
+        .icon-btn { width: 40px; height: 40px; border: 1px solid var(--border); background: rgba(255, 255, 255, 0.03); border-radius: 11px; color: var(--text); cursor: pointer; transition: all 0.2s ease; display: flex; align-items: center; justify-content: center; }
+        .icon-btn:hover { border-color: rgba(255, 255, 255, 0.25); transform: translateY(-1px); }
+        .profile-trigger { border: 1px solid var(--border); background: rgba(255, 255, 255, 0.03); border-radius: 12px; padding: 6px 10px 6px 7px; display: flex; align-items: center; gap: 9px; color: var(--text); cursor: pointer; transition: all 0.2s ease; }
+        .profile-trigger:hover { border-color: rgba(255, 255, 255, 0.22); transform: translateY(-1px); }
+        .avatar { width: 33px; height: 33px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: white; font-size: 12px; font-weight: 700; letter-spacing: 0.5px; }
+        .profile-meta { display: flex; flex-direction: column; align-items: flex-start; line-height: 1.1; min-width: 116px; }
+        .profile-meta strong { font-size: 13px; font-weight: 600; color: white; }
+        .profile-meta small { font-size: 11px; color: var(--muted-soft); }
+
+        .page { position: relative; z-index: 1; width: min(1320px, calc(100% - 42px)); margin: 98px auto 44px; }
+        .panel { background: linear-gradient(165deg, var(--panel), #111321 68%); border: 1px solid var(--border-soft); border-radius: 24px; box-shadow: var(--shadow); }
+
+        .hero { padding: 30px; display: grid; grid-template-columns: 1.35fr 1fr; gap: 22px; margin-bottom: 18px; }
+        .hero-main { border: 1px solid rgba(255, 107, 43, 0.2); border-radius: 22px; padding: 28px; background: radial-gradient(circle at 88% 8%, rgba(255, 107, 43, 0.24), transparent 48%), linear-gradient(135deg, rgba(255, 107, 43, 0.12), rgba(255, 179, 71, 0.06)); }
+        .hero-eyebrow { display: inline-flex; align-items: center; gap: 8px; font-size: 11px; font-weight: 700; letter-spacing: 1.7px; text-transform: uppercase; color: var(--accent-2); margin-bottom: 14px; }
+        .hero-eyebrow i { font-size: 8px; }
+        .hero-main h1 { font-family: "Clash Display", sans-serif; font-size: clamp(28px, 3.5vw, 44px); line-height: 1.03; letter-spacing: -1.3px; margin-bottom: 12px; }
+        .hero-main h1 em { font-style: normal; background: linear-gradient(135deg, var(--accent), var(--accent-2)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+        .hero-main p { font-size: 15px; line-height: 1.75; color: var(--muted); max-width: 640px; margin-bottom: 24px; }
+        .hero-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+
+        .btn { border: none; border-radius: 11px; padding: 12px 18px; font-size: 13px; font-weight: 700; font-family: "Bricolage Grotesque", sans-serif; cursor: pointer; transition: all 0.2s ease; display: inline-flex; align-items: center; gap: 8px; }
+        .btn-primary { color: white; background: linear-gradient(135deg, var(--accent), var(--accent-2)); }
+        .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 10px 28px rgba(255, 107, 43, 0.35); }
+        .btn-ghost { color: var(--text); border: 1px solid var(--border); background: rgba(255, 255, 255, 0.05); }
+        .btn-ghost:hover { border-color: rgba(255, 255, 255, 0.25); background: rgba(255, 255, 255, 0.09); }
+
+        .hero-stats { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+        .stat-card { border-radius: 18px; padding: 16px; background: linear-gradient(165deg, var(--panel-2), #111525); border: 1px solid var(--border-soft); min-height: 110px; }
+        .stat-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+        .stat-icon { width: 34px; height: 34px; border-radius: 11px; display: inline-flex; align-items: center; justify-content: center; font-size: 14px; }
+        .si-orange { background: rgba(255, 107, 43, 0.15); color: var(--accent); }
+        .si-blue { background: rgba(96, 165, 250, 0.15); color: var(--blue); }
+        .si-green { background: rgba(52, 211, 153, 0.15); color: var(--green); }
+        .si-purple { background: rgba(167, 139, 250, 0.15); color: var(--purple); }
+        .stat-value { font-family: "Clash Display", sans-serif; font-size: 30px; line-height: 1; margin-bottom: 6px; }
+        .stat-label { font-size: 12px; color: var(--muted-soft); }
+
+        .content-grid { display: grid; grid-template-columns: 320px minmax(0, 1fr); gap: 18px; }
+        .left-rail { align-self: start; position: sticky; top: 90px; display: flex; flex-direction: column; gap: 16px; }
+        .rail-card { padding: 22px; }
+        .rail-title { font-family: "Clash Display", sans-serif; font-size: 24px; letter-spacing: -0.6px; margin-bottom: 6px; }
+        .rail-sub { color: var(--muted); font-size: 13px; margin-bottom: 16px; }
+
+        .progress-wrap { margin-bottom: 18px; }
+        .progress-meta { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); margin-bottom: 7px; }
+        .progress-bar { height: 8px; border-radius: 999px; background: rgba(255, 255, 255, 0.08); overflow: hidden; }
+        .progress-bar span { display: block; width: 74%; height: 100%; border-radius: inherit; background: linear-gradient(90deg, var(--accent), var(--accent-2)); }
+
+        .task-list { list-style: none; display: flex; flex-direction: column; gap: 10px; margin-bottom: 14px; }
+        .task-list li { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); }
+        .task-list i { width: 18px; height: 18px; border-radius: 6px; display: inline-flex; align-items: center; justify-content: center; font-size: 10px; }
+        .task-list .done { color: var(--green); background: rgba(52, 211, 153, 0.16); }
+        .task-list .pending { color: var(--blue); background: rgba(96, 165, 250, 0.16); }
+
+        .filters-panel { padding: 22px; }
+        .filters-panel h3 { font-family: "Clash Display", sans-serif; font-size: 22px; letter-spacing: -0.6px; margin-bottom: 16px; }
+        .filter-group { margin-bottom: 18px; }
+        .filter-group h4 { font-size: 12px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--muted-soft); margin-bottom: 10px; }
+        .filter-options { display: flex; flex-direction: column; gap: 9px; }
+        .filter-options label { font-size: 13px; color: var(--muted); display: flex; align-items: center; gap: 9px; cursor: pointer; }
+        input[type="checkbox"] { accent-color: var(--accent); width: 15px; height: 15px; cursor: pointer; }
+        .filters-actions { display: grid; gap: 10px; }
+
+        .main-feed { display: flex; flex-direction: column; gap: 16px; }
+        .section-block { padding: 24px; }
+        .section-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 14px; margin-bottom: 16px; }
+        .section-head h2 { font-family: "Clash Display", sans-serif; font-size: clamp(24px, 2.8vw, 34px); letter-spacing: -0.9px; line-height: 1.05; }
+        .section-head p { color: var(--muted); font-size: 13px; max-width: 540px; line-height: 1.6; }
+        .section-tag { font-size: 12px; font-weight: 600; color: var(--accent-2); letter-spacing: 0.7px; }
+
+        .search-row { display: grid; grid-template-columns: 1.4fr 1.2fr 1fr auto; gap: 10px; margin-bottom: 14px; }
+        .input-wrap { border: 1px solid var(--border); background: rgba(255, 255, 255, 0.03); border-radius: 12px; height: 46px; display: flex; align-items: center; gap: 9px; padding: 0 13px; }
+        .input-wrap i { color: var(--muted-soft); font-size: 13px; }
+        .input-wrap input, .input-wrap select { border: none; outline: none; background: transparent; color: var(--text); width: 100%; font-size: 13px; font-family: inherit; }
+        .input-wrap input::placeholder { color: var(--muted-soft); }
+        .input-wrap select option { background: var(--panel); }
+
+        .job-list { display: flex; flex-direction: column; gap: 12px; }
+        .job-card { border-radius: 16px; border: 1px solid var(--border-soft); background: linear-gradient(165deg, rgba(255, 255, 255, 0.025), rgba(255, 255, 255, 0.01)); padding: 18px; transition: all 0.22s ease; }
+        .job-card:hover { border-color: rgba(255, 255, 255, 0.18); transform: translateY(-2px); }
+        .job-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; margin-bottom: 11px; }
+        .job-main { display: flex; gap: 12px; align-items: flex-start; }
+        .company-mark { width: 44px; height: 44px; border-radius: 14px; display: inline-flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+        .cm-orange { background: rgba(255, 107, 43, 0.16); color: var(--accent); }
+        .cm-blue { background: rgba(96, 165, 250, 0.16); color: var(--blue); }
+        .cm-green { background: rgba(52, 211, 153, 0.16); color: var(--green); }
+        .job-title { font-size: 18px; font-weight: 600; margin-bottom: 4px; letter-spacing: -0.2px; }
+        .job-company { color: var(--muted); font-size: 13px; margin-bottom: 9px; }
+        .job-chips { display: flex; flex-wrap: wrap; gap: 7px; }
+        .chip { border-radius: 999px; padding: 5px 10px; font-size: 11px; font-weight: 600; border: 1px solid transparent; }
+        .chip.role { color: var(--blue); background: rgba(96, 165, 250, 0.16); }
+        .chip.loc { color: var(--green); background: rgba(52, 211, 153, 0.16); }
+        .chip.pay { color: var(--accent-2); background: rgba(255, 179, 71, 0.15); }
+        .chip.tag { color: var(--muted); background: rgba(255, 255, 255, 0.06); border-color: var(--border-soft); }
+        .job-actions { display: flex; align-items: center; gap: 8px; }
+        .btn-small { padding: 10px 14px; border-radius: 10px; font-size: 12px; }
+
+        .feature-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 11px; }
+        .feature-card { border-radius: 15px; border: 1px solid var(--border-soft); background: linear-gradient(160deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.01)); padding: 18px; transition: all 0.25s ease; }
+        .feature-card:hover { transform: translateY(-3px); border-color: rgba(255, 255, 255, 0.18); }
+        .feature-icon { width: 36px; height: 36px; border-radius: 10px; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 11px; }
+        .fi-orange { background: rgba(255, 107, 43, 0.15); color: var(--accent); }
+        .fi-purple { background: rgba(167, 139, 250, 0.16); color: var(--purple); }
+        .fi-green { background: rgba(52, 211, 153, 0.16); color: var(--green); }
+        .feature-card h3 { font-size: 16px; margin-bottom: 6px; letter-spacing: -0.2px; }
+        .feature-card p { color: var(--muted); font-size: 12px; line-height: 1.7; margin-bottom: 12px; }
+        .feature-link { font-size: 12px; font-weight: 700; color: var(--accent-2); cursor: pointer; border: none; background: transparent; font-family: inherit; }
+
+        .application-list { display: grid; gap: 10px; }
+        .application-row { border: 1px solid var(--border-soft); border-radius: 14px; padding: 14px; background: rgba(255, 255, 255, 0.02); display: flex; justify-content: space-between; gap: 12px; align-items: center; }
+        .app-role { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
+        .app-meta { font-size: 12px; color: var(--muted); }
+        .status { border-radius: 999px; padding: 6px 11px; font-size: 11px; font-weight: 700; white-space: nowrap; }
+        .status.review { background: rgba(96, 165, 250, 0.16); color: var(--blue); }
+        .status.shortlisted { background: rgba(52, 211, 153, 0.16); color: var(--green); }
+        .status.submitted { background: rgba(255, 179, 71, 0.18); color: var(--accent-2); }
+
+        .split-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        .coming-card { padding: 22px; position: relative; overflow: hidden; }
+        .coming-card::after { content: ""; position: absolute; right: -40px; top: -50px; width: 160px; height: 160px; border-radius: 999px; background: radial-gradient(circle, rgba(255, 107, 43, 0.2), transparent 62%); pointer-events: none; }
+        .coming-card h3 { font-family: "Clash Display", sans-serif; font-size: 28px; letter-spacing: -0.7px; margin-bottom: 9px; }
+        .coming-card p { color: var(--muted); font-size: 13px; line-height: 1.7; margin-bottom: 14px; max-width: 470px; }
+
+        .profile-sidebar { position: fixed; top: 0; right: 0; width: min(370px, 94vw); height: 100vh; z-index: 160; border-left: 1px solid var(--border); background: linear-gradient(175deg, #101223, #0d0f1a 72%); transform: translateX(102%); transition: transform 0.3s ease; box-shadow: -20px 0 50px rgba(0, 0, 0, 0.45); overflow-y: auto; }
+        .profile-sidebar.open { transform: translateX(0); }
+        .sidebar-inner { padding: 22px; }
+        .sidebar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; }
+        .sidebar-header h2 { font-family: "Clash Display", sans-serif; font-size: 28px; letter-spacing: -0.7px; }
+        .close-btn { width: 36px; height: 36px; border-radius: 10px; border: 1px solid var(--border); background: rgba(255, 255, 255, 0.03); color: var(--text); cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        .side-user { display: flex; align-items: center; gap: 12px; padding: 14px; border-radius: 14px; border: 1px solid var(--border-soft); background: rgba(255, 255, 255, 0.03); margin-bottom: 14px; }
+        .side-user .avatar { width: 48px; height: 48px; font-size: 14px; }
+        .side-user h3 { font-size: 16px; margin-bottom: 3px; }
+        .side-user p { font-size: 12px; color: var(--muted); line-height: 1.5; }
+        .menu-list { display: flex; flex-direction: column; gap: 8px; margin-top: 6px; }
+        .menu-item { border: 1px solid var(--border-soft); border-radius: 12px; background: rgba(255, 255, 255, 0.02); padding: 12px; display: flex; align-items: flex-start; gap: 10px; transition: all 0.2s ease; color: var(--text); }
+        .menu-item:hover { border-color: rgba(255, 255, 255, 0.2); background: rgba(255, 255, 255, 0.05); }
+        .menu-icon { width: 34px; height: 34px; border-radius: 9px; display: inline-flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; }
+        .menu-item strong { display: block; font-size: 14px; margin-bottom: 2px; }
+        .menu-item span { font-size: 12px; color: var(--muted); }
+        .menu-btn { width: 100%; border: none; text-align: left; font-family: inherit; cursor: pointer; }
+        .menu-item.danger { color: #ffc9c9; border-color: rgba(248, 113, 113, 0.26); background: rgba(248, 113, 113, 0.08); }
+        .menu-item.danger span { color: #ffb3b3; }
+
+        .overlay { position: fixed; inset: 0; background: rgba(2, 4, 10, 0.74); opacity: 0; visibility: hidden; transition: opacity 0.25s ease; z-index: 140; }
+        .overlay.show { opacity: 1; visibility: visible; }
+
+        .modal-wrap { position: fixed; inset: 0; z-index: 170; display: grid; place-items: center; opacity: 0; visibility: hidden; transition: all 0.25s ease; padding: 16px; }
+        .modal-wrap.show { opacity: 1; visibility: visible; }
+        .modal-card { width: min(440px, 100%); border-radius: 20px; border: 1px solid var(--border); background: linear-gradient(170deg, var(--panel), #0f1220); padding: 26px; box-shadow: var(--shadow); text-align: center; }
+        .modal-icon { width: 58px; height: 58px; margin: 0 auto 14px; border-radius: 16px; display: grid; place-items: center; font-size: 24px; }
+        .modal-card h3 { font-family: "Clash Display", sans-serif; font-size: 30px; margin-bottom: 7px; letter-spacing: -0.6px; }
+        .modal-card p { color: var(--muted); font-size: 14px; margin-bottom: 18px; line-height: 1.7; }
+
+        .toast { position: fixed; right: 18px; bottom: 18px; z-index: 200; background: rgba(255, 255, 255, 0.95); color: #12131d; border-radius: 11px; padding: 11px 16px; font-size: 13px; font-weight: 600; box-shadow: 0 10px 28px rgba(0, 0, 0, 0.3); transform: translateY(12px); opacity: 0; pointer-events: none; transition: all 0.2s ease; }
+        .toast.show { transform: translateY(0); opacity: 1; }
+
+        ::-webkit-scrollbar { width: 10px; }
+        ::-webkit-scrollbar-track { background: #0b0d18; }
+        ::-webkit-scrollbar-thumb { background: #24273a; border-radius: 10px; }
+
+        @media (max-width: 1200px) {
+            .content-grid { grid-template-columns: 1fr; }
+            .left-rail { position: static; display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        }
+        @media (max-width: 980px) {
+            .nav-links { display: none; }
+            .hero { grid-template-columns: 1fr; }
+            .feature-grid { grid-template-columns: 1fr; }
+            .split-grid { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 760px) {
+            .top-nav { padding: 0 12px; }
+            .profile-meta { display: none; }
+            .search-row { grid-template-columns: 1fr; }
+            .job-top, .application-row { flex-direction: column; align-items: flex-start; }
+            .hero-stats { grid-template-columns: 1fr; }
+            .left-rail { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="glow g1"></div>
+    <div class="glow g2"></div>
+    <div class="glow g3"></div>
+    <div class="toast" id="toast"></div>
+
+    <nav class="top-nav">
+        <a href="#" class="brand">
+            <div class="brand-mark">🐦</div>
+            <span>The Bird <strong>Job</strong></span>
+        </a>
+        <div class="nav-links">
+            <a href="#jobs" class="nav-pill active">Jobs</a>
+            <a href="#features" class="nav-pill">Features</a>
+            <a href="#applications" class="nav-pill">Applications</a>
+            <a href="#tournaments" class="nav-pill">Tournaments</a>
+            <a href="#courses" class="nav-pill">Courses</a>
+        </div>
+        <div class="nav-actions">
+            <button class="icon-btn" onclick="showToast('Notifications coming soon!')">
+                <i class="fa-regular fa-bell"></i>
+            </button>
+            <button class="profile-trigger" onclick="toggleProfileSidebar()">
+                <span class="avatar">MK</span>
+                <span class="profile-meta">
+                    <strong>Mayank</strong>
+                    <small>Job Seeker</small>
+                </span>
+                <i class="fa-solid fa-chevron-down"></i>
+            </button>
+        </div>
+    </nav>
+
+    <main class="page">
+        <section class="panel hero">
+            <div class="hero-main">
+                <div class="hero-eyebrow">
+                    <i class="fa-solid fa-circle"></i> Candidate Command Center
+                </div>
+                <h1>Build a premium profile and land your <em>best role faster.</em></h1>
+                <p>Track progress, filter better opportunities, and make every application look intentional.</p>
+                <div class="hero-actions">
+                    <a href="#jobs" class="btn btn-primary"><i class="fa-solid fa-magnifying-glass"></i> Explore Jobs</a>
+                    <a href="#features" class="btn btn-ghost"><i class="fa-solid fa-star"></i> Boost My Profile</a>
+                </div>
+            </div>
+            <div class="hero-stats">
+                <article class="stat-card">
+                    <div class="stat-top"><div class="stat-icon si-orange"><i class="fa-solid fa-briefcase"></i></div></div>
+                    <div class="stat-value">158</div>
+                    <div class="stat-label">Open jobs matching your stack</div>
+                </article>
+                <article class="stat-card">
+                    <div class="stat-top"><div class="stat-icon si-blue"><i class="fa-solid fa-file-signature"></i></div></div>
+                    <div class="stat-value">24</div>
+                    <div class="stat-label">Applications submitted this month</div>
+                </article>
+                <article class="stat-card">
+                    <div class="stat-top"><div class="stat-icon si-green"><i class="fa-solid fa-user-check"></i></div></div>
+                    <div class="stat-value">7</div>
+                    <div class="stat-label">Recruiters viewed your profile</div>
+                </article>
+                <article class="stat-card">
+                    <div class="stat-top"><div class="stat-icon si-purple"><i class="fa-solid fa-bolt"></i></div></div>
+                    <div class="stat-value">74%</div>
+                    <div class="stat-label">Overall profile strength score</div>
+                </article>
+            </div>
+        </section>
+
+        <div class="content-grid">
+            <aside class="left-rail">
+                <section class="panel rail-card">
+                    <h2 class="rail-title">Hi, Mayank 👋</h2>
+                    <p class="rail-sub">Complete these actions to unlock more premium opportunities.</p>
+                    <div class="progress-wrap">
+                        <div class="progress-meta"><span>Profile completion</span><strong>74%</strong></div>
+                        <div class="progress-bar"><span></span></div>
+                    </div>
+                    <ul class="task-list">
+                        <li><i class="fa-solid fa-check done"></i> Resume uploaded and ATS scanned</li>
+                        <li><i class="fa-solid fa-check done"></i> Skills verified for top technologies</li>
+                        <li><i class="fa-solid fa-clock pending"></i> Add video resume intro</li>
+                        <li><i class="fa-solid fa-clock pending"></i> Pin two best portfolio projects</li>
+                    </ul>
+                </section>
+
+                <section class="panel filters-panel">
+                    <h3>Smart Filters</h3>
+                    <div class="filter-group">
+                        <h4>Salary Range</h4>
+                        <div class="filter-options">
+                            <label><input type="checkbox" name="salary"> Under ₹10 LPA</label>
+                            <label><input type="checkbox" name="salary"> ₹10 – 25 LPA</label>
+                            <label><input type="checkbox" name="salary"> ₹25 – 50 LPA</label>
+                            <label><input type="checkbox" name="salary"> ₹50 LPA+</label>
+                        </div>
+                    </div>
+                    <div class="filter-group">
+                        <h4>Work Type</h4>
+                        <div class="filter-options">
+                            <label><input type="checkbox" name="workType"> Full-time</label>
+                            <label><input type="checkbox" name="workType"> Part-time</label>
+                            <label><input type="checkbox" name="workType"> Contract</label>
+                            <label><input type="checkbox" name="workType"> Internship</label>
+                        </div>
+                    </div>
+                    <div class="filter-group">
+                        <h4>Work Location</h4>
+                        <div class="filter-options">
+                            <label><input type="checkbox" name="location"> Remote</label>
+                            <label><input type="checkbox" name="location"> On-site</label>
+                            <label><input type="checkbox" name="location"> Hybrid</label>
+                        </div>
+                    </div>
+                    <div class="filter-group">
+                        <h4>Experience Level</h4>
+                        <div class="filter-options">
+                            <label><input type="checkbox" name="experience"> Fresher</label>
+                            <label><input type="checkbox" name="experience"> 1-3 Years</label>
+                            <label><input type="checkbox" name="experience"> 3-5 Years</label>
+                            <label><input type="checkbox" name="experience"> 5+ Years</label>
+                        </div>
+                    </div>
+                    <div class="filters-actions">
+                        <button id="applyFiltersBtn" class="btn btn-primary"><i class="fa-solid fa-wand-magic-sparkles"></i> Apply Filters</button>
+                        <button id="clearFiltersBtn" class="btn btn-ghost"><i class="fa-solid fa-rotate-left"></i> Clear All</button>
+                    </div>
+                </section>
+            </aside>
+
+            <div class="main-feed">
+                <section id="jobs" class="panel section-block">
+                    <div class="section-head">
+                        <div>
+                            <h2>Find your next premium opportunity.</h2>
+                            <p>Use deep filters and role matching to quickly target jobs with better growth.</p>
+                        </div>
+                        <span class="section-tag">150+ active matches</span>
+                    </div>
+                    <div class="search-row">
+                        <label class="input-wrap">
+                            <i class="fa-solid fa-search"></i>
+                            <input id="jobKeyword" type="text" placeholder="Role, skill, or keyword">
+                        </label>
+                        <label class="input-wrap">
+                            <i class="fa-solid fa-location-dot"></i>
+                            <input id="jobLocation" type="text" placeholder="City, region, or remote">
+                        </label>
+                        <label class="input-wrap">
+                            <i class="fa-solid fa-layer-group"></i>
+                            <select id="jobLevel">
+                                <option value="">Any seniority</option>
+                                <option>Fresher</option>
+                                <option>1-3 Years</option>
+                                <option>3-5 Years</option>
+                                <option>5+ Years</option>
+                            </select>
+                        </label>
+                        <button id="searchJobsBtn" class="btn btn-primary btn-small">
+                            <i class="fa-solid fa-magnifying-glass"></i> Search
+                        </button>
+                    </div>
+                    <div class="job-list">
+                        <article class="job-card">
+                            <div class="job-top">
+                                <div class="job-main">
+                                    <div class="company-mark cm-orange">🏢</div>
+                                    <div>
+                                        <h3 class="job-title">ML Engineer</h3>
+                                        <p class="job-company">Google · Bangalore</p>
+                                        <div class="job-chips">
+                                            <span class="chip role">Full-time</span>
+                                            <span class="chip loc">Remote Friendly</span>
+                                            <span class="chip pay">₹40–60 LPA</span>
+                                            <span class="chip tag">New</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="job-actions">
+                                    <button class="btn btn-primary btn-small" onclick="showToast('Applied to Google ML Engineer! ✅')">Apply Now</button>
+                                    <button class="btn btn-ghost btn-small" onclick="showToast('Saved! 🔖')">Save</button>
+                                </div>
+                            </div>
+                        </article>
+                        <article class="job-card">
+                            <div class="job-top">
+                                <div class="job-main">
+                                    <div class="company-mark cm-blue">🛒</div>
+                                    <div>
+                                        <h3 class="job-title">Data Scientist</h3>
+                                        <p class="job-company">Flipkart · Remote</p>
+                                        <div class="job-chips">
+                                            <span class="chip role">Full-time</span>
+                                            <span class="chip loc">Remote</span>
+                                            <span class="chip pay">₹25–40 LPA</span>
+                                            <span class="chip tag">Hot 🔥</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="job-actions">
+                                    <button class="btn btn-primary btn-small" onclick="showToast('Applied to Flipkart! ✅')">Apply Now</button>
+                                    <button class="btn btn-ghost btn-small" onclick="showToast('Saved! 🔖')">Save</button>
+                                </div>
+                            </div>
+                        </article>
+                        <article class="job-card">
+                            <div class="job-top">
+                                <div class="job-main">
+                                    <div class="company-mark cm-green">💸</div>
+                                    <div>
+                                        <h3 class="job-title">AI/ML Intern</h3>
+                                        <p class="job-company">Razorpay · Bangalore</p>
+                                        <div class="job-chips">
+                                            <span class="chip role">Internship</span>
+                                            <span class="chip loc">On-site</span>
+                                            <span class="chip pay">₹60K/mo</span>
+                                            <span class="chip tag">Fresher ✓</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="job-actions">
+                                    <button class="btn btn-primary btn-small" onclick="showToast('Applied to Razorpay! ✅')">Apply Now</button>
+                                    <button class="btn btn-ghost btn-small" onclick="showToast('Saved! 🔖')">Save</button>
+                                </div>
+                            </div>
+                        </article>
+                    </div>
+                </section>
+
+                <section id="features" class="panel section-block">
+                    <div class="section-head">
+                        <div>
+                            <h2>Premium tools that move you ahead.</h2>
+                            <p>AI-powered capabilities surfaced directly in your dashboard.</p>
+                        </div>
+                    </div>
+                    <div class="feature-grid">
+                        <article class="feature-card">
+                            <div class="feature-icon fi-orange"><i class="fa-solid fa-robot"></i></div>
+                            <h3>AI ATS Scanner</h3>
+                            <p>Check resume compatibility, missing keywords, and score improvement in one click.</p>
+                            <button class="feature-link" onclick="showToast('Opening ATS Scanner 🤖')">Run scanner now</button>
+                        </article>
+                        <article class="feature-card">
+                            <div class="feature-icon fi-purple"><i class="fa-solid fa-video"></i></div>
+                            <h3>Video Resume Builder</h3>
+                            <p>Record a concise introduction and add it to your profile for higher recruiter recall.</p>
+                            <button class="feature-link" onclick="showToast('Opening Video Resume 🎥')">Create video intro</button>
+                        </article>
+                        <article class="feature-card">
+                            <div class="feature-icon fi-green"><i class="fa-solid fa-route"></i></div>
+                            <h3>AI Career Planner</h3>
+                            <p>Get personalized growth roadmap from your current level to your target role.</p>
+                            <button class="feature-link" onclick="showToast('Opening Career Planner 🗺️')">Plan my growth</button>
+                        </article>
+                    </div>
+                </section>
+
+                <section id="applications" class="panel section-block">
+                    <div class="section-head">
+                        <div>
+                            <h2>Application pipeline</h2>
+                            <p>Track every application stage and keep your momentum high.</p>
+                        </div>
+                    </div>
+                    <div class="application-list">
+                        <article class="application-row">
+                            <div>
+                                <h3 class="app-role">ML Engineer</h3>
+                                <p class="app-meta">Google · Applied 2 days ago</p>
+                            </div>
+                            <span class="status review">In Review</span>
+                        </article>
+                        <article class="application-row">
+                            <div>
+                                <h3 class="app-role">Data Scientist</h3>
+                                <p class="app-meta">Flipkart · Applied 4 days ago</p>
+                            </div>
+                            <span class="status shortlisted">Shortlisted 🎉</span>
+                        </article>
+                        <article class="application-row">
+                            <div>
+                                <h3 class="app-role">AI/ML Intern</h3>
+                                <p class="app-meta">Razorpay · Applied 6 days ago</p>
+                            </div>
+                            <span class="status submitted">Submitted</span>
+                        </article>
+                    </div>
+                </section>
+
+                <div class="split-grid">
+                    <section id="tournaments" class="panel coming-card">
+                        <h3>Skill Tournaments</h3>
+                        <p>Compete in real-world timed challenges and earn visible ranking badges recruiters notice.</p>
+                        <button class="btn btn-ghost" onclick="showToast('Tournaments launch soon! 🏆')">
+                            <i class="fa-solid fa-trophy"></i> Join waitlist
+                        </button>
+                    </section>
+                    <section id="courses" class="panel coming-card">
+                        <h3>Career Courses</h3>
+                        <p>Unlock curated role tracks with mini-projects, mock interviews, and mentor feedback loops.</p>
+                        <button class="btn btn-ghost" onclick="showToast('Courses launch soon! 📚')">
+                            <i class="fa-solid fa-graduation-cap"></i> Explore roadmap
+                        </button>
+                    </section>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <aside id="profileSidebar" class="profile-sidebar">
+        <div class="sidebar-inner">
+            <div class="sidebar-header">
+                <h2>Account</h2>
+                <button class="close-btn" onclick="toggleProfileSidebar(true)">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="side-user">
+                <span class="avatar" style="width:48px;height:48px;font-size:14px">MK</span>
+                <div>
+                    <h3>Mayank</h3>
+                    <p>Job Seeker Account</p>
+                    <p>mayank@email.com</p>
+                </div>
+            </div>
+            <div class="menu-list">
+                <a href="#" class="menu-item">
+                    <span class="menu-icon" style="background:rgba(96,165,250,0.16);color:var(--blue)"><i class="fa-solid fa-user-gear"></i></span>
+                    <span><strong>Manage Account</strong><span>Update profile and security</span></span>
+                </a>
+                <a href="#applications" class="menu-item" onclick="toggleProfileSidebar(true)">
+                    <span class="menu-icon" style="background:rgba(52,211,153,0.16);color:var(--green)"><i class="fa-solid fa-list-check"></i></span>
+                    <span><strong>Applications</strong><span>See your complete pipeline</span></span>
+                </a>
+                <a href="#" class="menu-item">
+                    <span class="menu-icon" style="background:rgba(167,139,250,0.16);color:var(--purple)"><i class="fa-solid fa-tags"></i></span>
+                    <span><strong>Pricing</strong><span>Compare free and premium plans</span></span>
+                </a>
+                <button class="menu-item menu-btn" onclick="showToast('Opening Portfolio... 🗂️');toggleProfileSidebar(true)">
+                    <span class="menu-icon" style="background:rgba(255,179,71,0.16);color:var(--accent-2)"><i class="fa-solid fa-briefcase"></i></span>
+                    <span><strong>Portfolio</strong><span>Manage projects and highlights</span></span>
+                </button>
+                <button class="menu-item menu-btn" onclick="showToast('Opening Certificates... 🏆');toggleProfileSidebar(true)">
+                    <span class="menu-icon" style="background:rgba(255,107,43,0.16);color:var(--accent)"><i class="fa-solid fa-certificate"></i></span>
+                    <span><strong>Certificates</strong><span>Track badges and achievements</span></span>
+                </button>
+                <a href="#" class="menu-item danger">
+                    <span class="menu-icon" style="background:rgba(248,113,113,0.22);color:#ffd5d5"><i class="fa-solid fa-right-from-bracket"></i></span>
+                    <span><strong>Log Out</strong><span>Sign out of your account</span></span>
+                </a>
+            </div>
+        </div>
+    </aside>
+
+    <div id="sidebarOverlay" class="overlay"></div>
+
+    <script>
+        const sidebar = document.getElementById("profileSidebar");
+        const overlay = document.getElementById("sidebarOverlay");
+        const toast = document.getElementById("toast");
+
+        function showToast(message) {
+            toast.textContent = message;
+            toast.classList.add("show");
+            clearTimeout(showToast.timer);
+            showToast.timer = setTimeout(() => toast.classList.remove("show"), 2200);
+        }
+
+        function toggleProfileSidebar(forceClose = false) {
+            const isOpen = sidebar.classList.contains("open");
+            if (forceClose || isOpen) {
+                sidebar.classList.remove("open");
+                overlay.classList.remove("show");
+            } else {
+                sidebar.classList.add("open");
+                overlay.classList.add("show");
+            }
+        }
+
+        overlay.addEventListener("click", () => {
+            sidebar.classList.remove("open");
+            overlay.classList.remove("show");
+        });
+
+        document.addEventListener("keydown", (e) => {
+            if (e.key === "Escape") {
+                sidebar.classList.remove("open");
+                overlay.classList.remove("show");
+            }
+        });
+
+        document.getElementById("applyFiltersBtn").addEventListener("click", () => {
+            const count = document.querySelectorAll("input[type='checkbox']:checked").length;
+            showToast(count ? `Applied ${count} filter(s) ✓` : "No filters selected");
+        });
+
+        document.getElementById("clearFiltersBtn").addEventListener("click", () => {
+            document.querySelectorAll("input[type='checkbox']").forEach(cb => cb.checked = false);
+            showToast("Filters cleared ✓");
+        });
+
+        document.getElementById("searchJobsBtn").addEventListener("click", () => {
+            const kw = document.getElementById("jobKeyword").value.trim();
+            showToast(kw ? `Searching for "${kw}"...` : "Searching all jobs...");
+        });
+    </script>
+</body>
+</html>

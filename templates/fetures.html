@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Features — The Bird Job</title>
+<link href="https://fonts.googleapis.com/css2?family=Clash+Display:wght@400;500;600;700&family=Bricolage+Grotesque:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #08080F;
+  --surface: #0F0F1A;
+  --card: #13131F;
+  --card2: #1A1A2E;
+  --accent: #FF6B2B;
+  --accent2: #FFB347;
+  --green: #34D399;
+  --blue: #60A5FA;
+  --purple: #A78BFA;
+  --gold: #FBBF24;
+  --pink: #F472B6;
+  --cyan: #22D3EE;
+  --border: rgba(255,255,255,0.07);
+  --border2: rgba(255,255,255,0.12);
+  --muted: rgba(255,255,255,0.38);
+  --text: rgba(255,255,255,0.92);
+  --text2: rgba(255,255,255,0.65);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { font-family: 'Bricolage Grotesque', sans-serif; background: var(--bg); color: var(--text); overflow-x: hidden; }
+
+/* Ambient glows */
+.glow { position: fixed; border-radius: 50%; filter: blur(130px); pointer-events: none; z-index: 0; }
+.g1 { width: 600px; height: 600px; background: rgba(255,107,43,0.07); top: -200px; right: -150px; }
+.g2 { width: 500px; height: 500px; background: rgba(96,165,250,0.05); top: 50vh; left: -150px; }
+.g3 { width: 400px; height: 400px; background: rgba(167,139,250,0.04); bottom: 20vh; right: 10%; }
+
+/* NAV */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  background: rgba(8,8,15,0.92); backdrop-filter: blur(24px);
+  border-bottom: 1px solid var(--border);
+  height: 64px; display: flex; align-items: center;
+  padding: 0 48px; justify-content: space-between;
+}
+.nav-brand { display: flex; align-items: center; gap: 10px; font-family: 'Clash Display', sans-serif; font-size: 20px; font-weight: 700; color: white; text-decoration: none; }
+.bird { width: 32px; height: 32px; background: var(--accent); border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 16px; }
+.nav-r { display: flex; align-items: center; gap: 8px; }
+.npill { padding: 7px 16px; border-radius: 8px; font-size: 13px; font-weight: 500; cursor: pointer; border: 1px solid var(--border2); background: transparent; color: var(--muted); transition: all 0.2s; font-family: 'Bricolage Grotesque', sans-serif; }
+.npill:hover { color: white; background: rgba(255,255,255,0.06); }
+.ncta { padding: 8px 20px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; border: none; background: var(--accent); color: white; font-family: 'Bricolage Grotesque', sans-serif; transition: all 0.2s; }
+.ncta:hover { background: #e55a20; transform: translateY(-1px); }
+
+/* ===== HERO ===== */
+.hero {
+  min-height: 100vh; display: flex; align-items: center; justify-content: center;
+  flex-direction: column; text-align: center;
+  padding: 100px 48px 80px; position: relative; z-index: 1;
+}
+
+.hero-eyebrow {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: rgba(255,107,43,0.1); border: 1px solid rgba(255,107,43,0.25);
+  color: var(--accent); font-size: 11px; font-weight: 600;
+  letter-spacing: 2px; text-transform: uppercase;
+  padding: 7px 18px; border-radius: 100px; margin-bottom: 28px;
+}
+.edot { width: 5px; height: 5px; background: var(--accent); border-radius: 50%; animation: blink 2s infinite; }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+.hero-title {
+  font-family: 'Clash Display', sans-serif;
+  font-size: clamp(40px, 6.5vw, 80px); font-weight: 700;
+  letter-spacing: -3px; line-height: 0.98; color: white;
+  margin-bottom: 22px; max-width: 900px;
+}
+.hero-title em {
+  font-style: normal;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.hero-sub { font-size: 17px; color: var(--muted); max-width: 540px; margin: 0 auto 52px; line-height: 1.8; }
+
+.feat-pills { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; margin-bottom: 52px; }
+.fpill {
+  display: flex; align-items: center; gap: 8px;
+  background: rgba(255,255,255,0.04); border: 1px solid var(--border2);
+  padding: 10px 20px; border-radius: 100px; font-size: 13px; color: var(--text2);
+  transition: all 0.2s;
+}
+.fpill:hover { border-color: rgba(255,107,43,0.3); color: white; }
+
+.hero-cta { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+.hbtn-main { background: var(--accent); color: white; border: none; padding: 15px 32px; border-radius: 12px; font-family: 'Bricolage Grotesque', sans-serif; font-size: 15px; font-weight: 700; cursor: pointer; transition: all 0.25s; }
+.hbtn-main:hover { background: #e55a20; transform: translateY(-2px); box-shadow: 0 12px 32px rgba(255,107,43,0.3); }
+.hbtn-sec { background: rgba(255,255,255,0.06); color: white; border: 1px solid var(--border2); padding: 15px 32px; border-radius: 12px; font-family: 'Bricolage Grotesque', sans-serif; font-size: 15px; font-weight: 600; cursor: pointer; transition: all 0.25s; }
+.hbtn-sec:hover { background: rgba(255,255,255,0.1); transform: translateY(-2px); }
+
+.scroll-hint { position: absolute; bottom: 32px; left: 50%; transform: translateX(-50%); color: var(--muted); font-size: 12px; display: flex; flex-direction: column; align-items: center; gap: 6px; animation: bob 2s ease-in-out infinite; }
+@keyframes bob { 0%,100%{transform:translateX(-50%) translateY(0)} 50%{transform:translateX(-50%) translateY(8px)} }
+
+/* ===== SECTION COMMON ===== */
+.section { padding: 100px 48px; position: relative; z-index: 1; }
+.section-inner { max-width: 1100px; margin: 0 auto; }
+
+.sec-header { margin-bottom: 60px; }
+.sec-eyebrow { font-size: 11px; font-weight: 600; letter-spacing: 2.5px; text-transform: uppercase; margin-bottom: 12px; }
+.sec-title { font-family: 'Clash Display', sans-serif; font-size: clamp(28px, 4vw, 48px); font-weight: 700; letter-spacing: -1.5px; line-height: 1.1; color: white; margin-bottom: 14px; }
+.sec-sub { font-size: 15px; color: var(--muted); line-height: 1.8; max-width: 520px; }
+
+/* ===== CORE FEATURES GRID ===== */
+.core-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+/* Feature Card */
+.fcard {
+  background: var(--card); border: 1px solid var(--border2);
+  border-radius: 24px; padding: 30px; position: relative;
+  overflow: hidden; transition: all 0.35s; cursor: pointer;
+}
+.fcard::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0;
+  height: 2px; transform: scaleX(0); transition: transform 0.35s; transform-origin: left;
+}
+.fcard:hover { transform: translateY(-6px); border-color: rgba(255,255,255,0.15); }
+.fcard:hover::before { transform: scaleX(1); }
+
+/* Card color variants */
+.fc-orange { }
+.fc-orange::before { background: linear-gradient(90deg, var(--accent), var(--accent2)); }
+.fc-orange:hover { box-shadow: 0 20px 60px rgba(255,107,43,0.1); background: linear-gradient(160deg, #1A0F0A 0%, var(--card) 60%); }
+
+.fc-blue::before { background: linear-gradient(90deg, var(--blue), #93C5FD); }
+.fc-blue:hover { box-shadow: 0 20px 60px rgba(96,165,250,0.08); background: linear-gradient(160deg, #0A0F1A 0%, var(--card) 60%); }
+
+.fc-green::before { background: linear-gradient(90deg, var(--green), #6EE7B7); }
+.fc-green:hover { box-shadow: 0 20px 60px rgba(52,211,153,0.08); background: linear-gradient(160deg, #0A1A12 0%, var(--card) 60%); }
+
+.fc-gold::before { background: linear-gradient(90deg, var(--gold), #FDE68A); }
+.fc-gold:hover { box-shadow: 0 20px 60px rgba(251,191,36,0.08); background: linear-gradient(160deg, #1A150A 0%, var(--card) 60%); }
+
+.fc-purple::before { background: linear-gradient(90deg, var(--purple), #C4B5FD); }
+.fc-purple:hover { box-shadow: 0 20px 60px rgba(167,139,250,0.08); background: linear-gradient(160deg, #110A1A 0%, var(--card) 60%); }
+
+.fc-pink::before { background: linear-gradient(90deg, var(--pink), #FBCFE8); }
+.fc-pink:hover { box-shadow: 0 20px 60px rgba(244,114,182,0.08); background: linear-gradient(160deg, #1A0A14 0%, var(--card) 60%); }
+
+.fcard-icon {
+  width: 50px; height: 50px; border-radius: 15px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px; margin-bottom: 18px;
+}
+.fi-orange { background: rgba(255,107,43,0.12); }
+.fi-blue { background: rgba(96,165,250,0.12); }
+.fi-green { background: rgba(52,211,153,0.1); }
+.fi-gold { background: rgba(251,191,36,0.1); }
+.fi-purple { background: rgba(167,139,250,0.1); }
+.fi-pink { background: rgba(244,114,182,0.1); }
+
+.fcard-name { font-family: 'Clash Display', sans-serif; font-size: 19px; font-weight: 700; color: white; margin-bottom: 10px; }
+.fcard-desc { font-size: 13px; color: var(--muted); line-height: 1.75; margin-bottom: 20px; }
+
+.fcard-bullets { list-style: none; display: flex; flex-direction: column; gap: 8px; margin-bottom: 24px; }
+.fcard-bullets li { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--text2); }
+.fbullet { width: 4px; height: 4px; border-radius: 50%; flex-shrink: 0; }
+.fb-orange { background: var(--accent); }
+.fb-blue { background: var(--blue); }
+.fb-green { background: var(--green); }
+.fb-gold { background: var(--gold); }
+.fb-purple { background: var(--purple); }
+.fb-pink { background: var(--pink); }
+
+.fcard-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 12px; font-weight: 700; cursor: pointer;
+  border: none; background: transparent; transition: gap 0.2s;
+  font-family: 'Bricolage Grotesque', sans-serif; padding: 0;
+}
+.fcard-btn:hover { gap: 10px; }
+.fb-col-orange { color: var(--accent); }
+.fb-col-blue { color: var(--blue); }
+.fb-col-green { color: var(--green); }
+.fb-col-gold { color: var(--gold); }
+.fb-col-purple { color: var(--purple); }
+.fb-col-pink { color: var(--pink); }
+
+/* ===== UNIQUE FEATURES ===== */
+.unique-grid { display: flex; flex-direction: column; gap: 20px; }
+
+.big-card {
+  border-radius: 28px; padding: 48px;
+  position: relative; overflow: hidden; transition: all 0.35s;
+  display: grid; gap: 48px; align-items: center;
+}
+.big-card-2col { grid-template-columns: 1fr 1fr; }
+
+/* Card backgrounds */
+.bc-video {
+  background: linear-gradient(135deg, #12092A 0%, #0F0F1A 100%);
+  border: 1px solid rgba(167,139,250,0.2);
+}
+.bc-video:hover { box-shadow: 0 28px 80px rgba(167,139,250,0.1); transform: translateY(-4px); }
+
+.bc-career {
+  background: linear-gradient(135deg, #091A11 0%, #0F1A0F 100%);
+  border: 1px solid rgba(52,211,153,0.2);
+}
+.bc-career:hover { box-shadow: 0 28px 80px rgba(52,211,153,0.08); transform: translateY(-4px); }
+
+.bc-projects {
+  background: linear-gradient(135deg, #1A1209 0%, #1A150A 100%);
+  border: 1px solid rgba(251,191,36,0.2);
+}
+.bc-projects:hover { box-shadow: 0 28px 80px rgba(251,191,36,0.08); transform: translateY(-4px); }
+
+/* Decorative bg pattern */
+.big-card::after {
+  content: ''; position: absolute; inset: 0; pointer-events: none;
+  background-image: radial-gradient(circle at 80% 20%, rgba(255,255,255,0.02) 0%, transparent 60%);
+}
+
+.big-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 10px; font-weight: 700; letter-spacing: 2px;
+  text-transform: uppercase; padding: 6px 14px; border-radius: 100px; margin-bottom: 20px;
+}
+.bb-purple { background: rgba(167,139,250,0.1); border: 1px solid rgba(167,139,250,0.25); color: var(--purple); }
+.bb-green { background: rgba(52,211,153,0.08); border: 1px solid rgba(52,211,153,0.2); color: var(--green); }
+.bb-gold { background: rgba(251,191,36,0.08); border: 1px solid rgba(251,191,36,0.2); color: var(--gold); }
+
+.big-title { font-family: 'Clash Display', sans-serif; font-size: clamp(24px, 3vw, 38px); font-weight: 700; color: white; letter-spacing: -1.5px; margin-bottom: 14px; line-height: 1.05; }
+.big-desc { font-size: 14px; color: var(--muted); line-height: 1.85; margin-bottom: 28px; }
+
+.big-feats { display: flex; flex-direction: column; gap: 14px; margin-bottom: 32px; }
+.big-feat { display: flex; align-items: flex-start; gap: 12px; }
+.bf-icon { width: 34px; height: 34px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 15px; flex-shrink: 0; }
+.bfi-purple { background: rgba(167,139,250,0.12); }
+.bfi-green { background: rgba(52,211,153,0.1); }
+.bfi-gold { background: rgba(251,191,36,0.08); }
+.bf-text { font-size: 13px; color: var(--text2); line-height: 1.6; margin-top: 6px; }
+.bf-text strong { color: white; font-weight: 600; }
+
+.big-btn { display: inline-flex; align-items: center; gap: 8px; padding: 13px 28px; border-radius: 12px; font-family: 'Bricolage Grotesque', sans-serif; font-size: 14px; font-weight: 700; cursor: pointer; border: none; transition: all 0.25s; }
+.bb-purple-btn { background: linear-gradient(135deg, var(--purple), var(--blue)); color: white; }
+.bb-purple-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(167,139,250,0.3); }
+.bb-green-btn { background: linear-gradient(135deg, var(--green), #6EE7B7); color: #091A11; font-weight: 800; }
+.bb-green-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(52,211,153,0.25); }
+.bb-gold-btn { background: linear-gradient(135deg, var(--gold), #FDE68A); color: #1A1209; font-weight: 800; }
+.bb-gold-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(251,191,36,0.25); }
+
+/* MOCKUPS */
+/* Video */
+.video-mockup { background: rgba(167,139,250,0.05); border: 1px solid rgba(167,139,250,0.15); border-radius: 20px; padding: 24px; }
+.video-screen { background: rgba(167,139,250,0.08); border: 1px solid rgba(167,139,250,0.15); border-radius: 14px; height: 180px; display: flex; align-items: center; justify-content: center; margin-bottom: 16px; position: relative; overflow: hidden; }
+.video-screen::before { content: ''; position: absolute; inset: 0; background: repeating-linear-gradient(45deg, transparent, transparent 12px, rgba(167,139,250,0.02) 12px, rgba(167,139,250,0.02) 13px); }
+.play-circle { width: 54px; height: 54px; background: var(--purple); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; position: relative; z-index: 1; box-shadow: 0 0 0 14px rgba(167,139,250,0.1); }
+.video-meta { display: flex; justify-content: space-between; align-items: center; }
+.vm-left { font-size: 13px; font-weight: 700; color: white; }
+.vm-sub { font-size: 11px; color: var(--muted); margin-top: 2px; }
+.vm-time { font-family: 'Clash Display', sans-serif; font-size: 18px; font-weight: 700; color: var(--purple); }
+.vm-bar { height: 4px; background: rgba(167,139,250,0.15); border-radius: 2px; margin-top: 12px; overflow: hidden; }
+.vm-progress { height: 100%; background: var(--purple); border-radius: 2px; width: 65%; }
+
+/* Career */
+.career-mockup { background: rgba(52,211,153,0.04); border: 1px solid rgba(52,211,153,0.12); border-radius: 20px; padding: 24px; }
+.career-header { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 16px; }
+.cp-step { display: flex; align-items: flex-start; gap: 12px; padding: 12px 16px; border-radius: 12px; margin-bottom: 6px; }
+.cp-active { background: rgba(52,211,153,0.1); border: 1px solid rgba(52,211,153,0.2); }
+.cp-next { background: rgba(96,165,250,0.06); border: 1px solid rgba(96,165,250,0.12); }
+.cp-locked { background: rgba(255,255,255,0.02); border: 1px dashed rgba(255,255,255,0.06); opacity: 0.5; }
+.cp-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; margin-top: 4px; }
+.cpd-green { background: var(--green); box-shadow: 0 0 8px rgba(52,211,153,0.5); }
+.cpd-blue { background: var(--blue); }
+.cpd-grey { background: rgba(255,255,255,0.2); }
+.cp-connector { width: 2px; height: 14px; margin-left: 20px; margin-bottom: 2px; }
+.cpc-green { background: rgba(52,211,153,0.25); }
+.cpc-grey { background: rgba(255,255,255,0.06); }
+.cp-name { font-size: 13px; font-weight: 600; color: white; }
+.cp-detail { font-size: 11px; color: var(--muted); margin-top: 2px; }
+.cp-tag { margin-left: auto; font-size: 10px; font-weight: 700; padding: 3px 10px; border-radius: 100px; white-space: nowrap; }
+.cpt-now { background: rgba(52,211,153,0.12); color: var(--green); }
+.cpt-6m { background: rgba(96,165,250,0.1); color: var(--blue); }
+.cpt-18m { background: rgba(255,255,255,0.05); color: var(--muted); }
+
+/* Projects */
+.proj-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.proj-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07); border-radius: 16px; padding: 18px; transition: all 0.2s; }
+.proj-card:hover { border-color: rgba(251,191,36,0.25); background: rgba(251,191,36,0.04); }
+.proj-emoji { font-size: 26px; margin-bottom: 10px; }
+.proj-name { font-size: 13px; font-weight: 700; color: white; margin-bottom: 4px; }
+.proj-tech { font-size: 11px; color: var(--muted); }
+.proj-views { font-size: 11px; color: var(--gold); margin-top: 8px; font-weight: 600; }
+.proj-add { background: rgba(255,255,255,0.02); border: 1px dashed rgba(255,255,255,0.08); border-radius: 16px; padding: 18px; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 6px; cursor: pointer; transition: all 0.2s; }
+.proj-add:hover { border-color: rgba(251,191,36,0.25); }
+.proj-add-icon { font-size: 24px; opacity: 0.4; }
+.proj-add-text { font-size: 11px; color: var(--muted); }
+
+/* ===== PREMIUM SECTION ===== */
+.prem-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+.prem-card {
+  background: var(--card); border: 1px solid var(--border2);
+  border-radius: 24px; padding: 36px; position: relative;
+  overflow: hidden; transition: all 0.35s;
+}
+.prem-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; }
+.pc-dm::before { background: linear-gradient(90deg, var(--purple), var(--blue)); }
+.pc-dm:hover { box-shadow: 0 20px 60px rgba(167,139,250,0.1); background: linear-gradient(160deg, #110A1A 0%, var(--card) 60%); transform: translateY(-5px); border-color: rgba(167,139,250,0.25); }
+.pc-review::before { background: linear-gradient(90deg, var(--green), #6EE7B7); }
+.pc-review:hover { box-shadow: 0 20px 60px rgba(52,211,153,0.08); background: linear-gradient(160deg, #0A1A12 0%, var(--card) 60%); transform: translateY(-5px); border-color: rgba(52,211,153,0.2); }
+
+.prem-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 20px; }
+.prem-icon { width: 52px; height: 52px; border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 24px; }
+.pi-purple { background: rgba(167,139,250,0.1); }
+.pi-green { background: rgba(52,211,153,0.08); }
+.prem-badge { display: flex; align-items: center; gap: 5px; background: linear-gradient(135deg, var(--accent), var(--accent2)); color: white; font-size: 10px; font-weight: 700; padding: 5px 12px; border-radius: 100px; }
+.prem-name { font-family: 'Clash Display', sans-serif; font-size: 22px; font-weight: 700; color: white; margin-bottom: 10px; }
+.prem-desc { font-size: 13px; color: var(--muted); line-height: 1.8; margin-bottom: 24px; }
+.prem-feats { list-style: none; display: flex; flex-direction: column; gap: 11px; margin-bottom: 28px; }
+.prem-feats li { display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--text2); }
+.pf-chk { width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 700; flex-shrink: 0; }
+.pfc-purple { background: rgba(167,139,250,0.12); color: var(--purple); }
+.pfc-green { background: rgba(52,211,153,0.1); color: var(--green); }
+.prem-btn { width: 100%; padding: 14px; border-radius: 12px; font-family: 'Bricolage Grotesque', sans-serif; font-size: 14px; font-weight: 700; cursor: pointer; border: none; transition: all 0.25s; }
+.pb-purple { background: rgba(167,139,250,0.1); color: var(--purple); border: 1px solid rgba(167,139,250,0.2); }
+.pb-purple:hover { background: var(--purple); color: white; transform: translateY(-2px); box-shadow: 0 8px 24px rgba(167,139,250,0.25); }
+.pb-green { background: rgba(52,211,153,0.08); color: var(--green); border: 1px solid rgba(52,211,153,0.18); }
+.pb-green:hover { background: var(--green); color: #091A11; transform: translateY(-2px); box-shadow: 0 8px 24px rgba(52,211,153,0.2); }
+
+/* ===== CTA ===== */
+.cta { padding: 100px 48px; text-align: center; position: relative; z-index: 1; overflow: hidden; }
+.cta::before { content: '🐦'; position: absolute; font-size: 320px; opacity: 0.02; top: 50%; left: 50%; transform: translate(-50%,-50%); pointer-events: none; }
+.cta-title { font-family: 'Clash Display', sans-serif; font-size: clamp(32px, 5vw, 60px); font-weight: 700; color: white; letter-spacing: -2px; margin-bottom: 16px; }
+.cta-sub { font-size: 16px; color: var(--muted); margin-bottom: 40px; }
+.cta-btns { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+.cta-main { background: linear-gradient(135deg, var(--accent), var(--accent2)); color: white; border: none; padding: 16px 36px; border-radius: 14px; font-family: 'Bricolage Grotesque', sans-serif; font-size: 16px; font-weight: 700; cursor: pointer; transition: all 0.25s; }
+.cta-main:hover { transform: translateY(-3px); box-shadow: 0 14px 40px rgba(255,107,43,0.35); }
+.cta-sec { background: rgba(255,255,255,0.06); color: white; border: 1px solid var(--border2); padding: 16px 36px; border-radius: 14px; font-family: 'Bricolage Grotesque', sans-serif; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.25s; }
+.cta-sec:hover { background: rgba(255,255,255,0.1); transform: translateY(-2px); }
+
+/* Divider */
+.divider { max-width: 1100px; margin: 0 auto; display: flex; align-items: center; gap: 20px; padding: 0 48px; }
+.dline { flex: 1; height: 1px; background: var(--border); }
+.dtxt { font-size: 11px; color: var(--muted); font-weight: 500; letter-spacing: 1.5px; text-transform: uppercase; white-space: nowrap; }
+
+/* Toast */
+.toast { position: fixed; bottom: 24px; right: 24px; background: rgba(255,255,255,0.95); color: #0F0F0E; padding: 14px 22px; border-radius: 12px; font-size: 14px; font-weight: 600; z-index: 9999; transform: translateY(80px); opacity: 0; transition: all 0.3s; pointer-events: none; font-family: 'Bricolage Grotesque', sans-serif; box-shadow: 0 8px 32px rgba(0,0,0,0.3); }
+.toast.show { transform: translateY(0); opacity: 1; }
+
+/* Animations */
+.fu { opacity: 0; transform: translateY(22px); transition: all 0.65s ease; }
+.fu.vis { opacity: 1; transform: translateY(0); }
+.fu2 { opacity: 0; transform: translateY(22px); transition: all 0.65s ease 0.1s; }
+.fu2.vis { opacity: 1; transform: translateY(0); }
+.fu3 { opacity: 0; transform: translateY(22px); transition: all 0.65s ease 0.2s; }
+.fu3.vis { opacity: 1; transform: translateY(0); }
+
+@media(max-width:900px) {
+  nav { padding: 0 20px; }
+  .hero { padding: 90px 20px 70px; }
+  .section { padding: 70px 20px; }
+  .core-grid { grid-template-columns: 1fr; }
+  .big-card-2col { grid-template-columns: 1fr; }
+  .prem-grid { grid-template-columns: 1fr; }
+  .proj-grid { grid-template-columns: 1fr; }
+  .cta { padding: 70px 20px; }
+  .divider { padding: 0 20px; }
+}
+@media(max-width:600px) {
+  .feat-pills { gap: 8px; }
+  .fpill { padding: 8px 14px; font-size: 12px; }
+}
+</style>
+</head>
+<body>
+
+<div class="glow g1"></div>
+<div class="glow g2"></div>
+<div class="glow g3"></div>
+<div class="toast" id="toast"></div>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="nav-brand">
+    <div class="bird">🐦</div>
+    The Bird Job
+  </a>
+  <div class="nav-r">
+    <button class="npill">Browse Jobs</button>
+    <button class="npill">Pricing</button>
+    <button class="ncta" onclick="showToast('Creating free account! 🎉')">Start Free</button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-eyebrow fu"><div class="edot"></div> Everything You Need to Get Hired</div>
+  <h1 class="hero-title fu">Features built to give you<br>an <em>unfair advantage.</em></h1>
+  <p class="hero-sub fu">From AI resume scanning to direct HR messaging — every tool you need to land your dream job, faster than everyone else.</p>
+
+  <div class="feat-pills fu">
+    <div class="fpill">🤖 AI Powered</div>
+    <div class="fpill">🧠 Skill Verified</div>
+    <div class="fpill">💰 Salary Insights</div>
+    <div class="fpill">🏆 Certifications</div>
+    <div class="fpill">📹 Video Resume</div>
+    <div class="fpill">🗺️ Career Planning</div>
+    <div class="fpill">🚀 Projects</div>
+  </div>
+
+  <div class="hero-cta fu">
+    <button class="hbtn-main" onclick="showToast('Starting for free! 🚀')">Start For Free</button>
+    <button class="hbtn-sec" onclick="document.getElementById('core').scrollIntoView({behavior:'smooth'})">Explore Features ↓</button>
+  </div>
+
+  <div class="scroll-hint">
+    <span style="letter-spacing:2px">scroll</span>
+    <span>↓</span>
+  </div>
+</div>
+
+<!-- CORE FEATURES -->
+<div class="section" id="core" style="background:var(--surface);">
+  <div class="section-inner">
+    <div class="sec-header fu">
+      <div class="sec-eyebrow" style="color:var(--accent)">// Core Features</div>
+      <h2 class="sec-title">Everything in one place.</h2>
+      <p class="sec-sub">All the tools you need to go from job seeker to hired — without switching between 10 different apps.</p>
+    </div>
+
+    <div class="core-grid">
+      <!-- ATS -->
+      <div class="fcard fc-orange fu" onclick="showToast('Opening ATS Scanner! 🤖')">
+        <div class="fcard-icon fi-orange">🤖</div>
+        <div class="fcard-name">AI ATS Scanner</div>
+        <div class="fcard-desc">Upload your resume and instantly see how it scores against real ATS systems. Know what recruiters' software sees — before they do.</div>
+        <ul class="fcard-bullets">
+          <li><span class="fbullet fb-orange"></span>Instant ATS compatibility score</li>
+          <li><span class="fbullet fb-orange"></span>Keyword gap analysis</li>
+          <li><span class="fbullet fb-orange"></span>AI-powered resume rewrite</li>
+          <li><span class="fbullet fb-orange"></span>Job description matching</li>
+        </ul>
+        <button class="fcard-btn fb-col-orange">Try ATS Scanner →</button>
+      </div>
+
+      <!-- Skill Tests -->
+      <div class="fcard fc-blue fu2" onclick="showToast('Opening Skill Tests! 🧠')">
+        <div class="fcard-icon fi-blue">🧠</div>
+        <div class="fcard-name">Skill Tests</div>
+        <div class="fcard-desc">Take industry-standard assessments and prove your expertise with verified scores directly on your profile — recruiters trust it.</div>
+        <ul class="fcard-bullets">
+          <li><span class="fbullet fb-blue"></span>10+ skill domains</li>
+          <li><span class="fbullet fb-blue"></span>Timed, real-world questions</li>
+          <li><span class="fbullet fb-blue"></span>Instant results & feedback</li>
+          <li><span class="fbullet fb-blue"></span>Retake to improve score</li>
+        </ul>
+        <button class="fcard-btn fb-col-blue">Take a Test →</button>
+      </div>
+
+      <!-- Salary -->
+      <div class="fcard fc-green fu3" onclick="showToast('Opening Salary Benchmark! 💰')">
+        <div class="fcard-icon fi-green">💰</div>
+        <div class="fcard-name">Salary Benchmark</div>
+        <div class="fcard-desc">Know exactly what you're worth. We analyze your skills, experience & location to tell you the salary you deserve — and how to negotiate it.</div>
+        <ul class="fcard-bullets">
+          <li><span class="fbullet fb-green"></span>Based on your skill scores</li>
+          <li><span class="fbullet fb-green"></span>Location-based comparison</li>
+          <li><span class="fbullet fb-green"></span>Real-time market data</li>
+          <li><span class="fbullet fb-green"></span>Negotiation talking points</li>
+        </ul>
+        <button class="fcard-btn fb-col-green">Check Your Worth →</button>
+      </div>
+
+      <!-- Badges -->
+      <div class="fcard fc-gold fu" onclick="showToast('Opening Badges! 🏆')">
+        <div class="fcard-icon fi-gold">🏆</div>
+        <div class="fcard-name">Badges & Certificates</div>
+        <div class="fcard-desc">Earn verifiable badges on skill tests and unlock certificates for advanced assessments — credentials recruiters actually check.</div>
+        <ul class="fcard-bullets">
+          <li><span class="fbullet fb-gold"></span>Badge on every skill test</li>
+          <li><span class="fbullet fb-gold"></span>Downloadable certificates</li>
+          <li><span class="fbullet fb-gold"></span>Share on LinkedIn</li>
+          <li><span class="fbullet fb-gold"></span>Verified by The Bird Job</li>
+        </ul>
+        <button class="fcard-btn fb-col-gold">View My Badges →</button>
+      </div>
+
+      <!-- Portfolio -->
+      <div class="fcard fc-purple fu2" onclick="showToast('Opening Portfolio! 🗂️')">
+        <div class="fcard-icon fi-purple">🗂️</div>
+        <div class="fcard-name">Portfolio Listing</div>
+        <div class="fcard-desc">Showcase your work directly on your candidate profile. Let your projects speak louder than your resume — and let recruiters find you.</div>
+        <ul class="fcard-bullets">
+          <li><span class="fbullet fb-purple"></span>Link projects & GitHub repos</li>
+          <li><span class="fbullet fb-purple"></span>Tech stack tagging</li>
+          <li><span class="fbullet fb-purple"></span>Visible to all recruiters</li>
+          <li><span class="fbullet fb-purple"></span>Profile priority boost</li>
+        </ul>
+        <button class="fcard-btn fb-col-purple">Add Portfolio →</button>
+      </div>
+
+      <!-- Interview Prep -->
+      <div class="fcard fc-pink fu3" onclick="showToast('Opening Interview Prep! 🎯')">
+        <div class="fcard-icon fi-pink">🎯</div>
+        <div class="fcard-name">AI Interview Prep</div>
+        <div class="fcard-desc">Practice with AI-generated questions tailored to the exact job you're applying for. Walk in confident, walk out hired.</div>
+        <ul class="fcard-bullets">
+          <li><span class="fbullet fb-pink"></span>Role-specific questions</li>
+          <li><span class="fbullet fb-pink"></span>AI feedback on your answers</li>
+          <li><span class="fbullet fb-pink"></span>HR & technical rounds</li>
+          <li><span class="fbullet fb-pink"></span>Mock interview sessions</li>
+        </ul>
+        <button class="fcard-btn fb-col-pink">Start Practicing →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- DIVIDER -->
+<div class="divider" style="padding:48px 48px;">
+  <div class="dline"></div>
+  <div class="dtxt">✦ Only on The Bird Job</div>
+  <div class="dline"></div>
+</div>
+
+<!-- UNIQUE FEATURES -->
+<div class="section" id="unique">
+  <div class="section-inner">
+    <div class="sec-header fu">
+      <div class="sec-eyebrow" style="color:var(--green)">// Unique Features</div>
+      <h2 class="sec-title">Features you won't find<br>anywhere else.</h2>
+      <p class="sec-sub">We built these from scratch — because job seekers deserve more than just a job listing page.</p>
+    </div>
+
+    <div class="unique-grid">
+
+      <!-- VIDEO RESUME -->
+      <div class="big-card big-card-2col bc-video fu">
+        <div>
+          <div class="big-badge bb-purple">✦ Unique to Bird Job</div>
+          <h3 class="big-title">Video Resume<br>Builder</h3>
+          <p class="big-desc">Record a 60-second video resume directly on the platform. Let recruiters see the real you — your energy, communication, and personality — before you even apply.</p>
+          <div class="big-feats">
+            <div class="big-feat">
+              <div class="bf-icon bfi-purple">🎥</div>
+              <div class="bf-text"><strong>Record in-browser</strong> — no downloads, no setup needed at all</div>
+            </div>
+            <div class="big-feat">
+              <div class="bf-icon bfi-purple">✂️</div>
+              <div class="bf-text"><strong>Simple editing</strong> — trim, retake, and perfect your intro</div>
+            </div>
+            <div class="big-feat">
+              <div class="bf-icon bfi-purple">👀</div>
+              <div class="bf-text"><strong>Recruiter visible</strong> — shown directly on your profile card</div>
+            </div>
+            <div class="big-feat">
+              <div class="bf-icon bfi-purple">🚀</div>
+              <div class="bf-text"><strong>Stand out instantly</strong> — 10x more memorable than text resume</div>
+            </div>
+          </div>
+          <button class="big-btn bb-purple-btn" onclick="showToast('Opening Video Resume Builder! 🎥')">Record Your Intro →</button>
+        </div>
+        <div>
+          <div class="video-mockup">
+            <div class="video-screen">
+              <div class="play-circle">▶</div>
+            </div>
+            <div class="video-meta">
+              <div>
+                <div class="vm-left">My Video Resume</div>
+                <div class="vm-sub">Ready to share with recruiters</div>
+              </div>
+              <div class="vm-time">0:58</div>
+            </div>
+            <div class="vm-bar"><div class="vm-progress"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CAREER PATH -->
+      <div class="big-card big-card-2col bc-career fu">
+        <div>
+          <div class="big-badge bb-green">✦ Unique to Bird Job</div>
+          <h3 class="big-title">AI Career Path<br>Planner</h3>
+          <p class="big-desc">Tell us where you are — we'll show you exactly where to go. AI-generated career roadmaps with skills to learn, certifications to earn, and clear timelines.</p>
+          <div class="big-feats">
+            <div class="big-feat">
+              <div class="bf-icon bfi-green">🗺️</div>
+              <div class="bf-text"><strong>Personalized roadmap</strong> — based on your skills & career goals</div>
+            </div>
+            <div class="big-feat">
+              <div class="bf-icon bfi-green">📅</div>
+              <div class="bf-text"><strong>Timeline based</strong> — "6 months to Senior ML Engineer"</div>
+            </div>
+            <div class="big-feat">
+              <div class="bf-icon bfi-green">📚</div>
+              <div class="bf-text"><strong>Skill gap analysis</strong> — exactly what you need to learn next</div>
+            </div>
+            <div class="big-feat">
+              <div class="bf-icon bfi-green">✅</div>
+              <div class="bf-text"><strong>Progress tracking</strong> — tick milestones as you grow</div>
+            </div>
+          </div>
+          <button class="big-btn bb-green-btn" onclick="showToast('Opening Career Planner! 🗺️')">Plan My Career →</button>
+        </div>
+        <div>
+          <div class="career-mockup">
+            <div class="career-header">Your Roadmap → Senior ML Engineer</div>
+            <div class="cp-step cp-active">
+              <div class="cp-dot cpd-green"></div>
+              <div style="flex:1">
+                <div class="cp-name">ML Engineer (Fresher)</div>
+                <div class="cp-detail">You are here now</div>
+              </div>
+              <div class="cp-tag cpt-now">Now</div>
+            </div>
+            <div class="cp-connector cpc-green"></div>
+            <div class="cp-step cp-next">
+              <div class="cp-dot cpd-blue"></div>
+              <div style="flex:1">
+                <div class="cp-name">ML Engineer (1–3 yrs)</div>
+                <div class="cp-detail">Learn: MLOps, Docker, FastAPI</div>
+              </div>
+              <div class="cp-tag cpt-6m">6 mo</div>
+            </div>
+            <div class="cp-connector cpc-grey"></div>
+            <div class="cp-step cp-locked">
+              <div class="cp-dot cpd-grey"></div>
+              <div style="flex:1">
+                <div class="cp-name">Senior ML Engineer</div>
+                <div class="cp-detail">Learn: System Design, Leadership</div>
+              </div>
+              <div class="cp-tag cpt-18m">18 mo</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PROJECTS -->
+      <div class="big-card big-card-2col bc-projects fu">
+        <div>
+          <div class="big-badge bb-gold">✦ Unique to Bird Job</div>
+          <h3 class="big-title">Projects<br>Showcase</h3>
+          <p class="big-desc">Add your real projects to your profile — with tech stack, description, and links. Recruiters see exactly what you've built, not just what you claim.</p>
+          <div class="big-feats">
+            <div class="big-feat">
+              <div class="bf-icon bfi-gold">💻</div>
+              <div class="bf-text"><strong>GitHub integration</strong> — import your projects directly</div>
+            </div>
+            <div class="big-feat">
+              <div class="bf-icon bfi-gold">🏷️</div>
+              <div class="bf-text"><strong>Tech stack tags</strong> — Python, React, TensorFlow & more</div>
+            </div>
+            <div class="big-feat">
+              <div class="bf-icon bfi-gold">👁️</div>
+              <div class="bf-text"><strong>Recruiter view tracking</strong> — see who looked at your work</div>
+            </div>
+            <div class="big-feat">
+              <div class="bf-icon bfi-gold">⭐</div>
+              <div class="bf-text"><strong>Pin your best work</strong> — featured projects shown at top</div>
+            </div>
+          </div>
+          <button class="big-btn bb-gold-btn" onclick="showToast('Opening Projects Showcase! 🚀')">Add My Projects →</button>
+        </div>
+        <div>
+          <div class="proj-grid">
+            <div class="proj-card">
+              <div class="proj-emoji">🤖</div>
+              <div class="proj-name">Sentiment Analyzer</div>
+              <div class="proj-tech">PyTorch · BERT · FastAPI</div>
+              <div class="proj-views">👁️ 34 recruiter views</div>
+            </div>
+            <div class="proj-card">
+              <div class="proj-emoji">📊</div>
+              <div class="proj-name">Sales Dashboard</div>
+              <div class="proj-tech">React · D3.js · Node</div>
+              <div class="proj-views">👁️ 21 recruiter views</div>
+            </div>
+            <div class="proj-card">
+              <div class="proj-emoji">🧠</div>
+              <div class="proj-name">Image Classifier</div>
+              <div class="proj-tech">TensorFlow · CNN · Flask</div>
+              <div class="proj-views">👁️ 18 recruiter views</div>
+            </div>
+            <div class="proj-add" onclick="showToast('Add new project! ➕')">
+              <div class="proj-add-icon">➕</div>
+              <div class="proj-add-text">Add Project</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- DIVIDER -->
+<div class="divider" style="padding:48px 48px;">
+  <div class="dline"></div>
+  <div class="dtxt">👑 Premium Only</div>
+  <div class="dline"></div>
+</div>
+
+<!-- PREMIUM -->
+<div class="section" id="premium" style="background:var(--surface);">
+  <div class="section-inner">
+    <div class="sec-header fu">
+      <div class="sec-eyebrow" style="color:var(--purple)">// Premium Features</div>
+      <h2 class="sec-title">Go further with<br>premium access.</h2>
+      <p class="sec-sub">Exclusive tools for serious job seekers who want every possible edge over the competition.</p>
+    </div>
+
+    <div class="prem-grid">
+      <!-- DM to HR -->
+      <div class="prem-card pc-dm fu">
+        <div class="prem-top">
+          <div class="prem-icon pi-purple">💬</div>
+          <div class="prem-badge">👑 Premium</div>
+        </div>
+        <div class="prem-name">DM to HR</div>
+        <div class="prem-desc">Skip the application queue. Message recruiters and HRs directly on the platform — no cold emails, no LinkedIn requests going unread.</div>
+        <ul class="prem-feats">
+          <li><span class="pf-chk pfc-purple">✓</span>Direct message any registered HR</li>
+          <li><span class="pf-chk pfc-purple">✓</span>Read receipts & response tracking</li>
+          <li><span class="pf-chk pfc-purple">✓</span>AI-suggested opening messages</li>
+          <li><span class="pf-chk pfc-purple">✓</span>Message templates for outreach</li>
+        </ul>
+        <button class="prem-btn pb-purple" onclick="showToast('Upgrade to Premium for DM to HR! 💬')">Unlock DM to HR →</button>
+      </div>
+
+      <!-- Expert Resume Review -->
+      <div class="prem-card pc-review fu2">
+        <div class="prem-top">
+          <div class="prem-icon pi-green">📄</div>
+          <div class="prem-badge">👑 Premium</div>
+        </div>
+        <div class="prem-name">Expert Resume Review</div>
+        <div class="prem-desc">Get your resume reviewed by a real recruiter — not just AI. Personalized, actionable feedback from someone who screens candidates every single day.</div>
+        <ul class="prem-feats">
+          <li><span class="pf-chk pfc-green">✓</span>Real recruiter assigned to you</li>
+          <li><span class="pf-chk pfc-green">✓</span>48-hour turnaround guaranteed</li>
+          <li><span class="pf-chk pfc-green">✓</span>Detailed written feedback</li>
+          <li><span class="pf-chk pfc-green">✓</span>1 revision round included</li>
+        </ul>
+        <button class="prem-btn pb-green" onclick="showToast('Upgrade to Premium for Expert Review! 📄')">Get Expert Review →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CTA -->
+<div class="cta">
+  <h2 class="cta-title fu">Ready to fly? 🐦</h2>
+  <p class="cta-sub fu">Join thousands of candidates already using The Bird Job to get hired faster</p>
+  <div class="cta-btns fu">
+    <button class="cta-main" onclick="showToast('Creating free account! 🎉')">Start Free — No Card Needed</button>
+    <button class="cta-sec" onclick="showToast('Opening pricing...')">View Pricing Plans →</button>
+  </div>
+</div>
+
+<script>
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('vis'); });
+}, { threshold: 0.08 });
+document.querySelectorAll('.fu, .fu2, .fu3').forEach(el => obs.observe(el));
+</script>
+</body>
+</html>

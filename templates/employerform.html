@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employer Profile | The Bird Job</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Clash+Display:wght@400;500;600;700&family=Bricolage+Grotesque:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg: #07070e;
+            --panel: #141728;
+            --line: rgba(255, 255, 255, 0.1);
+            --line-soft: rgba(255, 255, 255, 0.06);
+            --text: rgba(255, 255, 255, 0.93);
+            --muted: rgba(255, 255, 255, 0.62);
+            --muted-soft: rgba(255, 255, 255, 0.42);
+            --accent: #ff6b2b;
+            --accent-2: #ffb347;
+            --blue: #60a5fa;
+            --green: #34d399;
+            --shadow: 0 26px 70px rgba(0, 0, 0, 0.46);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: "Bricolage Grotesque", sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        a { color: inherit; text-decoration: none; }
+
+        .glow {
+            position: fixed;
+            border-radius: 999px;
+            filter: blur(130px);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .g1 { width: 520px; height: 520px; background: rgba(255, 107, 43, 0.12); top: -220px; right: -170px; }
+        .g2 { width: 460px; height: 460px; background: rgba(52, 211, 153, 0.1); bottom: -180px; left: -170px; }
+
+        .page {
+            position: relative;
+            z-index: 1;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+        }
+
+        .shell {
+            width: min(1060px, 100%);
+            border: 1px solid var(--line-soft);
+            border-radius: 24px;
+            overflow: hidden;
+            background: linear-gradient(165deg, var(--panel), #101323 72%);
+            box-shadow: var(--shadow);
+        }
+
+        .header {
+            padding: 26px;
+            border-bottom: 1px solid var(--line-soft);
+            background:
+                radial-gradient(circle at 88% 2%, rgba(52, 211, 153, 0.22), transparent 48%),
+                linear-gradient(165deg, rgba(255, 107, 43, 0.1), rgba(255, 179, 71, 0.05));
+        }
+
+        .brand {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            font-family: "Clash Display", sans-serif;
+            font-size: 25px;
+            letter-spacing: -0.6px;
+            margin-bottom: 9px;
+        }
+
+        .brand strong { color: var(--accent); }
+
+        .brand-mark {
+            width: 38px;
+            height: 38px;
+            border-radius: 11px;
+            display: grid;
+            place-items: center;
+            color: white;
+            background: linear-gradient(135deg, var(--accent), var(--accent-2));
+        }
+
+        .header h1 {
+            font-family: "Clash Display", sans-serif;
+            font-size: clamp(30px, 4vw, 40px);
+            line-height: 1;
+            letter-spacing: -1px;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            color: var(--muted);
+            font-size: 14px;
+            line-height: 1.7;
+        }
+
+        form {
+            padding: 24px;
+            display: grid;
+            gap: 18px;
+        }
+
+        .flash-stack {
+            display: grid;
+            gap: 8px;
+        }
+
+        .flash {
+            border-radius: 12px;
+            padding: 10px 12px;
+            font-size: 13px;
+        }
+
+        .flash.error {
+            color: #ffd1d1;
+            border: 1px solid rgba(248, 113, 113, 0.28);
+            background: rgba(248, 113, 113, 0.14);
+        }
+
+        .flash.success {
+            color: #c9ffe6;
+            border: 1px solid rgba(52, 211, 153, 0.28);
+            background: rgba(52, 211, 153, 0.14);
+        }
+
+        .section {
+            border: 1px solid var(--line);
+            border-radius: 16px;
+            background: rgba(255, 255, 255, 0.03);
+            padding: 16px;
+        }
+
+        .section-head {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            margin-bottom: 12px;
+            font-family: "Clash Display", sans-serif;
+            font-size: 22px;
+            letter-spacing: -0.5px;
+        }
+
+        .step-badge {
+            width: 30px;
+            height: 30px;
+            border-radius: 9px;
+            display: grid;
+            place-items: center;
+            font-size: 13px;
+            font-weight: 700;
+            color: white;
+            background: linear-gradient(135deg, var(--accent), var(--accent-2));
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .field {
+            display: grid;
+            gap: 6px;
+        }
+
+        .field label {
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+            color: var(--muted-soft);
+        }
+
+        .input {
+            border: 1px solid var(--line);
+            border-radius: 11px;
+            background: rgba(255, 255, 255, 0.04);
+            color: var(--text);
+            font-family: inherit;
+            font-size: 14px;
+            height: 44px;
+            padding: 0 12px;
+            outline: none;
+        }
+
+        .input::placeholder { color: var(--muted-soft); }
+        .input:focus { border-color: rgba(52, 211, 153, 0.48); }
+
+        input[type="file"].input {
+            height: auto;
+            padding: 9px 10px;
+            color: var(--muted);
+        }
+
+        input[type="file"].input::file-selector-button {
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.06);
+            color: var(--text);
+            padding: 6px 10px;
+            margin-right: 10px;
+            cursor: pointer;
+        }
+
+        .pw-wrap {
+            position: relative;
+        }
+
+        .pw-wrap .input { width: 100%; padding-right: 42px; }
+
+        .pw-toggle {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            border: none;
+            background: transparent;
+            color: var(--muted-soft);
+            cursor: pointer;
+        }
+
+        .actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .btn {
+            border: none;
+            border-radius: 12px;
+            padding: 12px;
+            font-family: inherit;
+            font-size: 14px;
+            font-weight: 700;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn.primary {
+            color: #07201b;
+            background: linear-gradient(135deg, var(--green), var(--blue));
+        }
+
+        .btn.primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 12px 26px rgba(52, 211, 153, 0.26);
+        }
+
+        .btn.ghost {
+            color: var(--muted);
+            border: 1px solid var(--line);
+            background: rgba(255, 255, 255, 0.04);
+        }
+
+        .btn.ghost:hover { color: white; border-color: rgba(255, 255, 255, 0.24); }
+
+        @media (max-width: 760px) {
+            .header, form { padding: 16px; }
+            .actions, .grid-2 { grid-template-columns: 1fr; }
+            .section-head { font-size: 20px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="glow g1"></div>
+    <div class="glow g2"></div>
+
+    <main class="page">
+        <section class="shell">
+            <header class="header">
+                <div class="brand">
+                    <span class="brand-mark"><i class="fa-solid fa-feather-pointed"></i></span>
+                    <span>The Bird <strong>Job</strong></span>
+                </div>
+                <h1>Complete Employer Profile</h1>
+                <p>Fill this once and continue to your premium employer dashboard.</p>
+            </header>
+
+            <form action="{{ url_for('employer_form') }}" method="POST" enctype="multipart/form-data">
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        <div class="flash-stack">
+                            {% for category, message in messages %}
+                                <div class="flash {% if category == 'error' %}error{% else %}success{% endif %}">
+                                    {{ message }}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                {% endwith %}
+
+                <section class="section">
+                    <h2 class="section-head"><span class="step-badge">1</span>Company Details</h2>
+                    <div class="grid-2">
+                        <div class="field">
+                            <label>Company Name</label>
+                            <input name="company_name" type="text" value="{{ oauth_data.name if oauth_data else '' }}" class="input" placeholder="Your Company Name" required>
+                        </div>
+                        <div class="field">
+                            <label>Company Size</label>
+                            <input name="company_size" type="text" class="input" placeholder="10-50 employees">
+                        </div>
+                    </div>
+                    <div class="field" style="margin-top:10px">
+                        <label>Company Logo (Optional)</label>
+                        <input name="company_logo" type="file" class="input" accept="image/*">
+                    </div>
+                </section>
+
+                <section class="section">
+                    <h2 class="section-head"><span class="step-badge">2</span>HR Contact</h2>
+                    <div class="grid-2">
+                        <div class="field">
+                            <label>HR Contact Name</label>
+                            <input name="hr_name" type="text" value="{{ oauth_data.name if oauth_data else '' }}" class="input" placeholder="HR Manager Name" required>
+                        </div>
+                        <div class="field">
+                            <label>Work Email</label>
+                            <input name="email" type="email" value="{{ oauth_data.email if oauth_data else '' }}" class="input" placeholder="hr@company.com" required>
+                        </div>
+                    </div>
+                    <div class="field" style="margin-top:10px">
+                        <label>Phone Number</label>
+                        <input name="phone" type="tel" class="input" placeholder="+1 (555) 123-4567">
+                    </div>
+                </section>
+
+                <section class="section">
+                    <h2 class="section-head"><span class="step-badge">3</span>Login Credentials</h2>
+                    <div class="grid-2">
+                        <div class="field">
+                            <label>Login Email</label>
+                            <input name="account_email" type="email" value="{{ oauth_data.email if oauth_data else '' }}" class="input" placeholder="you@company.com" required>
+                        </div>
+                        <div class="field">
+                            <label>Password</label>
+                            <div class="pw-wrap">
+                                <input name="password" type="password" id="password" class="input" placeholder="Create password" required>
+                                <button type="button" id="toggle-password" class="pw-toggle" aria-label="Toggle password visibility">
+                                    <i class="fa-solid fa-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <div class="actions">
+                    <button type="submit" class="btn primary">Save and Continue</button>
+                    <a href="/login" class="btn ghost">Back to Login</a>
+                </div>
+            </form>
+        </section>
+    </main>
+
+    <script>
+        const passwordInput = document.getElementById("password");
+        const togglePassword = document.getElementById("toggle-password");
+
+        if (passwordInput && togglePassword) {
+            togglePassword.addEventListener("click", function () {
+                const icon = this.querySelector("i");
+                if (passwordInput.type === "password") {
+                    passwordInput.type = "text";
+                    icon.classList.remove("fa-eye");
+                    icon.classList.add("fa-eye-slash");
+                } else {
+                    passwordInput.type = "password";
+                    icon.classList.remove("fa-eye-slash");
+                    icon.classList.add("fa-eye");
+                }
+            });
+        }
+    </script>
+</body>
+</html>

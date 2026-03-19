@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Signup | The Bird Job</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Clash+Display:wght@400;500;600;700&family=Bricolage+Grotesque:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg: #07070e;
+            --panel: #141728;
+            --line: rgba(255, 255, 255, 0.1);
+            --line-soft: rgba(255, 255, 255, 0.06);
+            --text: rgba(255, 255, 255, 0.93);
+            --muted: rgba(255, 255, 255, 0.62);
+            --muted-soft: rgba(255, 255, 255, 0.42);
+            --accent: #ff6b2b;
+            --accent-2: #ffb347;
+            --blue: #60a5fa;
+            --green: #34d399;
+            --danger: #f87171;
+            --shadow: 0 24px 68px rgba(0, 0, 0, 0.45);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: "Bricolage Grotesque", sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .glow {
+            position: fixed;
+            border-radius: 999px;
+            filter: blur(130px);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .g1 { width: 520px; height: 520px; background: rgba(255, 107, 43, 0.12); top: -220px; right: -170px; }
+        .g2 { width: 460px; height: 460px; background: rgba(96, 165, 250, 0.1); bottom: -180px; left: -170px; }
+
+        .page {
+            position: relative;
+            z-index: 1;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 18px;
+        }
+
+        .shell {
+            width: min(1100px, 100%);
+            border: 1px solid var(--line-soft);
+            border-radius: 24px;
+            overflow: hidden;
+            background: linear-gradient(165deg, var(--panel), #101323 72%);
+            box-shadow: var(--shadow);
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+        }
+
+        .left {
+            border-right: 1px solid var(--line-soft);
+            padding: 30px;
+            background:
+                radial-gradient(circle at 86% 4%, rgba(255, 107, 43, 0.24), transparent 46%),
+                linear-gradient(165deg, rgba(255, 107, 43, 0.1), rgba(255, 179, 71, 0.05));
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            gap: 20px;
+        }
+
+        .brand {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            font-family: "Clash Display", sans-serif;
+            font-size: 28px;
+            letter-spacing: -0.7px;
+        }
+
+        .brand strong { color: var(--accent); }
+
+        .brand-mark {
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            display: grid;
+            place-items: center;
+            color: white;
+            background: linear-gradient(135deg, var(--accent), var(--accent-2));
+            box-shadow: 0 10px 24px rgba(255, 107, 43, 0.35);
+        }
+
+        .left h1 {
+            font-family: "Clash Display", sans-serif;
+            font-size: clamp(34px, 4vw, 48px);
+            line-height: 1;
+            letter-spacing: -1px;
+            margin: 14px 0 10px;
+        }
+
+        .left p {
+            color: var(--muted);
+            font-size: 15px;
+            line-height: 1.75;
+        }
+
+        .benefits {
+            list-style: none;
+            display: grid;
+            gap: 10px;
+            margin-top: 14px;
+        }
+
+        .benefits li {
+            color: var(--muted);
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .benefits i { color: var(--green); }
+
+        .cards {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .mini-card {
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 12px;
+            text-align: center;
+            font-size: 13px;
+        }
+
+        .mini-card i {
+            color: var(--accent-2);
+            display: block;
+            margin-bottom: 6px;
+        }
+
+        .right {
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .title {
+            font-family: "Clash Display", sans-serif;
+            font-size: 38px;
+            line-height: 1;
+            letter-spacing: -1px;
+            margin-bottom: 8px;
+        }
+
+        .sub {
+            color: var(--muted);
+            font-size: 14px;
+            margin-bottom: 14px;
+        }
+
+        .flash-stack {
+            display: grid;
+            gap: 8px;
+            margin-bottom: 14px;
+        }
+
+        .flash {
+            border-radius: 12px;
+            padding: 10px 12px;
+            font-size: 13px;
+        }
+
+        .flash.error {
+            color: #ffd1d1;
+            border: 1px solid rgba(248, 113, 113, 0.28);
+            background: rgba(248, 113, 113, 0.14);
+        }
+
+        .flash.success {
+            color: #c9ffe6;
+            border: 1px solid rgba(52, 211, 153, 0.28);
+            background: rgba(52, 211, 153, 0.14);
+        }
+
+        .role-switch {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .role-btn {
+            border: 1px solid var(--line);
+            border-radius: 11px;
+            background: rgba(255, 255, 255, 0.04);
+            color: var(--muted);
+            padding: 10px 12px;
+            font-family: inherit;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .role-btn:hover { border-color: rgba(255, 255, 255, 0.22); color: white; }
+
+        .role-btn.active.candidate {
+            color: white;
+            border-color: rgba(255, 107, 43, 0.36);
+            background: linear-gradient(135deg, rgba(255, 107, 43, 0.22), rgba(255, 179, 71, 0.14));
+        }
+
+        .role-btn.active.employer {
+            color: white;
+            border-color: rgba(52, 211, 153, 0.36);
+            background: linear-gradient(135deg, rgba(52, 211, 153, 0.22), rgba(96, 165, 250, 0.14));
+        }
+
+        .hidden-form { display: none !important; }
+        .form-transition { transition: all 0.25s ease; }
+        .form-sections {
+            display: grid;
+            gap: 10px;
+        }
+
+        .form-section {
+            border: 1px solid var(--line);
+            border-radius: 14px;
+            background: rgba(255, 255, 255, 0.03);
+            padding: 12px;
+            display: grid;
+            gap: 10px;
+        }
+
+        .section-head {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--line-soft);
+        }
+
+        .section-step {
+            width: 24px;
+            height: 24px;
+            border-radius: 8px;
+            display: grid;
+            place-items: center;
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            color: #fff;
+            background: linear-gradient(135deg, var(--accent), var(--accent-2));
+            box-shadow: 0 8px 20px rgba(255, 107, 43, 0.3);
+            flex-shrink: 0;
+        }
+
+        .section-step.employer {
+            background: linear-gradient(135deg, var(--green), var(--blue));
+            box-shadow: 0 8px 20px rgba(52, 211, 153, 0.25);
+            color: #09171f;
+        }
+
+        .section-title {
+            font-size: 12px;
+            font-weight: 800;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: #fff;
+        }
+
+        .section-note {
+            margin-top: 2px;
+            font-size: 12px;
+            color: var(--muted);
+        }
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .field {
+            display: grid;
+            gap: 6px;
+        }
+
+        .field label {
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+            color: var(--muted-soft);
+        }
+
+        .field input,
+        .field select {
+            width: 100%;
+            border: 1px solid var(--line);
+            border-radius: 11px;
+            background: rgba(255, 255, 255, 0.04);
+            color: var(--text);
+            font-family: inherit;
+            font-size: 14px;
+            padding: 11px 12px;
+            outline: none;
+        }
+
+        .field input::placeholder { color: var(--muted-soft); }
+        .field input:focus, .field select:focus { border-color: rgba(255, 107, 43, 0.45); }
+        .field select option { background: #111526; }
+
+        .field input[type="file"] {
+            font-size: 12px;
+            color: var(--muted);
+            padding: 9px 10px;
+        }
+
+        .check {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            color: var(--muted);
+            margin: 6px 0;
+        }
+
+        .check input { accent-color: var(--accent); }
+
+        .submit {
+            width: 100%;
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-family: inherit;
+            font-size: 14px;
+            font-weight: 700;
+            padding: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .submit.candidate { background: linear-gradient(135deg, var(--accent), var(--accent-2)); }
+        .submit.employer { background: linear-gradient(135deg, var(--green), var(--blue)); color: #08151f; }
+        .submit:hover { transform: translateY(-1px); }
+
+        .foot-link {
+            margin-top: 12px;
+            font-size: 13px;
+            text-align: center;
+            color: var(--muted);
+        }
+
+        .foot-link a {
+            color: var(--accent-2);
+            font-weight: 700;
+            text-decoration: none;
+        }
+
+        .foot-link a:hover { color: white; }
+
+        @media (max-width: 980px) {
+            .shell { grid-template-columns: 1fr; }
+            .left { display: none; }
+        }
+
+        @media (max-width: 620px) {
+            .page { padding: 10px; }
+            .right { padding: 18px; }
+            .title { font-size: 32px; }
+            .role-switch,
+            .grid-2 { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="glow g1"></div>
+    <div class="glow g2"></div>
+
+    <main class="page">
+        <section class="shell">
+            <aside class="left">
+                <div>
+                    <div class="brand">
+                        <span class="brand-mark"><i class="fa-solid fa-feather-pointed"></i></span>
+                        <span>The Bird <strong>Job</strong></span>
+                    </div>
+                    <h1>Create your premium account.</h1>
+                    <p>Choose your role and join the AI-powered platform for faster hiring and better job outcomes.</p>
+                    <ul class="benefits">
+                        <li><i class="fa-solid fa-check"></i> Personalized candidate dashboard</li>
+                        <li><i class="fa-solid fa-check"></i> Employer-grade hiring workflow</li>
+                        <li><i class="fa-solid fa-check"></i> Skill + ATS quality signals</li>
+                    </ul>
+                </div>
+                <div class="cards">
+                    <article class="mini-card"><i class="fa-solid fa-user-graduate"></i><strong>Candidate</strong></article>
+                    <article class="mini-card"><i class="fa-solid fa-briefcase"></i><strong>Employer</strong></article>
+                </div>
+            </aside>
+
+            <section class="right">
+                <h2 class="title">Sign Up</h2>
+                <p class="sub">Fill your details to continue with your role-based onboarding.</p>
+
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        <div class="flash-stack">
+                            {% for category, message in messages %}
+                                <div class="flash {% if category == 'error' %}error{% else %}success{% endif %}">{{ message }}</div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                {% endwith %}
+
+                <div class="role-switch">
+                    <button onclick="switchForm('candidate')" id="btn-candidate" class="role-btn candidate">Candidate</button>
+                    <button onclick="switchForm('employer')" id="btn-employer" class="role-btn employer">Employer</button>
+                </div>
+
+                <form id="candidate-form" action="/signup/candidate" method="POST" enctype="multipart/form-data" class="form-transition form-sections">
+                    <section class="form-section">
+                        <div class="section-head">
+                            <div class="section-step">1</div>
+                            <div>
+                                <div class="section-title">Profile Details</div>
+                                <p class="section-note">Tell us about your background.</p>
+                            </div>
+                        </div>
+                        <div class="grid-2">
+                            <div class="field">
+                                <label>Full Name</label>
+                                <input type="text" name="name" value="{{ request.form.get('name', '') }}" placeholder="Rahul S." required>
+                            </div>
+                            <div class="field">
+                                <label>Education</label>
+                                <input type="text" name="education" value="{{ request.form.get('education', '') }}" placeholder="B.Tech / MBA" required>
+                            </div>
+                        </div>
+                        <div class="field">
+                            <label>Skills</label>
+                            <input type="text" name="skills" value="{{ request.form.get('skills', '') }}" placeholder="Python, Flask, Java" required>
+                        </div>
+                    </section>
+
+                    <section class="form-section">
+                        <div class="section-head">
+                            <div class="section-step">2</div>
+                            <div>
+                                <div class="section-title">Account Security</div>
+                                <p class="section-note">Create your secure login credentials.</p>
+                            </div>
+                        </div>
+                        <div class="field">
+                            <label>Email</label>
+                            <input type="email" name="email" value="{{ request.form.get('email', '') }}" placeholder="rahul@birdjob.com" required>
+                        </div>
+                        <div class="field">
+                            <label>Password</label>
+                            <input type="password" name="password" placeholder="********" required>
+                        </div>
+                    </section>
+
+                    <section class="form-section">
+                        <div class="section-head">
+                            <div class="section-step">3</div>
+                            <div>
+                                <div class="section-title">Finalize Profile</div>
+                                <p class="section-note">Upload resume and accept terms to continue.</p>
+                            </div>
+                        </div>
+                        <div class="field">
+                            <label>Resume (Optional)</label>
+                            <input type="file" name="resume">
+                        </div>
+                        <label class="check">
+                            <input type="checkbox" required>
+                            <span>I agree to the Terms and Privacy Policy</span>
+                        </label>
+                        <button type="submit" class="submit candidate">Save and Continue</button>
+                    </section>
+                </form>
+
+                <form id="employer-form" action="/signup/employer" method="POST" enctype="multipart/form-data" class="form-transition form-sections hidden-form">
+                    <section class="form-section">
+                        <div class="section-head">
+                            <div class="section-step employer">1</div>
+                            <div>
+                                <div class="section-title">Company Details</div>
+                                <p class="section-note">Set your business profile and team size.</p>
+                            </div>
+                        </div>
+                        <div class="grid-2">
+                            <div class="field">
+                                <label>Company Name</label>
+                                <input type="text" name="company_name" value="{{ request.form.get('company_name', '') }}" placeholder="Bird Tech Inc." required>
+                            </div>
+                            <div class="field">
+                                <label>Designation</label>
+                                <input type="text" name="designation" value="{{ request.form.get('designation', '') }}" placeholder="HR / CEO" required>
+                            </div>
+                        </div>
+                        <div class="grid-2">
+                            <div class="field">
+                                <label>Company Size</label>
+                                <select name="company_size">
+                                    <option value="1-10" {% if request.form.get('company_size') == '1-10' %}selected{% endif %}>1-10 Employees</option>
+                                    <option value="11-50" {% if request.form.get('company_size') == '11-50' %}selected{% endif %}>11-50 Employees</option>
+                                    <option value="51-200" {% if request.form.get('company_size') == '51-200' %}selected{% endif %}>51-200 Employees</option>
+                                    <option value="201-500" {% if request.form.get('company_size') == '201-500' %}selected{% endif %}>201-500 Employees</option>
+                                    <option value="500+" {% if request.form.get('company_size') == '500+' %}selected{% endif %}>500+ Employees</option>
+                                </select>
+                            </div>
+                            <div class="field">
+                                <label>Company Website</label>
+                                <input type="url" name="website" value="{{ request.form.get('website', '') }}" placeholder="https://birdjob.com">
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="form-section">
+                        <div class="section-head">
+                            <div class="section-step employer">2</div>
+                            <div>
+                                <div class="section-title">Account Security</div>
+                                <p class="section-note">Add official login credentials for hiring.</p>
+                            </div>
+                        </div>
+                        <div class="field">
+                            <label>Official Email</label>
+                            <input type="email" name="email" value="{{ request.form.get('email', '') }}" placeholder="hiring@company.com" required>
+                        </div>
+                        <div class="field">
+                            <label>Password</label>
+                            <input type="password" name="password" placeholder="********" required>
+                        </div>
+                    </section>
+
+                    <section class="form-section">
+                        <div class="section-head">
+                            <div class="section-step employer">3</div>
+                            <div>
+                                <div class="section-title">Brand & Terms</div>
+                                <p class="section-note">Upload your logo and confirm policies.</p>
+                            </div>
+                        </div>
+                        <div class="field">
+                            <label>Company Logo</label>
+                            <input type="file" name="company_logo" accept="image/*">
+                        </div>
+                        <label class="check">
+                            <input type="checkbox" required>
+                            <span>I agree to Company Hiring Terms</span>
+                        </label>
+                        <button type="submit" class="submit employer">Register Company</button>
+                    </section>
+                </form>
+
+                <p class="foot-link">Already have an account? <a href="/login">Go to Login</a></p>
+            </section>
+        </section>
+    </main>
+
+    <script>
+        function switchForm(role) {
+            const candidateForm = document.getElementById("candidate-form");
+            const employerForm = document.getElementById("employer-form");
+            const candidateBtn = document.getElementById("btn-candidate");
+            const employerBtn = document.getElementById("btn-employer");
+
+            if (role === "candidate") {
+                candidateForm.classList.remove("hidden-form");
+                employerForm.classList.add("hidden-form");
+                candidateBtn.classList.add("active");
+                candidateBtn.classList.add("candidate");
+                employerBtn.classList.remove("active");
+            } else {
+                employerForm.classList.remove("hidden-form");
+                candidateForm.classList.add("hidden-form");
+                employerBtn.classList.add("active");
+                employerBtn.classList.add("employer");
+                candidateBtn.classList.remove("active");
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const activeRole = "{{ active_role or 'candidate' }}";
+            switchForm(activeRole);
+        });
+    </script>
+</body>
+</html>

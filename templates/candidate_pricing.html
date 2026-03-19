@@ -1,0 +1,904 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>For Job Seekers — The Bird Job</title>
+<link href="https://fonts.googleapis.com/css2?family=Clash+Display:wght@400;500;600;700&family=Bricolage+Grotesque:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #08080F;
+  --surface: #0F0F1A;
+  --card: #13131F;
+  --accent: #FF6B2B;
+  --accent2: #FFB347;
+  --blue: #60A5FA;
+  --purple: #A78BFA;
+  --green: #34D399;
+  --gold: #FBBF24;
+  --border: rgba(255,255,255,0.07);
+  --border2: rgba(255,255,255,0.12);
+  --muted: rgba(255,255,255,0.38);
+  --text: rgba(255,255,255,0.92);
+  --text2: rgba(255,255,255,0.65);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Bricolage Grotesque', sans-serif;
+  overflow-x: hidden;
+}
+
+.glow { position: fixed; border-radius: 50%; filter: blur(120px); pointer-events: none; z-index: 0; }
+.glow-1 { width: 500px; height: 500px; background: rgba(255,107,43,0.07); top: -100px; right: -100px; }
+.glow-2 { width: 400px; height: 400px; background: rgba(96,165,250,0.05); bottom: 200px; left: -100px; }
+.glow-3 { width: 300px; height: 300px; background: rgba(167,139,250,0.04); top: 50%; right: 10%; }
+
+/* NAV */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+  background: rgba(8,8,15,0.9); backdrop-filter: blur(24px);
+  border-bottom: 1px solid var(--border);
+  padding: 0 48px; height: 64px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.nav-brand {
+  display: flex; align-items: center; gap: 10px;
+  font-family: 'Clash Display', sans-serif;
+  font-size: 20px; font-weight: 700; color: white; text-decoration: none;
+}
+.bird-icon {
+  width: 32px; height: 32px; background: var(--accent);
+  border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 16px;
+}
+.nav-right { display: flex; align-items: center; gap: 8px; }
+.nav-pill {
+  padding: 7px 16px; border-radius: 8px; font-size: 13px; font-weight: 500;
+  cursor: pointer; border: 1px solid var(--border2); background: transparent;
+  color: var(--muted); transition: all 0.2s; font-family: 'Bricolage Grotesque', sans-serif;
+}
+.nav-pill:hover { color: white; background: rgba(255,255,255,0.06); }
+.nav-cta {
+  padding: 8px 20px; border-radius: 8px; font-size: 13px; font-weight: 600;
+  cursor: pointer; border: none; background: var(--accent); color: white;
+  font-family: 'Bricolage Grotesque', sans-serif; transition: all 0.2s;
+}
+.nav-cta:hover { background: #e55a20; transform: translateY(-1px); }
+
+/* ===== STICKY TOGGLE BAR ===== */
+.sticky-toggle {
+  position: fixed; top: 64px; left: 0; right: 0; z-index: 150;
+  background: rgba(8,8,15,0.95); backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border2);
+  padding: 12px 48px;
+  display: flex; align-items: center; justify-content: center; gap: 20px;
+  transform: translateY(-100%);
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.sticky-toggle.visible { transform: translateY(0); }
+
+.sticky-label { font-size: 13px; color: var(--muted); }
+.sticky-label strong { color: white; }
+
+.sticky-tabs {
+  display: flex; background: rgba(255,255,255,0.06);
+  border: 1px solid var(--border2); border-radius: 100px; padding: 3px;
+}
+.sticky-tab {
+  padding: 7px 22px; border-radius: 100px; font-size: 13px; font-weight: 600;
+  cursor: pointer; border: none; transition: all 0.3s;
+  font-family: 'Bricolage Grotesque', sans-serif;
+  background: transparent; color: var(--muted);
+}
+.sticky-tab.active { background: white; color: #0F0F1A; }
+
+.sticky-save {
+  background: rgba(52,211,153,0.12); border: 1px solid rgba(52,211,153,0.25);
+  color: var(--green); font-size: 11px; font-weight: 700;
+  padding: 5px 14px; border-radius: 100px;
+  display: flex; align-items: center; gap: 6px;
+}
+.sticky-dot { width: 6px; height: 6px; background: var(--green); border-radius: 50%; animation: pulse 2s infinite; }
+
+/* HERO */
+.hero {
+  padding: 100px 48px 48px;
+  text-align: center; position: relative; z-index: 1;
+}
+.hero-eyebrow {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: rgba(255,107,43,0.1); border: 1px solid rgba(255,107,43,0.25);
+  color: var(--accent); font-size: 11px; font-weight: 600;
+  letter-spacing: 2px; text-transform: uppercase;
+  padding: 7px 18px; border-radius: 100px; margin-bottom: 24px;
+}
+.edot { width: 5px; height: 5px; background: var(--accent); border-radius: 50%; animation: pulse 2s infinite; }
+@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.4;transform:scale(0.7)} }
+
+.hero-title {
+  font-family: 'Clash Display', sans-serif;
+  font-size: clamp(36px, 5.5vw, 62px); font-weight: 700;
+  letter-spacing: -2.5px; line-height: 1.0; margin-bottom: 16px; color: white;
+}
+.hero-title em {
+  font-style: normal;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.hero-sub { font-size: 15px; color: var(--muted); max-width: 480px; margin: 0 auto 40px; line-height: 1.75; }
+
+/* HERO TOGGLE (main) */
+.hero-toggle-wrap {
+  display: flex; align-items: center; justify-content: center;
+  gap: 16px; margin-bottom: 16px;
+}
+.hero-tabs {
+  display: flex; background: rgba(255,255,255,0.06);
+  border: 1px solid var(--border2); border-radius: 100px; padding: 4px;
+}
+.hero-tab {
+  padding: 10px 28px; border-radius: 100px; font-size: 14px; font-weight: 600;
+  cursor: pointer; border: none; transition: all 0.3s;
+  font-family: 'Bricolage Grotesque', sans-serif;
+  background: transparent; color: var(--muted);
+}
+.hero-tab.active { background: white; color: #0F0F1A; }
+
+.save-badge-hero {
+  background: rgba(52,211,153,0.12); border: 1px solid rgba(52,211,153,0.3);
+  color: var(--green); font-size: 12px; font-weight: 700;
+  padding: 6px 14px; border-radius: 100px;
+  display: flex; align-items: center; gap: 6px; animation: glow-pulse 3s infinite;
+}
+@keyframes glow-pulse { 0%,100%{box-shadow:0 0 0 rgba(52,211,153,0)} 50%{box-shadow:0 0 16px rgba(52,211,153,0.2)} }
+
+.toggle-hint { font-size: 12px; color: var(--muted); margin-bottom: 40px; }
+.toggle-hint span { color: var(--green); }
+
+/* FEATURES STRIP */
+.features-strip {
+  display: flex; justify-content: center; gap: 12px;
+  flex-wrap: wrap; padding: 0 48px 48px;
+  position: relative; z-index: 1;
+}
+.feat-pill {
+  display: flex; align-items: center; gap: 7px;
+  background: rgba(255,255,255,0.04); border: 1px solid var(--border2);
+  padding: 8px 16px; border-radius: 100px; font-size: 12px; color: var(--text2);
+}
+
+/* FREE STRIP */
+.free-strip {
+  max-width: 1000px; margin: 0 auto 40px;
+  padding: 0 48px; position: relative; z-index: 1;
+}
+.free-inner {
+  background: var(--card); border: 1px solid rgba(52,211,153,0.2);
+  border-radius: 20px; padding: 22px 30px;
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 20px; flex-wrap: wrap; position: relative; overflow: hidden;
+}
+.free-inner::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0;
+  height: 2px; background: linear-gradient(90deg, var(--green), #34D399);
+}
+.free-left { display: flex; align-items: center; gap: 16px; }
+.free-icon {
+  width: 44px; height: 44px; background: rgba(52,211,153,0.1);
+  border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px;
+}
+.free-title { font-family: 'Clash Display', sans-serif; font-size: 18px; font-weight: 700; color: white; }
+.free-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+.free-pills { display: flex; gap: 8px; flex-wrap: wrap; }
+.free-pill {
+  background: rgba(52,211,153,0.07); border: 1px solid rgba(52,211,153,0.18);
+  color: var(--green); font-size: 12px; font-weight: 500; padding: 6px 12px; border-radius: 100px;
+}
+.free-btn {
+  background: rgba(52,211,153,0.1); color: var(--green);
+  border: 1px solid rgba(52,211,153,0.3); padding: 11px 24px;
+  border-radius: 10px; font-size: 14px; font-weight: 700;
+  cursor: pointer; transition: all 0.2s; white-space: nowrap;
+  font-family: 'Bricolage Grotesque', sans-serif;
+}
+.free-btn:hover { background: var(--green); color: #0a1a12; transform: translateY(-2px); }
+
+/* PLANS GRID */
+.plans-section { padding: 0 48px 60px; position: relative; z-index: 1; }
+
+.monthly-plans, .quarterly-plans { display: none; }
+.monthly-plans.active, .quarterly-plans.active { display: block; }
+
+.plans-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 20px; max-width: 1000px; margin: 0 auto; align-items: start;
+}
+
+/* PLAN CARD */
+.pcard {
+  background: var(--card); border: 1px solid var(--border2);
+  border-radius: 24px; padding: 30px 26px;
+  position: relative; overflow: hidden; transition: all 0.35s;
+}
+.pcard::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0;
+  height: 2px; opacity: 0; transition: opacity 0.3s;
+}
+.pcard:hover { transform: translateY(-6px); border-color: rgba(255,255,255,0.15); }
+.pcard:hover::before { opacity: 1; }
+
+.pcard-basic::before { background: linear-gradient(90deg, var(--blue), #818CF8); }
+.pcard-basic:hover { box-shadow: 0 20px 60px rgba(96,165,250,0.1); }
+
+.pcard-pro {
+  background: linear-gradient(160deg, #1A1035 0%, #0F0F1A 100%);
+  border-color: rgba(167,139,250,0.3);
+  transform: translateY(-8px);
+  box-shadow: 0 24px 64px rgba(167,139,250,0.15);
+}
+.pcard-pro::before { background: linear-gradient(90deg, var(--purple), var(--blue)); opacity: 1; }
+.pcard-pro:hover { transform: translateY(-14px); }
+
+.pcard-premium::before { background: linear-gradient(90deg, var(--gold), var(--accent)); }
+.pcard-premium:hover { box-shadow: 0 20px 60px rgba(251,191,36,0.08); }
+
+.featured-badge {
+  position: absolute; top: -1px; right: 22px;
+  background: linear-gradient(135deg, var(--purple), var(--blue));
+  color: white; font-size: 9px; font-weight: 700;
+  letter-spacing: 1.5px; text-transform: uppercase;
+  padding: 5px 12px; border-radius: 0 0 10px 10px;
+}
+
+.pcard-icon {
+  width: 44px; height: 44px; border-radius: 13px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px; margin-bottom: 16px;
+}
+.icon-basic { background: rgba(96,165,250,0.12); }
+.icon-pro { background: rgba(167,139,250,0.15); }
+.icon-premium { background: rgba(251,191,36,0.1); }
+
+.pcard-name { font-family: 'Clash Display', sans-serif; font-size: 22px; font-weight: 700; color: white; margin-bottom: 5px; }
+.pcard-tagline { font-size: 12px; color: var(--muted); margin-bottom: 20px; line-height: 1.6; }
+
+/* Price display */
+.price-block { margin-bottom: 18px; }
+.monthly-price, .quarterly-price { display: none; }
+.monthly-price.show, .quarterly-price.show { display: block; }
+
+.main-price {
+  display: flex; align-items: flex-start; gap: 3px;
+  font-family: 'Clash Display', sans-serif;
+  font-size: 42px; font-weight: 700; color: white;
+  line-height: 1; letter-spacing: -2px;
+}
+.pc { font-size: 18px; margin-top: 7px; color: var(--muted); font-weight: 600; }
+.price-period { font-size: 12px; color: var(--muted); margin-top: 4px; }
+
+.original-price { font-size: 12px; color: var(--muted); text-decoration: line-through; margin-bottom: 3px; }
+.save-label {
+  display: inline-block; background: rgba(52,211,153,0.12);
+  border: 1px solid rgba(52,211,153,0.25); color: var(--green);
+  font-size: 10px; font-weight: 700; padding: 3px 10px;
+  border-radius: 100px; margin-top: 6px; letter-spacing: 0.5px;
+}
+
+/* Limit badges */
+.limit-badges { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 18px; }
+.lbadge {
+  display: flex; align-items: center; gap: 5px;
+  padding: 6px 11px; border-radius: 8px; font-size: 11px; font-weight: 600;
+}
+.lb-blue { background: rgba(96,165,250,0.1); border: 1px solid rgba(96,165,250,0.2); color: var(--blue); }
+.lb-purple { background: rgba(167,139,250,0.1); border: 1px solid rgba(167,139,250,0.2); color: var(--purple); }
+.lb-gold { background: rgba(251,191,36,0.08); border: 1px solid rgba(251,191,36,0.2); color: var(--gold); }
+.lb-green { background: rgba(52,211,153,0.08); border: 1px solid rgba(52,211,153,0.2); color: var(--green); }
+.lb-orange { background: rgba(255,107,43,0.1); border: 1px solid rgba(255,107,43,0.2); color: var(--accent); }
+
+/* Features list */
+.pcard-feats { list-style: none; margin-bottom: 20px; display: flex; flex-direction: column; gap: 10px; }
+.pcard-feats li { display: flex; align-items: flex-start; gap: 8px; font-size: 12px; color: var(--text2); line-height: 1.5; }
+.chk {
+  width: 16px; height: 16px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 8px; flex-shrink: 0; margin-top: 1px; font-weight: 700;
+}
+.chk-blue { background: rgba(96,165,250,0.15); color: var(--blue); }
+.chk-purple { background: rgba(167,139,250,0.15); color: var(--purple); }
+.chk-gold { background: rgba(251,191,36,0.12); color: var(--gold); }
+.chk-x { background: rgba(255,255,255,0.05); color: var(--muted); }
+
+/* Bonus box */
+.bonus-box {
+  background: rgba(52,211,153,0.05); border: 1px dashed rgba(52,211,153,0.22);
+  border-radius: 10px; padding: 11px 13px; margin-bottom: 18px;
+  display: flex; align-items: flex-start; gap: 9px;
+}
+.bonus-box.hidden { display: none; }
+.bonus-text { font-size: 12px; color: rgba(52,211,153,0.8); line-height: 1.5; }
+.bonus-text strong { font-weight: 700; color: var(--green); }
+
+/* ===== CARD TOGGLE HINT ===== */
+.card-switch-hint {
+  display: flex; align-items: center; justify-content: center;
+  gap: 8px; margin-bottom: 16px;
+  padding: 9px 14px; border-radius: 10px; cursor: pointer;
+  transition: all 0.2s; border: none; width: 100%;
+  font-family: 'Bricolage Grotesque', sans-serif;
+}
+.hint-monthly {
+  background: rgba(52,211,153,0.07); border: 1px solid rgba(52,211,153,0.18);
+  color: rgba(52,211,153,0.8); font-size: 12px; font-weight: 600;
+}
+.hint-monthly:hover { background: rgba(52,211,153,0.12); color: var(--green); }
+.hint-quarterly {
+  background: rgba(255,107,43,0.07); border: 1px solid rgba(255,107,43,0.18);
+  color: rgba(255,107,43,0.8); font-size: 12px; font-weight: 600;
+}
+.hint-quarterly:hover { background: rgba(255,107,43,0.12); color: var(--accent); }
+.hint-arrow { font-size: 14px; transition: transform 0.2s; }
+.card-switch-hint:hover .hint-arrow { transform: translateX(3px); }
+
+/* Plan buttons */
+.pcard-btn {
+  width: 100%; padding: 13px; border-radius: 11px;
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-size: 14px; font-weight: 700; cursor: pointer; border: none; transition: all 0.25s;
+}
+.btn-basic { background: rgba(96,165,250,0.12); color: var(--blue); border: 1px solid rgba(96,165,250,0.25); }
+.btn-basic:hover { background: var(--blue); color: white; transform: translateY(-2px); box-shadow: 0 8px 24px rgba(96,165,250,0.25); }
+.btn-pro { background: linear-gradient(135deg, var(--purple), var(--blue)); color: white; }
+.btn-pro:hover { transform: translateY(-2px); box-shadow: 0 10px 32px rgba(167,139,250,0.3); }
+.btn-premium { background: rgba(251,191,36,0.1); color: var(--gold); border: 1px solid rgba(251,191,36,0.25); }
+.btn-premium:hover { background: var(--gold); color: #0F0F1A; transform: translateY(-2px); box-shadow: 0 8px 24px rgba(251,191,36,0.2); }
+
+/* ===== BOTTOM TOGGLE REPEAT ===== */
+.bottom-toggle {
+  max-width: 1000px; margin: 0 auto 60px;
+  padding: 0 48px; position: relative; z-index: 1;
+}
+.bottom-toggle-inner {
+  background: var(--card); border: 1px solid var(--border2);
+  border-radius: 20px; padding: 28px 36px;
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 24px; flex-wrap: wrap;
+}
+.bottom-toggle-text { }
+.bottom-toggle-title {
+  font-family: 'Clash Display', sans-serif;
+  font-size: 20px; font-weight: 700; color: white; margin-bottom: 4px;
+}
+.bottom-toggle-sub { font-size: 13px; color: var(--muted); }
+.bottom-toggle-sub span { color: var(--green); font-weight: 600; }
+
+.bottom-tabs {
+  display: flex; background: rgba(255,255,255,0.05);
+  border: 1px solid var(--border2); border-radius: 100px; padding: 4px;
+}
+.bottom-tab {
+  padding: 10px 24px; border-radius: 100px; font-size: 14px; font-weight: 600;
+  cursor: pointer; border: none; transition: all 0.3s;
+  font-family: 'Bricolage Grotesque', sans-serif; background: transparent; color: var(--muted);
+}
+.bottom-tab.active { background: white; color: #0F0F1A; }
+.bottom-save-tag {
+  background: rgba(52,211,153,0.1); border: 1px solid rgba(52,211,153,0.25);
+  color: var(--green); font-size: 12px; font-weight: 700;
+  padding: 6px 16px; border-radius: 100px;
+}
+
+/* FAQ */
+.faq-section {
+  max-width: 700px; margin: 0 auto;
+  padding: 0 48px 80px; position: relative; z-index: 1;
+}
+.faq-title {
+  font-family: 'Clash Display', sans-serif;
+  font-size: 28px; font-weight: 700; color: white;
+  letter-spacing: -1px; text-align: center; margin-bottom: 28px;
+}
+.faq-item {
+  background: var(--card); border: 1px solid var(--border2);
+  border-radius: 14px; margin-bottom: 10px; overflow: hidden;
+}
+.faq-q {
+  padding: 16px 20px; cursor: pointer;
+  display: flex; justify-content: space-between; align-items: center;
+  font-weight: 600; font-size: 14px; color: var(--text); transition: color 0.2s;
+}
+.faq-q:hover { color: var(--accent); }
+.faq-ico { font-size: 18px; transition: transform 0.3s; color: var(--muted); }
+.faq-item.open .faq-ico { transform: rotate(45deg); color: var(--accent); }
+.faq-a {
+  max-height: 0; overflow: hidden;
+  transition: max-height 0.4s ease, padding 0.3s;
+  font-size: 13px; color: var(--muted); line-height: 1.8; padding: 0 20px;
+}
+.faq-item.open .faq-a { max-height: 200px; padding: 0 20px 16px; }
+
+/* CTA */
+.cta {
+  background: linear-gradient(135deg, #1A0F2E 0%, #0F1A2E 100%);
+  border-top: 1px solid var(--border2); padding: 64px 48px;
+  text-align: center; position: relative; overflow: hidden;
+}
+.cta::before {
+  content: '🐦'; position: absolute; font-size: 260px; opacity: 0.02;
+  top: 50%; left: 50%; transform: translate(-50%,-50%);
+}
+.cta-title {
+  font-family: 'Clash Display', sans-serif;
+  font-size: clamp(26px, 4vw, 40px); font-weight: 700; color: white;
+  letter-spacing: -1.5px; margin-bottom: 10px;
+}
+.cta-sub { color: var(--muted); font-size: 15px; margin-bottom: 32px; }
+.cta-btns { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+.cta-btn-main {
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  color: white; border: none; padding: 14px 30px;
+  border-radius: 12px; font-family: 'Bricolage Grotesque', sans-serif;
+  font-size: 15px; font-weight: 700; cursor: pointer; transition: all 0.25s;
+}
+.cta-btn-main:hover { transform: translateY(-2px); box-shadow: 0 10px 32px rgba(255,107,43,0.3); }
+.cta-btn-sec {
+  background: rgba(255,255,255,0.06); color: white;
+  border: 1px solid var(--border2); padding: 14px 30px;
+  border-radius: 12px; font-family: 'Bricolage Grotesque', sans-serif;
+  font-size: 15px; font-weight: 600; cursor: pointer; transition: all 0.25s;
+}
+.cta-btn-sec:hover { background: rgba(255,255,255,0.1); transform: translateY(-2px); }
+
+/* Toast */
+.toast {
+  position: fixed; bottom: 24px; right: 24px;
+  background: rgba(255,255,255,0.95); color: #0F0F1A;
+  padding: 14px 22px; border-radius: 12px; font-size: 14px; font-weight: 500;
+  z-index: 9999; transform: translateY(80px); opacity: 0;
+  transition: all 0.3s; pointer-events: none;
+  font-family: 'Bricolage Grotesque', sans-serif;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+}
+.toast.show { transform: translateY(0); opacity: 1; }
+
+/* Animations */
+.fu { opacity: 0; transform: translateY(20px); transition: all 0.6s ease; }
+.fu.vis { opacity: 1; transform: translateY(0); }
+
+@media(max-width:900px) {
+  nav { padding: 0 20px; }
+  .sticky-toggle { padding: 10px 20px; }
+  .hero { padding: 90px 20px 40px; }
+  .features-strip { padding: 0 20px 40px; gap: 8px; }
+  .free-strip { padding: 0 20px; }
+  .plans-section { padding: 0 20px 48px; }
+  .plans-grid { grid-template-columns: 1fr; }
+  .pcard-pro { transform: none; }
+  .bottom-toggle { padding: 0 20px; }
+  .bottom-toggle-inner { flex-direction: column; align-items: flex-start; }
+  .faq-section { padding: 0 20px 60px; }
+  .cta { padding: 48px 20px; }
+}
+@media(max-width:600px) {
+  .hero-tab { padding: 9px 18px; }
+}
+</style>
+</head>
+<body>
+
+<div class="glow glow-1"></div>
+<div class="glow glow-2"></div>
+<div class="glow glow-3"></div>
+<div class="toast" id="toast"></div>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-brand" href="#">
+    <div class="bird-icon">🐦</div>
+    The Bird Job
+  </a>
+  <div class="nav-right">
+    <button class="nav-pill">Browse Jobs</button>
+    <button class="nav-pill">For Recruiters</button>
+    <button class="nav-cta" onclick="showToast('Creating free account! 🎉')">Get Started Free</button>
+  </div>
+</nav>
+
+<!-- ===== STICKY TOGGLE ===== -->
+<div class="sticky-toggle" id="stickyToggle">
+  <span class="sticky-label">Billing cycle:</span>
+  <div class="sticky-tabs">
+    <button class="sticky-tab active" id="sticky-monthly" onclick="switchTab('monthly')">Monthly</button>
+    <button class="sticky-tab" id="sticky-quarterly" onclick="switchTab('quarterly')">3 Months</button>
+  </div>
+  <div class="sticky-save"><div class="sticky-dot"></div> Save up to 30% on 3 months</div>
+</div>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-eyebrow"><div class="edot"></div> For Job Seekers</div>
+  <h1 class="hero-title">Land your dream job<br>with <em>AI on your side.</em></h1>
+  <p class="hero-sub">ATS scanner, skill tests, salary benchmark, and direct HR access — everything to get hired faster.</p>
+
+  <div class="hero-toggle-wrap">
+    <div class="hero-tabs">
+      <button class="hero-tab active" id="hero-monthly" onclick="switchTab('monthly')">Monthly</button>
+      <button class="hero-tab" id="hero-quarterly" onclick="switchTab('quarterly')">3 Months</button>
+    </div>
+    <div class="save-badge-hero"><div class="sticky-dot"></div> Save up to 30%</div>
+  </div>
+  <div class="toggle-hint" id="toggleHint">👆 Switch to <span>3 Months</span> to save more!</div>
+</div>
+
+<!-- FEATURES -->
+<div class="features-strip fu">
+  <div class="feat-pill"><span>🤖</span><span>AI ATS Scanner</span></div>
+  <div class="feat-pill"><span>🧠</span><span>Skill Tests & Badges</span></div>
+  <div class="feat-pill"><span>💰</span><span>Salary Benchmark</span></div>
+  <div class="feat-pill"><span>🏆</span><span>Certificates</span></div>
+  <div class="feat-pill"><span>💬</span><span>DM to HR</span></div>
+  <div class="feat-pill"><span>🎯</span><span>AI Interview Prep</span></div>
+  <div class="feat-pill"><span>🗂️</span><span>Portfolio Listing</span></div>
+</div>
+
+<!-- FREE -->
+<div class="free-strip fu">
+  <div class="free-inner">
+    <div class="free-left">
+      <div class="free-icon">🆓</div>
+      <div>
+        <div class="free-title">Free Forever</div>
+        <div class="free-sub">Try before you commit — no card needed</div>
+      </div>
+    </div>
+    <div class="free-pills">
+      <div class="free-pill">✓ 1x ATS Score Check</div>
+      <div class="free-pill">✓ 1x Skill Test</div>
+      <div class="free-pill">✓ Basic Job Search</div>
+    </div>
+    <button class="free-btn" onclick="showToast('Creating free account! 🎉')">Start Free →</button>
+  </div>
+</div>
+
+<!-- PLANS -->
+<div class="plans-section">
+
+  <!-- MONTHLY -->
+  <div class="monthly-plans active" id="monthly-plans">
+    <div class="plans-grid">
+
+      <!-- BASIC MONTHLY -->
+      <div class="pcard pcard-basic fu">
+        <div class="pcard-icon icon-basic">⚡</div>
+        <div class="pcard-name">Basic</div>
+        <div class="pcard-tagline">Just getting started with AI career tools.</div>
+        <div class="price-block">
+          <div class="monthly-price show">
+            <div class="main-price"><span class="pc">₹</span>149</div>
+            <div class="price-period">per month</div>
+          </div>
+        </div>
+        <div class="limit-badges">
+          <div class="lbadge lb-blue">🤖 10 Scans</div>
+          <div class="lbadge lb-blue">✍️ 5 Rewrites</div>
+          <div class="lbadge lb-purple">🧠 3 Tests</div>
+        </div>
+        <ul class="pcard-feats">
+          <li><span class="chk chk-blue">✓</span><span>AI ATS scanner — 10 scans/month</span></li>
+          <li><span class="chk chk-blue">✓</span><span>AI resume rewrite — 5x/month</span></li>
+          <li><span class="chk chk-blue">✓</span><span>3 skill tests per month</span></li>
+          <li><span class="chk chk-blue">✓</span><span>3 skill badges on profile</span></li>
+          <li><span class="chk chk-x">–</span><span style="color:var(--muted)">No certificates</span></li>
+          <li><span class="chk chk-x">–</span><span style="color:var(--muted)">No salary benchmark</span></li>
+          <li><span class="chk chk-x">–</span><span style="color:var(--muted)">No DM to HR</span></li>
+        </ul>
+        <!-- CARD HINT -->
+        <button class="card-switch-hint hint-monthly" onclick="switchTab('quarterly')">
+          💰 Get 3 months for ₹349 — save ₹98 <span class="hint-arrow">→</span>
+        </button>
+        <button class="pcard-btn btn-basic" onclick="showToast('Starting Basic plan! ⚡')">Get Basic →</button>
+      </div>
+
+      <!-- PRO MONTHLY -->
+      <div class="pcard pcard-pro fu" style="transition-delay:0.1s">
+        <div class="featured-badge">⭐ Most Popular</div>
+        <div class="pcard-icon icon-pro">🚀</div>
+        <div class="pcard-name">Pro</div>
+        <div class="pcard-tagline">Stand out from the crowd with verified skills.</div>
+        <div class="price-block">
+          <div class="monthly-price show">
+            <div class="main-price"><span class="pc">₹</span>249</div>
+            <div class="price-period">per month</div>
+          </div>
+        </div>
+        <div class="limit-badges">
+          <div class="lbadge lb-purple">🤖 25 Scans</div>
+          <div class="lbadge lb-purple">✍️ 15 Rewrites</div>
+          <div class="lbadge lb-purple">🧠 5 Tests</div>
+          <div class="lbadge lb-purple">🏆 1 Cert</div>
+        </div>
+        <ul class="pcard-feats">
+          <li><span class="chk chk-purple">✓</span><span>AI ATS scanner — 25 scans/month</span></li>
+          <li><span class="chk chk-purple">✓</span><span>AI resume rewrite — 15x/month</span></li>
+          <li><span class="chk chk-purple">✓</span><span>5 skill tests per month</span></li>
+          <li><span class="chk chk-purple">✓</span><span>All skill badges on profile</span></li>
+          <li><span class="chk chk-purple">✓</span><span>1 certificate — any skill</span></li>
+          <li><span class="chk chk-purple">✓</span><span>Priority job listing visibility</span></li>
+          <li><span class="chk chk-x">–</span><span style="color:var(--muted)">No DM to HR</span></li>
+        </ul>
+        <button class="card-switch-hint hint-monthly" onclick="switchTab('quarterly')">
+          💰 Get 3 months for ₹599 + Expert Review <span class="hint-arrow">→</span>
+        </button>
+        <button class="pcard-btn btn-pro" onclick="showToast('Starting Pro plan! 🚀')">Get Pro →</button>
+      </div>
+
+      <!-- PREMIUM MONTHLY -->
+      <div class="pcard pcard-premium fu" style="transition-delay:0.2s">
+        <div class="pcard-icon icon-premium">👑</div>
+        <div class="pcard-name">Premium</div>
+        <div class="pcard-tagline">Every unfair advantage to get hired fast.</div>
+        <div class="price-block">
+          <div class="monthly-price show">
+            <div class="main-price"><span class="pc">₹</span>399</div>
+            <div class="price-period">per month</div>
+          </div>
+        </div>
+        <div class="limit-badges">
+          <div class="lbadge lb-gold">🤖 Unlimited</div>
+          <div class="lbadge lb-gold">🧠 10+ Tests</div>
+          <div class="lbadge lb-gold">🏆 3 Certs</div>
+          <div class="lbadge lb-orange">💬 DM HR</div>
+        </div>
+        <ul class="pcard-feats">
+          <li><span class="chk chk-gold">✓</span><span>Unlimited ATS scans + rewrites</span></li>
+          <li><span class="chk chk-gold">✓</span><span>10+ skill tests per month</span></li>
+          <li><span class="chk chk-gold">✓</span><span>3 certificates — any skills</span></li>
+          <li><span class="chk chk-gold">✓</span><span>Salary benchmark</span></li>
+          <li><span class="chk chk-gold">✓</span><span>DM directly to HRs</span></li>
+          <li><span class="chk chk-gold">✓</span><span>AI interview preparation</span></li>
+          <li><span class="chk chk-gold">✓</span><span>Portfolio listing + top priority</span></li>
+        </ul>
+        <button class="card-switch-hint hint-monthly" onclick="switchTab('quarterly')">
+          💰 Get 3 months for ₹999 + VIP Support <span class="hint-arrow">→</span>
+        </button>
+        <button class="pcard-btn btn-premium" onclick="showToast('Starting Premium plan! 👑')">Get Premium →</button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- QUARTERLY -->
+  <div class="quarterly-plans" id="quarterly-plans">
+    <div class="plans-grid">
+
+      <!-- BASIC 3M -->
+      <div class="pcard pcard-basic fu">
+        <div class="pcard-icon icon-basic">⚡</div>
+        <div class="pcard-name">Basic</div>
+        <div class="pcard-tagline">3 months to build your profile and skills.</div>
+        <div class="price-block">
+          <div class="original-price">₹447 (3 × ₹149)</div>
+          <div class="main-price"><span class="pc">₹</span>349</div>
+          <div class="price-period">for 3 months</div>
+          <div class="save-label">💰 Save ₹98 — 22% off</div>
+        </div>
+        <div class="limit-badges">
+          <div class="lbadge lb-blue">🤖 10 Scans/mo</div>
+          <div class="lbadge lb-purple">🧠 5 Tests/mo</div>
+        </div>
+        <div class="bonus-box">
+          <span style="font-size:16px">🎁</span>
+          <div class="bonus-text"><strong>Bonus:</strong> +2 extra skill tests/month — 5 instead of 3!</div>
+        </div>
+        <ul class="pcard-feats">
+          <li><span class="chk chk-blue">✓</span><span>Everything in Basic monthly</span></li>
+          <li><span class="chk chk-blue">✓</span><span>+2 bonus skill tests per month</span></li>
+          <li><span class="chk chk-blue">✓</span><span>3 months uninterrupted access</span></li>
+          <li><span class="chk chk-x">–</span><span style="color:var(--muted)">No certificates</span></li>
+        </ul>
+        <button class="card-switch-hint hint-quarterly" onclick="switchTab('monthly')">
+          ← View monthly plan instead
+        </button>
+        <button class="pcard-btn btn-basic" onclick="showToast('Starting Basic 3-month plan! ⚡')">Get Basic 3M →</button>
+      </div>
+
+      <!-- PRO 3M -->
+      <div class="pcard pcard-pro fu" style="transition-delay:0.1s">
+        <div class="featured-badge">⭐ Best Value</div>
+        <div class="pcard-icon icon-pro">🚀</div>
+        <div class="pcard-name">Pro</div>
+        <div class="pcard-tagline">3 months to seriously level up your career.</div>
+        <div class="price-block">
+          <div class="original-price">₹747 (3 × ₹249)</div>
+          <div class="main-price"><span class="pc">₹</span>599</div>
+          <div class="price-period">for 3 months</div>
+          <div class="save-label">💰 Save ₹148 — 20% off</div>
+        </div>
+        <div class="limit-badges">
+          <div class="lbadge lb-purple">🤖 25 Scans/mo</div>
+          <div class="lbadge lb-purple">🧠 7 Tests/mo</div>
+          <div class="lbadge lb-purple">🏆 1 Cert</div>
+        </div>
+        <div class="bonus-box">
+          <span style="font-size:16px">🎁</span>
+          <div class="bonus-text"><strong>Bonus:</strong> Expert resume review by a real recruiter — free!</div>
+        </div>
+        <ul class="pcard-feats">
+          <li><span class="chk chk-purple">✓</span><span>Everything in Pro monthly</span></li>
+          <li><span class="chk chk-purple">✓</span><span>+2 bonus skill tests per month</span></li>
+          <li><span class="chk chk-purple">✓</span><span>Expert resume review (1x free)</span></li>
+          <li><span class="chk chk-purple">✓</span><span>1 certificate included</span></li>
+        </ul>
+        <button class="card-switch-hint hint-quarterly" onclick="switchTab('monthly')">
+          ← View monthly plan instead
+        </button>
+        <button class="pcard-btn btn-pro" onclick="showToast('Starting Pro 3-month plan! 🚀')">Get Pro 3M →</button>
+      </div>
+
+      <!-- PREMIUM 3M -->
+      <div class="pcard pcard-premium fu" style="transition-delay:0.2s">
+        <div class="pcard-icon icon-premium">👑</div>
+        <div class="pcard-name">Premium</div>
+        <div class="pcard-tagline">Maximum firepower for 3 months of job hunting.</div>
+        <div class="price-block">
+          <div class="original-price">₹1197 (3 × ₹399)</div>
+          <div class="main-price"><span class="pc">₹</span>999</div>
+          <div class="price-period">for 3 months</div>
+          <div class="save-label">💰 Save ₹198 — 17% off</div>
+        </div>
+        <div class="limit-badges">
+          <div class="lbadge lb-gold">🤖 Unlimited</div>
+          <div class="lbadge lb-gold">🧠 10+ Tests</div>
+          <div class="lbadge lb-gold">🏆 3 Certs</div>
+        </div>
+        <div class="bonus-box">
+          <span style="font-size:16px">🎁</span>
+          <div class="bonus-text"><strong>Bonus:</strong> VIP Placement Support — dedicated team helps you get placed!</div>
+        </div>
+        <ul class="pcard-feats">
+          <li><span class="chk chk-gold">✓</span><span>Everything in Premium monthly</span></li>
+          <li><span class="chk chk-gold">✓</span><span>VIP Placement Support team</span></li>
+          <li><span class="chk chk-gold">✓</span><span>3 certificates included</span></li>
+          <li><span class="chk chk-gold">✓</span><span>DM HR + Interview prep + Portfolio</span></li>
+        </ul>
+        <button class="card-switch-hint hint-quarterly" onclick="switchTab('monthly')">
+          ← View monthly plan instead
+        </button>
+        <button class="pcard-btn btn-premium" onclick="showToast('Starting Premium 3-month plan! 👑')">Get Premium 3M →</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- BOTTOM TOGGLE -->
+<div class="bottom-toggle fu">
+  <div class="bottom-toggle-inner">
+    <div class="bottom-toggle-text">
+      <div class="bottom-toggle-title">💡 Did you know?</div>
+      <div class="bottom-toggle-sub" id="bottomSubText">Switch to <span>3 months</span> and save up to ₹198 — plus get exclusive bonuses!</div>
+    </div>
+    <div class="bottom-tabs">
+      <button class="bottom-tab active" id="bottom-monthly" onclick="switchTab('monthly')">Monthly</button>
+      <button class="bottom-tab" id="bottom-quarterly" onclick="switchTab('quarterly')">3 Months</button>
+    </div>
+    <div class="bottom-save-tag" id="bottomTag">💰 Save up to 30%</div>
+  </div>
+</div>
+
+<!-- FAQ -->
+<div class="faq-section">
+  <div class="faq-title">Quick answers</div>
+  <div class="faq-item fu">
+    <div class="faq-q" onclick="toggleFaq(this)">ATS scanner exactly kya karta hai? <span class="faq-ico">+</span></div>
+    <div class="faq-a">Tera resume real ATS systems ke against check karta hai — keywords, formatting, sections sab. Phir specific improvements suggest karta hai aur job description ke according rewrite bhi kar sakta hai AI se.</div>
+  </div>
+  <div class="faq-item fu">
+    <div class="faq-q" onclick="toggleFaq(this)">Certificate aur Badge mein kya fark hai? <span class="faq-ico">+</span></div>
+    <div class="faq-a">Badge milta hai basic skill test pe — profile pe dikhta hai. Certificate milta hai advanced test dene ke baad — downloadable, shareable, aur recruiters ke liye zyada credible hota hai.</div>
+  </div>
+  <div class="faq-item fu">
+    <div class="faq-q" onclick="toggleFaq(this)">3-month plan mein kya extra milta hai? <span class="faq-ico">+</span></div>
+    <div class="faq-a">Savings ke alawa — Basic mein +2 extra tests/month, Pro mein expert resume review free, Premium mein VIP Placement Support. Teeno mein kuch na kuch bonus hai jo monthly mein nahi milta.</div>
+  </div>
+  <div class="faq-item fu">
+    <div class="faq-q" onclick="toggleFaq(this)">DM to HR kaise kaam karta hai? <span class="faq-ico">+</span></div>
+    <div class="faq-a">Premium plan mein tum registered recruiters aur HRs ko directly platform ke andar message kar sakte ho. Cold email se zyada effective hai kyunki recruiter already active hai yahan.</div>
+  </div>
+  <div class="faq-item fu">
+    <div class="faq-q" onclick="toggleFaq(this)">Monthly se 3-month mein switch kar sakte hain? <span class="faq-ico">+</span></div>
+    <div class="faq-a">Bilkul! Kisi bhi time upgrade kar sakte ho. Remaining days pro-rate ho jaate hain aur quarterly plan turant start ho jaata hai.</div>
+  </div>
+</div>
+
+<!-- CTA -->
+<div class="cta">
+  <div class="cta-title">Your dream job is waiting. 🐦</div>
+  <div class="cta-sub">Thousands of candidates already using The Bird Job to get hired faster</div>
+  <div class="cta-btns">
+    <button class="cta-btn-main" onclick="showToast('Creating free account! 🎉')">Start Free — No Card Needed</button>
+    <button class="cta-btn-sec" onclick="switchTab('quarterly');window.scrollTo({top:400,behavior:'smooth'})">See 3-Month Plans 💰</button>
+  </div>
+</div>
+
+<script>
+let currentTab = 'monthly';
+
+function switchTab(tab) {
+  currentTab = tab;
+
+  // Hero tabs
+  document.getElementById('hero-monthly').classList.toggle('active', tab === 'monthly');
+  document.getElementById('hero-quarterly').classList.toggle('active', tab === 'quarterly');
+
+  // Sticky tabs
+  document.getElementById('sticky-monthly').classList.toggle('active', tab === 'monthly');
+  document.getElementById('sticky-quarterly').classList.toggle('active', tab === 'quarterly');
+
+  // Bottom tabs
+  document.getElementById('bottom-monthly').classList.toggle('active', tab === 'monthly');
+  document.getElementById('bottom-quarterly').classList.toggle('active', tab === 'quarterly');
+
+  // Plans
+  document.getElementById('monthly-plans').classList.toggle('active', tab === 'monthly');
+  document.getElementById('quarterly-plans').classList.toggle('active', tab === 'quarterly');
+
+  // Toggle hint text
+  const hint = document.getElementById('toggleHint');
+  if (tab === 'quarterly') {
+    hint.innerHTML = '✅ Showing <span>3-month plans</span> — best value!';
+  } else {
+    hint.innerHTML = '👆 Switch to <span>3 Months</span> to save more!';
+  }
+
+  // Bottom text
+  const bottomSub = document.getElementById('bottomSubText');
+  const bottomTag = document.getElementById('bottomTag');
+  if (tab === 'quarterly') {
+    bottomSub.innerHTML = 'You\'re on 3-month plans. <span>Switch to monthly</span> for more flexibility.';
+    bottomTag.textContent = '✅ Best value selected!';
+  } else {
+    bottomSub.innerHTML = 'Switch to <span>3 months</span> and save up to ₹198 — plus get exclusive bonuses!';
+    bottomTag.textContent = '💰 Save up to 30%';
+  }
+
+  // Re-animate cards
+  document.querySelectorAll('.fu').forEach(el => {
+    el.classList.remove('vis');
+    setTimeout(() => el.classList.add('vis'), 80);
+  });
+
+  showToast(tab === 'quarterly' ? '3-month plans — save up to 30%! 💰' : 'Monthly plans — pay as you go! 📅');
+}
+
+// Sticky toggle on scroll
+window.addEventListener('scroll', () => {
+  const sticky = document.getElementById('stickyToggle');
+  if (window.scrollY > 300) {
+    sticky.classList.add('visible');
+  } else {
+    sticky.classList.remove('visible');
+  }
+});
+
+function toggleFaq(el) { el.parentElement.classList.toggle('open'); }
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// Scroll reveal
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('vis'); });
+}, { threshold: 0.08 });
+document.querySelectorAll('.fu').forEach(el => obs.observe(el));
+</script>
+</body>
+</html>

@@ -1,0 +1,879 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employer Dashboard | The Bird Job</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Clash+Display:wght@400;500;600;700&family=Bricolage+Grotesque:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg: #07070e;
+            --surface: #0e0f1a;
+            --panel: #131422;
+            --panel-2: #181a2b;
+            --border: rgba(255,255,255,0.1);
+            --border-soft: rgba(255,255,255,0.06);
+            --text: rgba(255,255,255,0.92);
+            --muted: rgba(255,255,255,0.55);
+            --muted-soft: rgba(255,255,255,0.38);
+            --accent: #ff6b2b;
+            --accent-2: #ffb347;
+            --blue: #60a5fa;
+            --green: #34d399;
+            --purple: #a78bfa;
+            --gold: #fbbf24;
+            --danger: #f87171;
+            --shadow: 0 22px 70px rgba(0,0,0,0.38);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
+        body { font-family: "Bricolage Grotesque", sans-serif; background: var(--bg); color: var(--text); overflow-x: hidden; }
+        a { color: inherit; text-decoration: none; }
+
+        .glow { position: fixed; border-radius: 999px; filter: blur(130px); pointer-events: none; z-index: 0; }
+        .g1 { width: 520px; height: 520px; background: rgba(255,107,43,0.09); top: -220px; right: -160px; }
+        .g2 { width: 460px; height: 460px; background: rgba(96,165,250,0.07); top: 40vh; left: -210px; }
+        .g3 { width: 420px; height: 420px; background: rgba(167,139,250,0.06); bottom: -220px; right: 10%; }
+
+        /* NAV */
+        .top-nav {
+            position: fixed; top: 0; left: 0; right: 0; height: 74px;
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0 28px;
+            background: rgba(7,7,14,0.9); border-bottom: 1px solid var(--border-soft);
+            backdrop-filter: blur(20px); z-index: 120;
+        }
+        .brand { display: inline-flex; align-items: center; gap: 11px; font-family: "Clash Display", sans-serif; font-size: 22px; font-weight: 600; letter-spacing: -0.5px; }
+        .brand strong { color: var(--accent); font-weight: 700; }
+        .brand-mark { width: 36px; height: 36px; border-radius: 11px; display: inline-flex; align-items: center; justify-content: center; color: white; background: linear-gradient(135deg, var(--accent), var(--accent-2)); box-shadow: 0 10px 30px rgba(255,107,43,0.35); font-size: 18px; }
+        .nav-links { display: flex; gap: 6px; }
+        .nav-pill { border: 1px solid var(--border); background: rgba(255,255,255,0.02); color: var(--muted); font-size: 13px; font-weight: 500; padding: 8px 14px; border-radius: 10px; transition: all 0.2s ease; font-family: "Bricolage Grotesque", sans-serif; }
+        .nav-pill:hover { color: white; border-color: rgba(255,255,255,0.2); transform: translateY(-1px); }
+        .nav-pill.active { color: white; background: linear-gradient(135deg, rgba(255,107,43,0.25), rgba(255,179,71,0.12)); border-color: rgba(255,107,43,0.35); }
+        .nav-actions { display: flex; align-items: center; gap: 12px; }
+        .icon-btn { width: 40px; height: 40px; border: 1px solid var(--border); background: rgba(255,255,255,0.03); border-radius: 11px; color: var(--text); cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; position: relative; }
+        .icon-btn:hover { border-color: rgba(255,255,255,0.25); transform: translateY(-1px); }
+        .notif-dot { position: absolute; top: 8px; right: 8px; width: 7px; height: 7px; background: var(--accent); border-radius: 50%; border: 1.5px solid var(--bg); }
+        .profile-trigger { border: 1px solid var(--border); background: rgba(255,255,255,0.03); border-radius: 12px; padding: 6px 10px 6px 7px; display: flex; align-items: center; gap: 9px; color: var(--text); cursor: pointer; transition: all 0.2s; }
+        .profile-trigger:hover { border-color: rgba(255,255,255,0.22); transform: translateY(-1px); }
+        .avatar { width: 33px; height: 33px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: white; font-size: 12px; font-weight: 700; }
+        .profile-meta { display: flex; flex-direction: column; line-height: 1.1; min-width: 110px; }
+        .profile-meta strong { font-size: 13px; font-weight: 600; color: white; }
+        .profile-meta small { font-size: 11px; color: var(--muted-soft); }
+
+        /* PAGE */
+        .page { position: relative; z-index: 1; width: min(1320px, calc(100% - 42px)); margin: 98px auto 44px; }
+
+        /* PANEL */
+        .panel { background: linear-gradient(165deg, var(--panel), #111321 68%); border: 1px solid var(--border-soft); border-radius: 24px; box-shadow: var(--shadow); }
+
+        /* HERO / PROFILE CARD */
+        .profile-hero {
+            padding: 32px; margin-bottom: 18px;
+            display: grid; grid-template-columns: 1fr auto; gap: 24px; align-items: center;
+            border: 1px solid rgba(255,107,43,0.18);
+            background: radial-gradient(circle at 90% 10%, rgba(255,107,43,0.2), transparent 50%),
+                        linear-gradient(135deg, rgba(255,107,43,0.1), rgba(255,179,71,0.05));
+            border-radius: 24px;
+        }
+        .profile-left { display: flex; align-items: center; gap: 20px; }
+        .company-avatar { width: 72px; height: 72px; border-radius: 20px; background: linear-gradient(135deg, var(--accent), var(--accent-2)); display: flex; align-items: center; justify-content: center; color: white; font-family: "Clash Display", sans-serif; font-size: 26px; font-weight: 700; box-shadow: 0 12px 32px rgba(255,107,43,0.3); flex-shrink: 0; }
+        .company-name { font-family: "Clash Display", sans-serif; font-size: clamp(22px, 2.5vw, 32px); font-weight: 700; letter-spacing: -0.8px; margin-bottom: 4px; }
+        .company-sub { font-size: 13px; color: var(--muted); margin-bottom: 12px; }
+        .company-badges { display: flex; gap: 8px; flex-wrap: wrap; }
+        .cbadge { display: flex; align-items: center; gap: 5px; padding: 5px 12px; border-radius: 100px; font-size: 12px; font-weight: 600; }
+        .cb-gold { background: rgba(251,191,36,0.12); border: 1px solid rgba(251,191,36,0.25); color: var(--gold); }
+        .cb-green { background: rgba(52,211,153,0.1); border: 1px solid rgba(52,211,153,0.22); color: var(--green); }
+        .cb-blue { background: rgba(96,165,250,0.1); border: 1px solid rgba(96,165,250,0.22); color: var(--blue); }
+
+        /* STAT CARDS */
+        .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 18px; }
+        .stat-card { border-radius: 20px; padding: 20px; background: linear-gradient(165deg, var(--panel-2), #111525); border: 1px solid var(--border-soft); transition: all 0.25s; }
+        .stat-card:hover { transform: translateY(-3px); box-shadow: 0 12px 32px rgba(0,0,0,0.3); }
+        .stat-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+        .stat-icon { width: 36px; height: 36px; border-radius: 11px; display: flex; align-items: center; justify-content: center; font-size: 15px; }
+        .si-orange { background: rgba(255,107,43,0.15); color: var(--accent); }
+        .si-green { background: rgba(52,211,153,0.15); color: var(--green); }
+        .si-purple { background: rgba(167,139,250,0.15); color: var(--purple); }
+        .si-blue { background: rgba(96,165,250,0.15); color: var(--blue); }
+        .si-gold { background: rgba(251,191,36,0.12); color: var(--gold); }
+        .stat-trend { font-size: 11px; font-weight: 600; padding: 3px 8px; border-radius: 100px; }
+        .trend-up { background: rgba(52,211,153,0.1); color: var(--green); }
+        .trend-neu { background: rgba(96,165,250,0.1); color: var(--blue); }
+        .stat-value { font-family: "Clash Display", sans-serif; font-size: 32px; line-height: 1; margin-bottom: 5px; }
+        .stat-label { font-size: 12px; color: var(--muted-soft); }
+
+        /* CONTENT GRID */
+        .content-grid { display: grid; grid-template-columns: 280px minmax(0,1fr); gap: 18px; }
+
+        /* LEFT RAIL */
+        .left-rail { align-self: start; position: sticky; top: 90px; display: flex; flex-direction: column; gap: 14px; }
+        .rail-card { padding: 22px; }
+
+        /* QUICK ACTIONS */
+        .qa-title { font-family: "Clash Display", sans-serif; font-size: 20px; letter-spacing: -0.5px; margin-bottom: 14px; }
+        .qa-btn { width: 100%; border: none; border-radius: 12px; padding: 13px 16px; font-family: "Bricolage Grotesque", sans-serif; font-size: 13px; font-weight: 700; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+        .qa-primary { background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: white; }
+        .qa-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(255,107,43,0.35); }
+        .qa-ghost { background: rgba(255,255,255,0.04); color: var(--text); border: 1px solid var(--border-soft); }
+        .qa-ghost:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.18); }
+
+        /* ACTIVITY */
+        .activity-list { display: flex; flex-direction: column; gap: 12px; }
+        .activity-item { display: flex; align-items: flex-start; gap: 10px; }
+        .act-icon { width: 32px; height: 32px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 13px; flex-shrink: 0; }
+        .act-text { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 2px; }
+        .act-meta { font-size: 11px; color: var(--muted-soft); }
+
+        /* MAIN FEED */
+        .main-feed { display: flex; flex-direction: column; gap: 16px; }
+        .section-block { padding: 26px; }
+        .section-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 14px; margin-bottom: 18px; }
+        .section-head h2 { font-family: "Clash Display", sans-serif; font-size: clamp(22px, 2.5vw, 30px); letter-spacing: -0.8px; line-height: 1.05; }
+        .section-head p { color: var(--muted); font-size: 13px; max-width: 460px; line-height: 1.6; }
+        .section-tag { font-size: 12px; font-weight: 600; color: var(--accent-2); letter-spacing: 0.5px; white-space: nowrap; }
+
+        /* SEARCH ROW */
+        .search-row { display: grid; grid-template-columns: 1.4fr 1fr auto; gap: 10px; margin-bottom: 16px; }
+        .input-wrap { border: 1px solid var(--border); background: rgba(255,255,255,0.03); border-radius: 12px; height: 46px; display: flex; align-items: center; gap: 9px; padding: 0 13px; }
+        .input-wrap i { color: var(--muted-soft); font-size: 13px; }
+        .input-wrap input { border: none; outline: none; background: transparent; color: var(--text); width: 100%; font-size: 13px; font-family: inherit; }
+        .input-wrap input::placeholder { color: var(--muted-soft); }
+
+        /* BTN */
+        .btn { border: none; border-radius: 11px; padding: 12px 18px; font-size: 13px; font-weight: 700; font-family: "Bricolage Grotesque", sans-serif; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; gap: 8px; }
+        .btn-primary { color: white; background: linear-gradient(135deg, var(--accent), var(--accent-2)); }
+        .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 10px 28px rgba(255,107,43,0.35); }
+        .btn-ghost { color: var(--text); border: 1px solid var(--border); background: rgba(255,255,255,0.04); }
+        .btn-ghost:hover { border-color: rgba(255,255,255,0.22); background: rgba(255,255,255,0.08); }
+        .btn-small { padding: 9px 14px; border-radius: 10px; font-size: 12px; }
+        .btn-danger { color: var(--danger); border: 1px solid rgba(248,113,113,0.25); background: rgba(248,113,113,0.08); }
+        .btn-danger:hover { background: rgba(248,113,113,0.15); }
+
+        /* JOB CARDS */
+        .job-list { display: flex; flex-direction: column; gap: 12px; }
+        .job-card { border-radius: 18px; border: 1px solid var(--border-soft); background: linear-gradient(165deg, rgba(255,255,255,0.025), rgba(255,255,255,0.01)); padding: 20px; transition: all 0.22s; }
+        .job-card:hover { border-color: rgba(255,107,43,0.25); transform: translateY(-2px); box-shadow: 0 12px 36px rgba(0,0,0,0.25); }
+        .job-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+        .job-main { display: flex; gap: 14px; align-items: flex-start; flex: 1; }
+        .job-logo { width: 48px; height: 48px; border-radius: 14px; background: linear-gradient(135deg, var(--accent), var(--accent-2)); display: flex; align-items: center; justify-content: center; color: white; font-family: "Clash Display", sans-serif; font-size: 14px; font-weight: 700; flex-shrink: 0; }
+        .job-title { font-family: "Clash Display", sans-serif; font-size: 17px; font-weight: 600; margin-bottom: 4px; letter-spacing: -0.3px; }
+        .job-meta { color: var(--muted); font-size: 13px; margin-bottom: 10px; }
+        .job-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+        .chip { border-radius: 999px; padding: 4px 10px; font-size: 11px; font-weight: 600; }
+        .chip-green { color: var(--green); background: rgba(52,211,153,0.12); }
+        .chip-blue { color: var(--blue); background: rgba(96,165,250,0.12); }
+        .chip-orange { color: var(--accent-2); background: rgba(255,179,71,0.12); }
+        .chip-grey { color: var(--muted); background: rgba(255,255,255,0.06); border: 1px solid var(--border-soft); }
+        .chip-red { color: var(--danger); background: rgba(248,113,113,0.1); }
+        .job-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+
+        /* EMPTY STATE */
+        .empty-state { text-align: center; padding: 48px 24px; }
+        .empty-icon { font-size: 48px; margin-bottom: 16px; opacity: 0.3; }
+        .empty-title { font-family: "Clash Display", sans-serif; font-size: 22px; font-weight: 700; margin-bottom: 8px; }
+        .empty-sub { font-size: 14px; color: var(--muted); margin-bottom: 24px; }
+
+        /* CANDIDATES TABLE */
+        .cand-table { width: 100%; border-collapse: collapse; }
+        .cand-table th { text-align: left; padding: 10px 14px; font-size: 11px; font-weight: 700; color: var(--muted-soft); text-transform: uppercase; letter-spacing: 1px; border-bottom: 1px solid var(--border-soft); background: rgba(255,255,255,0.02); }
+        .cand-table td { padding: 14px; font-size: 13px; border-bottom: 1px solid var(--border-soft); vertical-align: middle; }
+        .cand-table tr:last-child td { border-bottom: none; }
+        .cand-table tr:hover td { background: rgba(255,255,255,0.02); }
+        .cand-name { font-weight: 600; color: var(--text); }
+        .cand-role { font-size: 12px; color: var(--muted); margin-top: 2px; }
+        .score-wrap { display: flex; align-items: center; gap: 8px; }
+        .score-bar-track { width: 72px; height: 5px; background: var(--border-soft); border-radius: 3px; overflow: hidden; }
+        .score-bar-fill { height: 100%; border-radius: 3px; background: linear-gradient(90deg, var(--accent), var(--accent-2)); }
+        .score-num { font-size: 12px; font-weight: 700; color: var(--text); }
+        .status-pill { display: inline-block; padding: 4px 10px; border-radius: 100px; font-size: 11px; font-weight: 700; }
+        .sp-new { background: rgba(96,165,250,0.14); color: var(--blue); }
+        .sp-review { background: rgba(255,179,71,0.14); color: var(--accent-2); }
+        .sp-hired { background: rgba(52,211,153,0.14); color: var(--green); }
+        .sp-reject { background: rgba(248,113,113,0.12); color: var(--danger); }
+
+        /* POST JOB FORM */
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        .form-group { display: flex; flex-direction: column; gap: 7px; }
+        .form-group label { font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.8px; }
+        .form-input { background: rgba(255,255,255,0.04); border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px; color: var(--text); font-family: "Bricolage Grotesque", sans-serif; font-size: 14px; outline: none; transition: border-color 0.2s; }
+        .form-input:focus { border-color: var(--accent); background: rgba(255,107,43,0.04); }
+        .form-input::placeholder { color: var(--muted-soft); }
+        textarea.form-input { resize: vertical; min-height: 100px; }
+        select.form-input { cursor: pointer; }
+        select.form-input option { background: var(--panel); }
+        .form-full { grid-column: 1 / -1; }
+
+        /* SIDEBAR */
+        .profile-sidebar { position: fixed; top: 0; right: 0; width: min(370px, 94vw); height: 100vh; z-index: 160; border-left: 1px solid var(--border); background: linear-gradient(175deg, #101223, #0d0f1a 72%); transform: translateX(102%); transition: transform 0.3s ease; box-shadow: -20px 0 50px rgba(0,0,0,0.45); overflow-y: auto; }
+        .profile-sidebar.open { transform: translateX(0); }
+        .sidebar-inner { padding: 22px; }
+        .sidebar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; }
+        .sidebar-header h2 { font-family: "Clash Display", sans-serif; font-size: 26px; letter-spacing: -0.6px; }
+        .close-btn { width: 36px; height: 36px; border-radius: 10px; border: 1px solid var(--border); background: rgba(255,255,255,0.03); color: var(--text); cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        .side-user { display: flex; align-items: center; gap: 12px; padding: 14px; border-radius: 14px; border: 1px solid var(--border-soft); background: rgba(255,255,255,0.03); margin-bottom: 14px; }
+        .side-user .big-av { width: 52px; height: 52px; border-radius: 15px; background: linear-gradient(135deg, var(--accent), var(--accent-2)); display: flex; align-items: center; justify-content: center; color: white; font-family: "Clash Display", sans-serif; font-size: 18px; font-weight: 700; flex-shrink: 0; }
+        .side-user h3 { font-size: 16px; font-weight: 700; margin-bottom: 3px; }
+        .side-user p { font-size: 12px; color: var(--muted); }
+        .menu-list { display: flex; flex-direction: column; gap: 7px; margin-top: 6px; }
+        .menu-item { border: 1px solid var(--border-soft); border-radius: 12px; background: rgba(255,255,255,0.02); padding: 12px; display: flex; align-items: flex-start; gap: 10px; transition: all 0.2s; color: var(--text); }
+        .menu-item:hover { border-color: rgba(255,255,255,0.18); background: rgba(255,255,255,0.05); }
+        .menu-icon { width: 34px; height: 34px; border-radius: 9px; display: inline-flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; }
+        .menu-item strong { display: block; font-size: 14px; margin-bottom: 2px; }
+        .menu-item span { font-size: 12px; color: var(--muted); }
+        .menu-btn { width: 100%; border: none; text-align: left; font-family: inherit; cursor: pointer; }
+        .menu-item.danger { color: #ffc9c9; border-color: rgba(248,113,113,0.22); background: rgba(248,113,113,0.06); }
+        .menu-item.danger span { color: #ffb3b3; }
+
+        /* OVERLAY / MODAL */
+        .overlay { position: fixed; inset: 0; background: rgba(2,4,10,0.75); opacity: 0; visibility: hidden; transition: opacity 0.25s; z-index: 140; }
+        .overlay.show { opacity: 1; visibility: visible; }
+        .modal-wrap { position: fixed; inset: 0; z-index: 170; display: grid; place-items: center; opacity: 0; visibility: hidden; transition: all 0.25s; padding: 16px; }
+        .modal-wrap.show { opacity: 1; visibility: visible; }
+        .modal-card { width: min(480px, 100%); border-radius: 22px; border: 1px solid var(--border); background: linear-gradient(170deg, var(--panel), #0f1220); padding: 32px; box-shadow: var(--shadow); }
+        .modal-icon { width: 58px; height: 58px; margin: 0 auto 16px; border-radius: 16px; display: grid; place-items: center; font-size: 24px; }
+        .modal-card h3 { font-family: "Clash Display", sans-serif; font-size: 28px; margin-bottom: 8px; letter-spacing: -0.6px; text-align: center; }
+        .modal-card p { color: var(--muted); font-size: 14px; margin-bottom: 20px; line-height: 1.7; text-align: center; }
+
+        /* TOAST */
+        .toast { position: fixed; right: 18px; bottom: 18px; z-index: 200; background: rgba(255,255,255,0.95); color: #12131d; border-radius: 11px; padding: 12px 18px; font-size: 13px; font-weight: 600; box-shadow: 0 10px 28px rgba(0,0,0,0.3); transform: translateY(12px); opacity: 0; pointer-events: none; transition: all 0.2s; }
+        .toast.show { transform: translateY(0); opacity: 1; }
+
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #0b0d18; }
+        ::-webkit-scrollbar-thumb { background: #24273a; border-radius: 8px; }
+
+        @media(max-width:1200px) {
+            .content-grid { grid-template-columns: 1fr; }
+            .left-rail { position: static; display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+        }
+        @media(max-width:980px) {
+            .nav-links { display: none; }
+            .stats-row { grid-template-columns: 1fr 1fr; }
+            .form-grid { grid-template-columns: 1fr; }
+            .search-row { grid-template-columns: 1fr; }
+        }
+        @media(max-width:700px) {
+            .top-nav { padding: 0 14px; }
+            .profile-meta { display: none; }
+            .profile-hero { grid-template-columns: 1fr; }
+            .stats-row { grid-template-columns: 1fr 1fr; }
+            .left-rail { grid-template-columns: 1fr; }
+            .job-top { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+    <div class="glow g1"></div>
+    <div class="glow g2"></div>
+    <div class="glow g3"></div>
+    <div class="toast" id="toast"></div>
+
+    <!-- NAV -->
+    <nav class="top-nav">
+        <a href="#" class="brand">
+            <div class="brand-mark">🐦</div>
+            <span>The Bird <strong>Job</strong></span>
+        </a>
+        <div class="nav-links">
+            <a href="#jobs" class="nav-pill active">My Jobs</a>
+            <a href="#candidates" class="nav-pill">Candidates</a>
+            <a href="#post" class="nav-pill">Post a Job</a>
+            <a href="#applications" class="nav-pill">Applications</a>
+            <a href="#messages" class="nav-pill">Messages</a>
+        </div>
+        <div class="nav-actions">
+            <button class="icon-btn" onclick="showToast('No new notifications')">
+                <i class="fa-regular fa-bell"></i>
+                <span class="notif-dot"></span>
+            </button>
+            <button class="profile-trigger" onclick="toggleSidebar()">
+                <span class="avatar">{{ user.initials }}</span>
+                <span class="profile-meta">
+                    <strong>{{ user.company_name }}</strong>
+                    <small>Employer</small>
+                </span>
+                <i class="fa-solid fa-chevron-down" style="font-size:10px;color:var(--muted-soft)"></i>
+            </button>
+        </div>
+    </nav>
+
+    <main class="page">
+
+        <!-- PROFILE HERO -->
+        <div class="profile-hero panel" style="margin-bottom:18px">
+            <div class="profile-left">
+                <div class="company-avatar">{{ user.initials }}</div>
+                <div>
+                    <div class="company-name">{{ user.company_name }}</div>
+                    <div class="company-sub">Employer Account{% if user.company_size %} &nbsp;·&nbsp; {{ user.company_size }} Employees{% endif %}</div>
+                    <div class="company-badges">
+                        <div class="cbadge cb-gold"><i class="fa-solid fa-star" style="font-size:10px"></i> 4.8 Rating</div>
+                        <div class="cbadge cb-green"><i class="fa-solid fa-user-check" style="font-size:10px"></i> 500+ Hires</div>
+                        <div class="cbadge cb-blue"><i class="fa-solid fa-shield-halved" style="font-size:10px"></i> Verified Employer</div>
+                    </div>
+                </div>
+            </div>
+            <button class="btn btn-primary" onclick="document.getElementById('post').scrollIntoView({behavior:'smooth'})">
+                <i class="fa-solid fa-plus"></i> Post New Job
+            </button>
+        </div>
+
+        <!-- STATS -->
+        <div class="stats-row">
+            <div class="stat-card">
+                <div class="stat-top">
+                    <div class="stat-icon si-blue"><i class="fa-solid fa-file-signature"></i></div>
+                    <span class="stat-trend trend-up">↑ 18%</span>
+                </div>
+                <div class="stat-value">{{ user.stats.total_applications or '348' }}</div>
+                <div class="stat-label">Total Applications</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-top">
+                    <div class="stat-icon si-green"><i class="fa-solid fa-briefcase"></i></div>
+                    <span class="stat-trend trend-up">↑ 3 new</span>
+                </div>
+                <div class="stat-value">{{ user.stats.active_jobs or '12' }}</div>
+                <div class="stat-label">Active Job Posts</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-top">
+                    <div class="stat-icon si-purple"><i class="fa-solid fa-calendar-check"></i></div>
+                    <span class="stat-trend trend-neu">This week</span>
+                </div>
+                <div class="stat-value">{{ user.stats.interviews_scheduled or '24' }}</div>
+                <div class="stat-label">Interviews Scheduled</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-top">
+                    <div class="stat-icon si-orange"><i class="fa-solid fa-user-check"></i></div>
+                    <span class="stat-trend trend-up">↑ 2 more</span>
+                </div>
+                <div class="stat-value">{{ user.stats.hires_this_month or '8' }}</div>
+                <div class="stat-label">Hires This Month</div>
+            </div>
+        </div>
+
+        <!-- CONTENT GRID -->
+        <div class="content-grid">
+
+            <!-- LEFT RAIL -->
+            <aside class="left-rail">
+                <section class="panel rail-card">
+                    <div class="qa-title">Quick Actions</div>
+                    <button class="qa-btn qa-primary" onclick="document.getElementById('post').scrollIntoView({behavior:'smooth'})">
+                        <i class="fa-solid fa-plus"></i> Post New Job
+                    </button>
+                    <button class="qa-btn qa-ghost" onclick="document.getElementById('candidates').scrollIntoView({behavior:'smooth'})">
+                        <i class="fa-solid fa-users"></i> Find Candidates
+                    </button>
+                    <button class="qa-btn qa-ghost" onclick="document.getElementById('applications').scrollIntoView({behavior:'smooth'})">
+                        <i class="fa-solid fa-list-check"></i> View Applications
+                    </button>
+                    <button class="qa-btn qa-ghost" onclick="showToast('Analytics coming soon! 📊')">
+                        <i class="fa-solid fa-chart-bar"></i> Analytics
+                    </button>
+                </section>
+
+                <section class="panel rail-card">
+                    <div class="qa-title" style="margin-bottom:16px">Recent Activity</div>
+                    <div class="activity-list">
+                        <div class="activity-item">
+                            <div class="act-icon" style="background:rgba(52,211,153,0.12);color:var(--green)"><i class="fa-solid fa-user-plus"></i></div>
+                            <div>
+                                <div class="act-text">New application received</div>
+                                <div class="act-meta">ML Engineer role · 2 hours ago</div>
+                            </div>
+                        </div>
+                        <div class="activity-item">
+                            <div class="act-icon" style="background:rgba(96,165,250,0.12);color:var(--blue)"><i class="fa-solid fa-calendar-check"></i></div>
+                            <div>
+                                <div class="act-text">Interview scheduled</div>
+                                <div class="act-meta">Data Scientist · Tomorrow 2 PM</div>
+                            </div>
+                        </div>
+                        <div class="activity-item">
+                            <div class="act-icon" style="background:rgba(167,139,250,0.12);color:var(--purple)"><i class="fa-solid fa-eye"></i></div>
+                            <div>
+                                <div class="act-text">48 profile views today</div>
+                                <div class="act-meta">Backend Engineer post · active</div>
+                            </div>
+                        </div>
+                        <div class="activity-item">
+                            <div class="act-icon" style="background:rgba(255,107,43,0.12);color:var(--accent)"><i class="fa-solid fa-trophy"></i></div>
+                            <div>
+                                <div class="act-text">Candidate hired! 🎉</div>
+                                <div class="act-meta">Sneha Joshi · ML Engineer</div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </aside>
+
+            <!-- MAIN FEED -->
+            <div class="main-feed">
+
+                <!-- MY JOB POSTS -->
+                <section id="jobs" class="panel section-block">
+                    <div class="section-head">
+                        <div>
+                            <h2>My Job Postings</h2>
+                            <p>Manage your active listings, track applicants, and edit details.</p>
+                        </div>
+                        <span class="section-tag">{{ user.jobs|length if user.jobs else '3' }} active posts</span>
+                    </div>
+
+                    <div class="search-row">
+                        <label class="input-wrap">
+                            <i class="fa-solid fa-search"></i>
+                            <input type="text" placeholder="Search your job posts...">
+                        </label>
+                        <label class="input-wrap">
+                            <i class="fa-solid fa-filter"></i>
+                            <input type="text" placeholder="Filter by status...">
+                        </label>
+                        <button class="btn btn-primary btn-small" onclick="showToast('Searching... 🔍')">
+                            <i class="fa-solid fa-magnifying-glass"></i> Search
+                        </button>
+                    </div>
+
+                    <div class="job-list">
+                        {% if user.jobs %}
+                            {% for job in user.jobs %}
+                            <div class="job-card">
+                                <div class="job-top">
+                                    <div class="job-main">
+                                        <div class="job-logo">{{ job.title.split()[0][0] }}{{ job.title.split()[-1][0] if job.title.split()|length > 1 else '' }}</div>
+                                        <div>
+                                            <div class="job-title">{{ job.title }}</div>
+                                            <div class="job-meta">{{ user.company_name }} &nbsp;·&nbsp; {{ job.location }} &nbsp;·&nbsp; {{ job.salary }}</div>
+                                            <div class="job-chips">
+                                                <span class="chip chip-green">Active</span>
+                                                <span class="chip chip-blue">0 applicants</span>
+                                                <span class="chip chip-grey">Posted recently</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="job-actions">
+                                        <button class="btn btn-ghost btn-small" onclick="showToast('Opening job view...')"><i class="fa-solid fa-eye"></i> View</button>
+                                        <button class="btn btn-primary btn-small" onclick="showToast('Opening editor...')"><i class="fa-solid fa-pen"></i> Edit</button>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                            <!-- Demo cards -->
+                            <div class="job-card">
+                                <div class="job-top">
+                                    <div class="job-main">
+                                        <div class="job-logo">ML</div>
+                                        <div>
+                                            <div class="job-title">Senior ML Engineer</div>
+                                            <div class="job-meta">Acme Corp &nbsp;·&nbsp; Bangalore &nbsp;·&nbsp; ₹40–60 LPA</div>
+                                            <div class="job-chips">
+                                                <span class="chip chip-green">Active</span>
+                                                <span class="chip chip-blue">124 applicants</span>
+                                                <span class="chip chip-orange">ATS Score req: 75+</span>
+                                                <span class="chip chip-grey">2 days ago</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="job-actions">
+                                        <button class="btn btn-ghost btn-small" onclick="showToast('Opening job view...')"><i class="fa-solid fa-eye"></i> View</button>
+                                        <button class="btn btn-primary btn-small" onclick="showToast('Opening editor...')"><i class="fa-solid fa-pen"></i> Edit</button>
+                                        <button class="btn btn-danger btn-small" onclick="showToast('Job paused!')"><i class="fa-solid fa-pause"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="job-card">
+                                <div class="job-top">
+                                    <div class="job-main">
+                                        <div class="job-logo">DS</div>
+                                        <div>
+                                            <div class="job-title">Data Scientist</div>
+                                            <div class="job-meta">Acme Corp &nbsp;·&nbsp; Remote &nbsp;·&nbsp; ₹25–40 LPA</div>
+                                            <div class="job-chips">
+                                                <span class="chip chip-green">Active</span>
+                                                <span class="chip chip-blue">89 applicants</span>
+                                                <span class="chip chip-grey">5 days ago</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="job-actions">
+                                        <button class="btn btn-ghost btn-small" onclick="showToast('Opening job view...')"><i class="fa-solid fa-eye"></i> View</button>
+                                        <button class="btn btn-primary btn-small" onclick="showToast('Opening editor...')"><i class="fa-solid fa-pen"></i> Edit</button>
+                                        <button class="btn btn-danger btn-small" onclick="showToast('Job paused!')"><i class="fa-solid fa-pause"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="job-card">
+                                <div class="job-top">
+                                    <div class="job-main">
+                                        <div class="job-logo">BE</div>
+                                        <div>
+                                            <div class="job-title">Backend Engineer</div>
+                                            <div class="job-meta">Acme Corp &nbsp;·&nbsp; Hyderabad &nbsp;·&nbsp; ₹20–35 LPA</div>
+                                            <div class="job-chips">
+                                                <span class="chip chip-orange">Paused</span>
+                                                <span class="chip chip-blue">56 applicants</span>
+                                                <span class="chip chip-grey">1 week ago</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="job-actions">
+                                        <button class="btn btn-ghost btn-small" onclick="showToast('Opening job view...')"><i class="fa-solid fa-eye"></i> View</button>
+                                        <button class="btn btn-primary btn-small" onclick="showToast('Job resumed! ✅')"><i class="fa-solid fa-play"></i> Resume</button>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                </section>
+
+                <!-- CANDIDATES -->
+                <section id="candidates" class="panel section-block">
+                    <div class="section-head">
+                        <div>
+                            <h2>Top Candidates</h2>
+                            <p>ATS-screened applicants with verified skill scores — ready to interview.</p>
+                        </div>
+                        <span class="section-tag">348 total applicants</span>
+                    </div>
+                    <div style="overflow-x:auto; border-radius:14px; border:1px solid var(--border-soft);">
+                        <table class="cand-table">
+                            <thead>
+                                <tr>
+                                    <th>Candidate</th>
+                                    <th>Applied For</th>
+                                    <th>ATS Score</th>
+                                    <th>Skill Test</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <div class="cand-name">Rahul Sharma</div>
+                                        <div class="cand-role">rahul@email.com</div>
+                                    </td>
+                                    <td style="color:var(--muted);font-size:13px">ML Engineer</td>
+                                    <td>
+                                        <div class="score-wrap">
+                                            <div class="score-bar-track"><div class="score-bar-fill" style="width:88%"></div></div>
+                                            <span class="score-num">88</span>
+                                        </div>
+                                    </td>
+                                    <td style="color:var(--green);font-size:13px;font-weight:700">92%</td>
+                                    <td><span class="status-pill sp-new">New</span></td>
+                                    <td><button class="btn btn-primary btn-small" onclick="showToast('Shortlisted Rahul! ✅')">Shortlist</button></td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="cand-name">Priya Nair</div>
+                                        <div class="cand-role">priya@email.com</div>
+                                    </td>
+                                    <td style="color:var(--muted);font-size:13px">Data Scientist</td>
+                                    <td>
+                                        <div class="score-wrap">
+                                            <div class="score-bar-track"><div class="score-bar-fill" style="width:94%"></div></div>
+                                            <span class="score-num">94</span>
+                                        </div>
+                                    </td>
+                                    <td style="color:var(--green);font-size:13px;font-weight:700">88%</td>
+                                    <td><span class="status-pill sp-review">In Review</span></td>
+                                    <td><button class="btn btn-primary btn-small" onclick="showToast('Shortlisted Priya! ✅')">Shortlist</button></td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="cand-name">Arjun Mehta</div>
+                                        <div class="cand-role">arjun@email.com</div>
+                                    </td>
+                                    <td style="color:var(--muted);font-size:13px">Backend Eng.</td>
+                                    <td>
+                                        <div class="score-wrap">
+                                            <div class="score-bar-track"><div class="score-bar-fill" style="width:76%"></div></div>
+                                            <span class="score-num">76</span>
+                                        </div>
+                                    </td>
+                                    <td style="color:var(--accent-2);font-size:13px;font-weight:700">71%</td>
+                                    <td><span class="status-pill sp-review">In Review</span></td>
+                                    <td><button class="btn btn-ghost btn-small" onclick="showToast('Reviewing Arjun...')">Review</button></td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="cand-name">Sneha Joshi</div>
+                                        <div class="cand-role">sneha@email.com</div>
+                                    </td>
+                                    <td style="color:var(--muted);font-size:13px">ML Engineer</td>
+                                    <td>
+                                        <div class="score-wrap">
+                                            <div class="score-bar-track"><div class="score-bar-fill" style="width:91%"></div></div>
+                                            <span class="score-num">91</span>
+                                        </div>
+                                    </td>
+                                    <td style="color:var(--green);font-size:13px;font-weight:700">95%</td>
+                                    <td><span class="status-pill sp-hired">Hired 🎉</span></td>
+                                    <td><button class="btn btn-ghost btn-small" style="opacity:0.4;cursor:default">Done</button></td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="cand-name">Vikram Singh</div>
+                                        <div class="cand-role">vikram@email.com</div>
+                                    </td>
+                                    <td style="color:var(--muted);font-size:13px">DevOps Eng.</td>
+                                    <td>
+                                        <div class="score-wrap">
+                                            <div class="score-bar-track"><div class="score-bar-fill" style="width:82%"></div></div>
+                                            <span class="score-num">82</span>
+                                        </div>
+                                    </td>
+                                    <td style="color:var(--accent-2);font-size:13px;font-weight:700">79%</td>
+                                    <td><span class="status-pill sp-new">New</span></td>
+                                    <td><button class="btn btn-primary btn-small" onclick="showToast('Shortlisted Vikram! ✅')">Shortlist</button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- POST A JOB -->
+                <section id="post" class="panel section-block">
+                    <div class="section-head">
+                        <div>
+                            <h2>Post a New Job</h2>
+                            <p>Fill in the details and go live in minutes. Set ATS score requirements and skill test filters.</p>
+                        </div>
+                    </div>
+
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Job Title *</label>
+                            <input class="form-input" type="text" placeholder="e.g. Senior ML Engineer">
+                        </div>
+                        <div class="form-group">
+                            <label>Location *</label>
+                            <input class="form-input" type="text" placeholder="e.g. Bangalore / Remote">
+                        </div>
+                        <div class="form-group">
+                            <label>Job Type</label>
+                            <select class="form-input">
+                                <option>Full-time</option>
+                                <option>Part-time</option>
+                                <option>Contract</option>
+                                <option>Internship</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Salary Range</label>
+                            <input class="form-input" type="text" placeholder="e.g. ₹20–35 LPA">
+                        </div>
+                        <div class="form-group">
+                            <label>Experience Required</label>
+                            <select class="form-input">
+                                <option>Fresher (0-1 yr)</option>
+                                <option>1-3 years</option>
+                                <option>3-5 years</option>
+                                <option>5+ years</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Min. ATS Score</label>
+                            <input class="form-input" type="number" placeholder="e.g. 75" min="0" max="100">
+                        </div>
+                        <div class="form-group form-full">
+                            <label>Job Description *</label>
+                            <textarea class="form-input" placeholder="Describe the role, responsibilities, and requirements..."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Required Skills</label>
+                            <input class="form-input" type="text" placeholder="e.g. Python, TensorFlow, MLOps">
+                        </div>
+                        <div class="form-group">
+                            <label>Require Skill Test?</label>
+                            <select class="form-input">
+                                <option>Yes — ML Fundamentals</option>
+                                <option>Yes — Python Coding</option>
+                                <option>Yes — Data Analysis</option>
+                                <option>No skill test needed</option>
+                            </select>
+                        </div>
+                        <div class="form-group form-full" style="margin-top:8px">
+                            <button class="btn btn-primary" style="width:fit-content;padding:14px 36px;font-size:15px" onclick="showToast('Job posted successfully! 🎉')">
+                                <i class="fa-solid fa-rocket"></i> Post Job Now
+                            </button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- APPLICATIONS -->
+                <section id="applications" class="panel section-block">
+                    <div class="section-head">
+                        <div>
+                            <h2>Application Pipeline</h2>
+                            <p>Track every application across all your active job posts.</p>
+                        </div>
+                        <span class="section-tag">348 total</span>
+                    </div>
+                    <div style="overflow-x:auto; border-radius:14px; border:1px solid var(--border-soft);">
+                        <table class="cand-table">
+                            <thead>
+                                <tr>
+                                    <th>Candidate</th>
+                                    <th>Job Post</th>
+                                    <th>Applied</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><div class="cand-name">Rahul Sharma</div><div class="cand-role">ATS: 88 · Test: 92%</div></td>
+                                    <td style="color:var(--muted);font-size:13px">ML Engineer</td>
+                                    <td style="color:var(--muted);font-size:12px">2 days ago</td>
+                                    <td><span class="status-pill sp-new">New</span></td>
+                                    <td><button class="btn btn-primary btn-small" onclick="showToast('Opening profile...')">Review</button></td>
+                                </tr>
+                                <tr>
+                                    <td><div class="cand-name">Priya Nair</div><div class="cand-role">ATS: 94 · Test: 88%</div></td>
+                                    <td style="color:var(--muted);font-size:13px">Data Scientist</td>
+                                    <td style="color:var(--muted);font-size:12px">4 days ago</td>
+                                    <td><span class="status-pill sp-review">In Review</span></td>
+                                    <td><button class="btn btn-primary btn-small" onclick="showToast('Opening profile...')">Review</button></td>
+                                </tr>
+                                <tr>
+                                    <td><div class="cand-name">Sneha Joshi</div><div class="cand-role">ATS: 91 · Test: 95%</div></td>
+                                    <td style="color:var(--muted);font-size:13px">ML Engineer</td>
+                                    <td style="color:var(--muted);font-size:12px">1 week ago</td>
+                                    <td><span class="status-pill sp-hired">Hired 🎉</span></td>
+                                    <td><button class="btn btn-ghost btn-small" style="opacity:0.4">Done</button></td>
+                                </tr>
+                                <tr>
+                                    <td><div class="cand-name">Arjun Mehta</div><div class="cand-role">ATS: 76 · Test: 71%</div></td>
+                                    <td style="color:var(--muted);font-size:13px">Backend Eng.</td>
+                                    <td style="color:var(--muted);font-size:12px">1 week ago</td>
+                                    <td><span class="status-pill sp-reject">Rejected</span></td>
+                                    <td><button class="btn btn-ghost btn-small" onclick="showToast('Archived...')">Archive</button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- MESSAGES -->
+                <section id="messages" class="panel section-block">
+                    <div class="section-head">
+                        <div>
+                            <h2>Messages</h2>
+                            <p>Direct messages from candidates who reached out via DM to HR.</p>
+                        </div>
+                        <span class="section-tag">3 unread</span>
+                    </div>
+                    <div style="display:flex;flex-direction:column;gap:10px">
+                        <div style="display:flex;align-items:center;gap:14px;padding:16px;border-radius:14px;border:1px solid var(--border-soft);background:rgba(255,255,255,0.02);transition:all 0.2s;cursor:pointer" onmouseenter="this.style.borderColor='rgba(255,107,43,0.25)'" onmouseleave="this.style.borderColor='rgba(255,255,255,0.06)'" onclick="showToast('Opening message...')">
+                            <div style="width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,var(--purple),var(--blue));display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:15px;flex-shrink:0">RK</div>
+                            <div style="flex:1">
+                                <div style="font-weight:700;font-size:14px;margin-bottom:3px">Rohan Kumar <span style="font-size:10px;background:rgba(255,107,43,0.15);color:var(--accent);padding:2px 8px;border-radius:100px;font-weight:700;margin-left:6px">New</span></div>
+                                <div style="font-size:12px;color:var(--muted)">Hi, I'm interested in the ML Engineer role. I have 3 years of...</div>
+                            </div>
+                            <div style="font-size:11px;color:var(--muted-soft)">2h ago</div>
+                        </div>
+                        <div style="display:flex;align-items:center;gap:14px;padding:16px;border-radius:14px;border:1px solid var(--border-soft);background:rgba(255,255,255,0.02);cursor:pointer" onclick="showToast('Opening message...')">
+                            <div style="width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,var(--green),var(--blue));display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:15px;flex-shrink:0">AS</div>
+                            <div style="flex:1">
+                                <div style="font-weight:700;font-size:14px;margin-bottom:3px">Ananya Singh</div>
+                                <div style="font-size:12px;color:var(--muted)">Thank you for shortlisting me! When can we schedule the...</div>
+                            </div>
+                            <div style="font-size:11px;color:var(--muted-soft)">1d ago</div>
+                        </div>
+                        <div style="display:flex;align-items:center;gap:14px;padding:16px;border-radius:14px;border:1px solid var(--border-soft);background:rgba(255,255,255,0.02);cursor:pointer" onclick="showToast('Opening message...')">
+                            <div style="width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--accent));display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:15px;flex-shrink:0">MK</div>
+                            <div style="flex:1">
+                                <div style="font-weight:700;font-size:14px;margin-bottom:3px">Mehul Kapoor</div>
+                                <div style="font-size:12px;color:var(--muted)">I saw your Data Scientist opening and believe my background...</div>
+                            </div>
+                            <div style="font-size:11px;color:var(--muted-soft)">2d ago</div>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+        </div>
+    </main>
+
+    <!-- PROFILE SIDEBAR -->
+    <aside id="profileSidebar" class="profile-sidebar">
+        <div class="sidebar-inner">
+            <div class="sidebar-header">
+                <h2>Account</h2>
+                <button class="close-btn" onclick="toggleSidebar(true)"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="side-user">
+                <div class="big-av">{{ user.initials }}</div>
+                <div>
+                    <h3>{{ user.company_name }}</h3>
+                    <p>Employer Account</p>
+                    <p>{{ user.email }}</p>
+                </div>
+            </div>
+            <div class="menu-list">
+                <a href="{{ url_for('login') }}" class="menu-item">
+                    <span class="menu-icon" style="background:rgba(96,165,250,0.15);color:var(--blue)"><i class="fa-solid fa-user-gear"></i></span>
+                    <span><strong>Manage Account</strong><span>Profile and settings</span></span>
+                </a>
+                <a href="#applications" onclick="toggleSidebar(true)" class="menu-item">
+                    <span class="menu-icon" style="background:rgba(52,211,153,0.15);color:var(--green)"><i class="fa-solid fa-list-check"></i></span>
+                    <span><strong>Applications</strong><span>View all job applications</span></span>
+                </a>
+                <a href="{{ url_for('price') }}" class="menu-item">
+                    <span class="menu-icon" style="background:rgba(167,139,250,0.15);color:var(--purple)"><i class="fa-solid fa-tags"></i></span>
+                    <span><strong>Pricing Plans</strong><span>Manage your subscription</span></span>
+                </a>
+                <button class="menu-item menu-btn" onclick="showToast('Analytics coming soon! 📊');toggleSidebar(true)">
+                    <span class="menu-icon" style="background:rgba(251,191,36,0.12);color:var(--gold)"><i class="fa-solid fa-chart-bar"></i></span>
+                    <span><strong>Analytics</strong><span>Job post performance</span></span>
+                </button>
+                <div style="border-top:1px solid var(--border-soft);margin:8px 0"></div>
+                <a href="{{ url_for('logout') }}" class="menu-item danger">
+                    <span class="menu-icon" style="background:rgba(248,113,113,0.2);color:#ffd5d5"><i class="fa-solid fa-right-from-bracket"></i></span>
+                    <span><strong>Log Out</strong><span>Sign out of account</span></span>
+                </a>
+            </div>
+        </div>
+    </aside>
+
+    <div id="overlay" class="overlay"></div>
+
+    <script>
+        const sidebar = document.getElementById('profileSidebar');
+        const overlay = document.getElementById('overlay');
+        const toast = document.getElementById('toast');
+
+        function showToast(msg) {
+            toast.textContent = msg;
+            toast.classList.add('show');
+            clearTimeout(showToast._t);
+            showToast._t = setTimeout(() => toast.classList.remove('show'), 2400);
+        }
+
+        function toggleSidebar(forceClose = false) {
+            const isOpen = sidebar.classList.contains('open');
+            if (forceClose || isOpen) {
+                sidebar.classList.remove('open');
+                overlay.classList.remove('show');
+            } else {
+                sidebar.classList.add('open');
+                overlay.classList.add('show');
+            }
+        }
+
+        overlay.addEventListener('click', () => toggleSidebar(true));
+        document.addEventListener('keydown', e => { if (e.key === 'Escape') toggleSidebar(true); });
+    </script>
+</body>
+</html>
