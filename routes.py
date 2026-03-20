@@ -153,14 +153,6 @@ def register_routes(app):
             'company_size': company_size,
             'email': email,
             'initials': build_initials(company_name),
-            'stats': {
-                # Defaults keep dashboard cards stable until real analytics are connected.
-                'total_applications': '348',
-                'active_jobs': '12',
-                'interviews_scheduled': '24',
-                'hires_this_month': '8',
-            },
-            'jobs': [],
         }
 
     def create_local_user(role, email, password, username='', full_name=''):

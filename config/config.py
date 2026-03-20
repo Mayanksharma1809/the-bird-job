@@ -27,6 +27,27 @@ def has_placeholder_in_url(value):
     return any(token in lowered for token in PLACEHOLDER_VALUES)
 
 
+def normalize_database_url(value):
+    cleaned = (value or '').strip()
+    if cleaned.startswith('postgres://'):
+        # SQLAlchemy expects "postgresql://".
+        cleaned = cleaned.replace('postgres://', 'postgresql://', 1)
+    return cleaned
+
+
+def parse_int(value, default):
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return default
+
+
+def parse_csv(value):
+    if not value:
+        return []
+    return [item.strip() for item in value.split(',') if item.strip()]
+
+
 class Config:
     SECRET_KEY = (
         os.environ.get('SECRET_KEY')
@@ -34,7 +55,9 @@ class Config:
         or 'fallback-secret-key'
     )
 
-    _database_url = os.environ.get('DATABASE_URL')
+    _database_url = normalize_database_url(
+        os.environ.get('DATABASE_URL') or os.environ.get('SUPABASE_DB_URL')
+    )
     if has_placeholder_in_url(_database_url):
         _database_url = None
 
@@ -54,7 +77,15 @@ class Config:
 
     SQLALCHEMY_DATABASE_URI = _database_url or 'sqlite:///job_portal.db'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+    SQLALCHEMY_ENGINE_OPTIONS = {
+        'pool_pre_ping': True,
+    }
     DEBUG = os.environ.get('DEBUG', 'False').lower() in ('true', '1', 'yes')
+    JOBS_API_URL = os.environ.get('JOBS_API_URL', 'https://remotive.com/api/remote-jobs')
+    JOBS_API_URL_2 = os.environ.get('JOBS_API_URL_2')
+    JOBS_API_URLS = parse_csv(os.environ.get('JOBS_API_URLS'))
+    JOBS_API_TIMEOUT = parse_int(os.environ.get('JOBS_API_TIMEOUT'), 10)
+    CANDIDATE_DASHBOARD_JOB_LIMIT = parse_int(os.environ.get('CANDIDATE_DASHBOARD_JOB_LIMIT'), 12)
     GOOGLE_CLIENT_ID = os.environ.get('GOOGLE_CLIENT_ID')
     GOOGLE_CLIENT_SECRET = os.environ.get('GOOGLE_CLIENT_SECRET')
     GOOGLE_REDIRECT_URI = os.environ.get('GOOGLE_REDIRECT_URI')

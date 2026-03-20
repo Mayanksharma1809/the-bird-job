@@ -1,6 +1,8 @@
+from datetime import datetime
+
 from flask import flash, redirect, render_template, request, url_for
 
-from models import EmployerProfile, User, db
+from models import CandidateJobAction, EmployerJob, EmployerProfile, User, db
 
 
 def register_employer_dashboard_routes(app, helpers):
@@ -11,6 +13,45 @@ def register_employer_dashboard_routes(app, helpers):
     employer_dashboard_user = helpers['employer_dashboard_user']
     has_completed_profile = helpers['has_completed_profile']
 
+    def parse_int(value):
+        try:
+            return int(value)
+        except (TypeError, ValueError):
+            return None
+
+    def employer_dashboard_data(user):
+        jobs = EmployerJob.query.filter_by(employer_user_id=user.id).order_by(EmployerJob.created_at.desc()).all()
+        job_ids = [job.id for job in jobs]
+
+        if job_ids:
+            applied_query = CandidateJobAction.query.filter(
+                CandidateJobAction.employer_job_id.in_(job_ids),
+                CandidateJobAction.action == 'applied',
+            )
+            total_applications = applied_query.count()
+            interviews_scheduled = applied_query.filter(CandidateJobAction.status == 'interview').count()
+
+            month_start = datetime.utcnow().replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+            hires_this_month = applied_query.filter(
+                CandidateJobAction.status == 'hired',
+                CandidateJobAction.updated_at >= month_start,
+            ).count()
+            recent_applications = applied_query.order_by(CandidateJobAction.created_at.desc()).limit(10).all()
+        else:
+            total_applications = 0
+            interviews_scheduled = 0
+            hires_this_month = 0
+            recent_applications = []
+
+        active_jobs = sum(1 for job in jobs if (job.status or '').lower() == 'active')
+        stats = {
+            'total_applications': total_applications,
+            'active_jobs': active_jobs,
+            'interviews_scheduled': interviews_scheduled,
+            'hires_this_month': hires_this_month,
+        }
+        return jobs, stats, recent_applications
+
     @app.route('/employer_dashboard')
     def employer_dashboard():
         user = get_logged_in_user()
@@ -19,7 +60,63 @@ def register_employer_dashboard_routes(app, helpers):
         if not has_completed_profile(user):
             flash('Please complete your employer profile first.', 'error')
             return redirect(url_for('employer_form'))
-        return render_template('employer_dashboard.html', user=employer_dashboard_user(user))
+        jobs, stats, recent_applications = employer_dashboard_data(user)
+        dashboard_user = employer_dashboard_user(user)
+        dashboard_user['jobs'] = jobs
+        dashboard_user['stats'] = stats
+
+        return render_template(
+            'employer_dashboard.html',
+            user=dashboard_user,
+            candidate_applications=recent_applications,
+        )
+
+    @app.route('/employer/jobs/create', methods=['POST'])
+    def create_employer_job():
+        user = get_logged_in_user()
+        if user is None:
+            flash('Please login first.', 'error')
+            return redirect(url_for('login'))
+        if normalize_role(user.role) != 'employer':
+            return redirect(url_for(dashboard_endpoint_for_role(user.role)))
+
+        title = request.form.get('title', '').strip()
+        location = request.form.get('location', '').strip()
+        job_type = request.form.get('job_type', '').strip()
+        salary = request.form.get('salary', '').strip()
+        experience_level = request.form.get('experience_level', '').strip()
+        min_ats_score = parse_int(request.form.get('min_ats_score', '').strip())
+        required_skills = request.form.get('required_skills', '').strip()
+        description = request.form.get('description', '').strip()
+
+        if not title or not description:
+            flash('Job title and description are required.', 'error')
+            return redirect(url_for('employer_dashboard'))
+
+        new_job = EmployerJob(
+            employer_user_id=user.id,
+            title=title,
+            location=location or None,
+            job_type=job_type or None,
+            salary=salary or None,
+            experience_level=experience_level or None,
+            min_ats_score=min_ats_score,
+            required_skills=required_skills or None,
+            description=description,
+            status='active',
+        )
+
+        try:
+            db.session.add(new_job)
+            db.session.commit()
+        except Exception:
+            db.session.rollback()
+            app.logger.exception('Failed to create employer job')
+            flash('Unable to create the job post right now. Please try again.', 'error')
+            return redirect(url_for('employer_dashboard'))
+
+        flash('Job post created successfully.', 'success')
+        return redirect(url_for('employer_dashboard'))
 
     @app.route('/employer_form', methods=['GET', 'POST'])
     def employer_form():

@@ -330,7 +330,7 @@
                     <div class="stat-icon si-blue"><i class="fa-solid fa-file-signature"></i></div>
                     <span class="stat-trend trend-up">↑ 18%</span>
                 </div>
-                <div class="stat-value">{{ user.stats.total_applications or '348' }}</div>
+                <div class="stat-value">{{ user.stats.total_applications }}</div>
                 <div class="stat-label">Total Applications</div>
             </div>
             <div class="stat-card">
@@ -338,7 +338,7 @@
                     <div class="stat-icon si-green"><i class="fa-solid fa-briefcase"></i></div>
                     <span class="stat-trend trend-up">↑ 3 new</span>
                 </div>
-                <div class="stat-value">{{ user.stats.active_jobs or '12' }}</div>
+                <div class="stat-value">{{ user.stats.active_jobs }}</div>
                 <div class="stat-label">Active Job Posts</div>
             </div>
             <div class="stat-card">
@@ -346,7 +346,7 @@
                     <div class="stat-icon si-purple"><i class="fa-solid fa-calendar-check"></i></div>
                     <span class="stat-trend trend-neu">This week</span>
                 </div>
-                <div class="stat-value">{{ user.stats.interviews_scheduled or '24' }}</div>
+                <div class="stat-value">{{ user.stats.interviews_scheduled }}</div>
                 <div class="stat-label">Interviews Scheduled</div>
             </div>
             <div class="stat-card">
@@ -354,7 +354,7 @@
                     <div class="stat-icon si-orange"><i class="fa-solid fa-user-check"></i></div>
                     <span class="stat-trend trend-up">↑ 2 more</span>
                 </div>
-                <div class="stat-value">{{ user.stats.hires_this_month or '8' }}</div>
+                <div class="stat-value">{{ user.stats.hires_this_month }}</div>
                 <div class="stat-label">Hires This Month</div>
             </div>
         </div>
@@ -425,7 +425,7 @@
                             <h2>My Job Postings</h2>
                             <p>Manage your active listings, track applicants, and edit details.</p>
                         </div>
-                        <span class="section-tag">{{ user.jobs|length if user.jobs else '3' }} active posts</span>
+                        <span class="section-tag">{{ user.jobs|length }} active posts</span>
                     </div>
 
                     <div class="search-row">
@@ -467,69 +467,10 @@
                             </div>
                             {% endfor %}
                         {% else %}
-                            <!-- Demo cards -->
-                            <div class="job-card">
-                                <div class="job-top">
-                                    <div class="job-main">
-                                        <div class="job-logo">ML</div>
-                                        <div>
-                                            <div class="job-title">Senior ML Engineer</div>
-                                            <div class="job-meta">Acme Corp &nbsp;·&nbsp; Bangalore &nbsp;·&nbsp; ₹40–60 LPA</div>
-                                            <div class="job-chips">
-                                                <span class="chip chip-green">Active</span>
-                                                <span class="chip chip-blue">124 applicants</span>
-                                                <span class="chip chip-orange">ATS Score req: 75+</span>
-                                                <span class="chip chip-grey">2 days ago</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="job-actions">
-                                        <button class="btn btn-ghost btn-small" onclick="showToast('Opening job view...')"><i class="fa-solid fa-eye"></i> View</button>
-                                        <button class="btn btn-primary btn-small" onclick="showToast('Opening editor...')"><i class="fa-solid fa-pen"></i> Edit</button>
-                                        <button class="btn btn-danger btn-small" onclick="showToast('Job paused!')"><i class="fa-solid fa-pause"></i></button>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="job-card">
-                                <div class="job-top">
-                                    <div class="job-main">
-                                        <div class="job-logo">DS</div>
-                                        <div>
-                                            <div class="job-title">Data Scientist</div>
-                                            <div class="job-meta">Acme Corp &nbsp;·&nbsp; Remote &nbsp;·&nbsp; ₹25–40 LPA</div>
-                                            <div class="job-chips">
-                                                <span class="chip chip-green">Active</span>
-                                                <span class="chip chip-blue">89 applicants</span>
-                                                <span class="chip chip-grey">5 days ago</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="job-actions">
-                                        <button class="btn btn-ghost btn-small" onclick="showToast('Opening job view...')"><i class="fa-solid fa-eye"></i> View</button>
-                                        <button class="btn btn-primary btn-small" onclick="showToast('Opening editor...')"><i class="fa-solid fa-pen"></i> Edit</button>
-                                        <button class="btn btn-danger btn-small" onclick="showToast('Job paused!')"><i class="fa-solid fa-pause"></i></button>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="job-card">
-                                <div class="job-top">
-                                    <div class="job-main">
-                                        <div class="job-logo">BE</div>
-                                        <div>
-                                            <div class="job-title">Backend Engineer</div>
-                                            <div class="job-meta">Acme Corp &nbsp;·&nbsp; Hyderabad &nbsp;·&nbsp; ₹20–35 LPA</div>
-                                            <div class="job-chips">
-                                                <span class="chip chip-orange">Paused</span>
-                                                <span class="chip chip-blue">56 applicants</span>
-                                                <span class="chip chip-grey">1 week ago</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="job-actions">
-                                        <button class="btn btn-ghost btn-small" onclick="showToast('Opening job view...')"><i class="fa-solid fa-eye"></i> View</button>
-                                        <button class="btn btn-primary btn-small" onclick="showToast('Job resumed! ✅')"><i class="fa-solid fa-play"></i> Resume</button>
-                                    </div>
-                                </div>
+                            <div class="empty-state">
+                                <div class="empty-icon"><i class="fa-regular fa-folder-open"></i></div>
+                                <div class="empty-title">No job posts yet</div>
+                                <div class="empty-sub">Create your first post from the section below and it will appear here.</div>
                             </div>
                         {% endif %}
                     </div>
@@ -542,7 +483,7 @@
                             <h2>Top Candidates</h2>
                             <p>ATS-screened applicants with verified skill scores — ready to interview.</p>
                         </div>
-                        <span class="section-tag">348 total applicants</span>
+                        <span class="section-tag">{{ candidate_applications|length }} total applicants</span>
                     </div>
                     <div style="overflow-x:auto; border-radius:14px; border:1px solid var(--border-soft);">
                         <table class="cand-table">
@@ -557,86 +498,28 @@
                                 </tr>
                             </thead>
                             <tbody>
+                                {% if candidate_applications %}
+                                {% for application in candidate_applications %}
                                 <tr>
                                     <td>
-                                        <div class="cand-name">Rahul Sharma</div>
-                                        <div class="cand-role">rahul@email.com</div>
+                                        <div class="cand-name">{{ application.candidate.full_name or application.candidate.username }}</div>
+                                        <div class="cand-role">{{ application.candidate.email }}</div>
                                     </td>
-                                    <td style="color:var(--muted);font-size:13px">ML Engineer</td>
+                                    <td style="color:var(--muted);font-size:13px">{{ application.job_title }}</td>
+                                    <td style="color:var(--muted);font-size:13px">-</td>
+                                    <td style="color:var(--muted);font-size:13px">-</td>
+                                    {% set status_key = (application.status or 'submitted')|lower %}
                                     <td>
-                                        <div class="score-wrap">
-                                            <div class="score-bar-track"><div class="score-bar-fill" style="width:88%"></div></div>
-                                            <span class="score-num">88</span>
-                                        </div>
+                                        <span class="status-pill {% if status_key == 'hired' %}sp-hired{% elif status_key in ['review', 'in_review', 'interview'] %}sp-review{% elif status_key == 'rejected' %}sp-reject{% else %}sp-new{% endif %}">{{ status_key.replace('_', ' ')|title }}</span>
                                     </td>
-                                    <td style="color:var(--green);font-size:13px;font-weight:700">92%</td>
-                                    <td><span class="status-pill sp-new">New</span></td>
-                                    <td><button class="btn btn-primary btn-small" onclick="showToast('Shortlisted Rahul! ✅')">Shortlist</button></td>
+                                    <td><button class="btn btn-ghost btn-small" onclick="showToast('Profile actions coming soon')">Review</button></td>
                                 </tr>
+                                {% endfor %}
+                                {% else %}
                                 <tr>
-                                    <td>
-                                        <div class="cand-name">Priya Nair</div>
-                                        <div class="cand-role">priya@email.com</div>
-                                    </td>
-                                    <td style="color:var(--muted);font-size:13px">Data Scientist</td>
-                                    <td>
-                                        <div class="score-wrap">
-                                            <div class="score-bar-track"><div class="score-bar-fill" style="width:94%"></div></div>
-                                            <span class="score-num">94</span>
-                                        </div>
-                                    </td>
-                                    <td style="color:var(--green);font-size:13px;font-weight:700">88%</td>
-                                    <td><span class="status-pill sp-review">In Review</span></td>
-                                    <td><button class="btn btn-primary btn-small" onclick="showToast('Shortlisted Priya! ✅')">Shortlist</button></td>
+                                    <td colspan="6" style="text-align:center;color:var(--muted);padding:24px">No applicants yet for your current job posts.</td>
                                 </tr>
-                                <tr>
-                                    <td>
-                                        <div class="cand-name">Arjun Mehta</div>
-                                        <div class="cand-role">arjun@email.com</div>
-                                    </td>
-                                    <td style="color:var(--muted);font-size:13px">Backend Eng.</td>
-                                    <td>
-                                        <div class="score-wrap">
-                                            <div class="score-bar-track"><div class="score-bar-fill" style="width:76%"></div></div>
-                                            <span class="score-num">76</span>
-                                        </div>
-                                    </td>
-                                    <td style="color:var(--accent-2);font-size:13px;font-weight:700">71%</td>
-                                    <td><span class="status-pill sp-review">In Review</span></td>
-                                    <td><button class="btn btn-ghost btn-small" onclick="showToast('Reviewing Arjun...')">Review</button></td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <div class="cand-name">Sneha Joshi</div>
-                                        <div class="cand-role">sneha@email.com</div>
-                                    </td>
-                                    <td style="color:var(--muted);font-size:13px">ML Engineer</td>
-                                    <td>
-                                        <div class="score-wrap">
-                                            <div class="score-bar-track"><div class="score-bar-fill" style="width:91%"></div></div>
-                                            <span class="score-num">91</span>
-                                        </div>
-                                    </td>
-                                    <td style="color:var(--green);font-size:13px;font-weight:700">95%</td>
-                                    <td><span class="status-pill sp-hired">Hired 🎉</span></td>
-                                    <td><button class="btn btn-ghost btn-small" style="opacity:0.4;cursor:default">Done</button></td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <div class="cand-name">Vikram Singh</div>
-                                        <div class="cand-role">vikram@email.com</div>
-                                    </td>
-                                    <td style="color:var(--muted);font-size:13px">DevOps Eng.</td>
-                                    <td>
-                                        <div class="score-wrap">
-                                            <div class="score-bar-track"><div class="score-bar-fill" style="width:82%"></div></div>
-                                            <span class="score-num">82</span>
-                                        </div>
-                                    </td>
-                                    <td style="color:var(--accent-2);font-size:13px;font-weight:700">79%</td>
-                                    <td><span class="status-pill sp-new">New</span></td>
-                                    <td><button class="btn btn-primary btn-small" onclick="showToast('Shortlisted Vikram! ✅')">Shortlist</button></td>
-                                </tr>
+                                {% endif %}
                             </tbody>
                         </table>
                     </div>
@@ -651,64 +534,57 @@
                         </div>
                     </div>
 
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label>Job Title *</label>
-                            <input class="form-input" type="text" placeholder="e.g. Senior ML Engineer">
+                    <form method="post" action="{{ url_for('create_employer_job') }}">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Job Title *</label>
+                                <input class="form-input" type="text" name="title" placeholder="e.g. Senior ML Engineer" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Location *</label>
+                                <input class="form-input" type="text" name="location" placeholder="e.g. Bangalore / Remote" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Job Type</label>
+                                <select class="form-input" name="job_type">
+                                    <option value="Full-time">Full-time</option>
+                                    <option value="Part-time">Part-time</option>
+                                    <option value="Contract">Contract</option>
+                                    <option value="Internship">Internship</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Salary Range</label>
+                                <input class="form-input" type="text" name="salary" placeholder="e.g. 20-35 LPA">
+                            </div>
+                            <div class="form-group">
+                                <label>Experience Required</label>
+                                <select class="form-input" name="experience_level">
+                                    <option value="Fresher (0-1 yr)">Fresher (0-1 yr)</option>
+                                    <option value="1-3 years">1-3 years</option>
+                                    <option value="3-5 years">3-5 years</option>
+                                    <option value="5+ years">5+ years</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Min. ATS Score</label>
+                                <input class="form-input" type="number" name="min_ats_score" placeholder="e.g. 75" min="0" max="100">
+                            </div>
+                            <div class="form-group form-full">
+                                <label>Job Description *</label>
+                                <textarea class="form-input" name="description" placeholder="Describe the role, responsibilities, and requirements..." required></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Required Skills</label>
+                                <input class="form-input" type="text" name="required_skills" placeholder="e.g. Python, TensorFlow, MLOps">
+                            </div>
+                            <div class="form-group form-full" style="margin-top:8px">
+                                <button class="btn btn-primary" type="submit" style="width:fit-content;padding:14px 36px;font-size:15px">
+                                    <i class="fa-solid fa-rocket"></i> Post Job Now
+                                </button>
+                            </div>
                         </div>
-                        <div class="form-group">
-                            <label>Location *</label>
-                            <input class="form-input" type="text" placeholder="e.g. Bangalore / Remote">
-                        </div>
-                        <div class="form-group">
-                            <label>Job Type</label>
-                            <select class="form-input">
-                                <option>Full-time</option>
-                                <option>Part-time</option>
-                                <option>Contract</option>
-                                <option>Internship</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>Salary Range</label>
-                            <input class="form-input" type="text" placeholder="e.g. ₹20–35 LPA">
-                        </div>
-                        <div class="form-group">
-                            <label>Experience Required</label>
-                            <select class="form-input">
-                                <option>Fresher (0-1 yr)</option>
-                                <option>1-3 years</option>
-                                <option>3-5 years</option>
-                                <option>5+ years</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>Min. ATS Score</label>
-                            <input class="form-input" type="number" placeholder="e.g. 75" min="0" max="100">
-                        </div>
-                        <div class="form-group form-full">
-                            <label>Job Description *</label>
-                            <textarea class="form-input" placeholder="Describe the role, responsibilities, and requirements..."></textarea>
-                        </div>
-                        <div class="form-group">
-                            <label>Required Skills</label>
-                            <input class="form-input" type="text" placeholder="e.g. Python, TensorFlow, MLOps">
-                        </div>
-                        <div class="form-group">
-                            <label>Require Skill Test?</label>
-                            <select class="form-input">
-                                <option>Yes — ML Fundamentals</option>
-                                <option>Yes — Python Coding</option>
-                                <option>Yes — Data Analysis</option>
-                                <option>No skill test needed</option>
-                            </select>
-                        </div>
-                        <div class="form-group form-full" style="margin-top:8px">
-                            <button class="btn btn-primary" style="width:fit-content;padding:14px 36px;font-size:15px" onclick="showToast('Job posted successfully! 🎉')">
-                                <i class="fa-solid fa-rocket"></i> Post Job Now
-                            </button>
-                        </div>
-                    </div>
+                    </form>
                 </section>
 
                 <!-- APPLICATIONS -->
@@ -718,7 +594,7 @@
                             <h2>Application Pipeline</h2>
                             <p>Track every application across all your active job posts.</p>
                         </div>
-                        <span class="section-tag">348 total</span>
+                        <span class="section-tag">{{ candidate_applications|length }} total</span>
                     </div>
                     <div style="overflow-x:auto; border-radius:14px; border:1px solid var(--border-soft);">
                         <table class="cand-table">
@@ -732,34 +608,22 @@
                                 </tr>
                             </thead>
                             <tbody>
+                                {% if candidate_applications %}
+                                {% for application in candidate_applications %}
+                                {% set status_key = (application.status or 'submitted')|lower %}
                                 <tr>
-                                    <td><div class="cand-name">Rahul Sharma</div><div class="cand-role">ATS: 88 · Test: 92%</div></td>
-                                    <td style="color:var(--muted);font-size:13px">ML Engineer</td>
-                                    <td style="color:var(--muted);font-size:12px">2 days ago</td>
-                                    <td><span class="status-pill sp-new">New</span></td>
-                                    <td><button class="btn btn-primary btn-small" onclick="showToast('Opening profile...')">Review</button></td>
+                                    <td><div class="cand-name">{{ application.candidate.full_name or application.candidate.username }}</div><div class="cand-role">{{ application.candidate.email }}</div></td>
+                                    <td style="color:var(--muted);font-size:13px">{{ application.job_title }}</td>
+                                    <td style="color:var(--muted);font-size:12px">{{ application.created_at.strftime("%d %b %Y") }}</td>
+                                    <td><span class="status-pill {% if status_key == 'hired' %}sp-hired{% elif status_key in ['review', 'in_review', 'interview'] %}sp-review{% elif status_key == 'rejected' %}sp-reject{% else %}sp-new{% endif %}">{{ status_key.replace('_', ' ')|title }}</span></td>
+                                    <td><button class="btn btn-ghost btn-small" onclick="showToast('Profile actions coming soon')">Review</button></td>
                                 </tr>
+                                {% endfor %}
+                                {% else %}
                                 <tr>
-                                    <td><div class="cand-name">Priya Nair</div><div class="cand-role">ATS: 94 · Test: 88%</div></td>
-                                    <td style="color:var(--muted);font-size:13px">Data Scientist</td>
-                                    <td style="color:var(--muted);font-size:12px">4 days ago</td>
-                                    <td><span class="status-pill sp-review">In Review</span></td>
-                                    <td><button class="btn btn-primary btn-small" onclick="showToast('Opening profile...')">Review</button></td>
+                                    <td colspan="5" style="text-align:center;color:var(--muted);padding:24px">No applications yet for your job posts.</td>
                                 </tr>
-                                <tr>
-                                    <td><div class="cand-name">Sneha Joshi</div><div class="cand-role">ATS: 91 · Test: 95%</div></td>
-                                    <td style="color:var(--muted);font-size:13px">ML Engineer</td>
-                                    <td style="color:var(--muted);font-size:12px">1 week ago</td>
-                                    <td><span class="status-pill sp-hired">Hired 🎉</span></td>
-                                    <td><button class="btn btn-ghost btn-small" style="opacity:0.4">Done</button></td>
-                                </tr>
-                                <tr>
-                                    <td><div class="cand-name">Arjun Mehta</div><div class="cand-role">ATS: 76 · Test: 71%</div></td>
-                                    <td style="color:var(--muted);font-size:13px">Backend Eng.</td>
-                                    <td style="color:var(--muted);font-size:12px">1 week ago</td>
-                                    <td><span class="status-pill sp-reject">Rejected</span></td>
-                                    <td><button class="btn btn-ghost btn-small" onclick="showToast('Archived...')">Archive</button></td>
-                                </tr>
+                                {% endif %}
                             </tbody>
                         </table>
                     </div>
@@ -822,7 +686,7 @@
                 </div>
             </div>
             <div class="menu-list">
-                <a href="{{ url_for('login') }}" class="menu-item">
+                <a href="{{ url_for('employer_form') }}" class="menu-item">
                     <span class="menu-icon" style="background:rgba(96,165,250,0.15);color:var(--blue)"><i class="fa-solid fa-user-gear"></i></span>
                     <span><strong>Manage Account</strong><span>Profile and settings</span></span>
                 </a>

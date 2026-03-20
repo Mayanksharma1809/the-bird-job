@@ -34,6 +34,7 @@ def ensure_legacy_users_schema():
     existing_columns = {col['name'] for col in inspector.get_columns('users')}
     dialect = db.engine.dialect.name
     now_expr = 'NOW()' if dialect == 'mysql' else 'CURRENT_TIMESTAMP'
+    datetime_type = 'TIMESTAMP' if dialect == 'postgresql' else 'DATETIME'
 
     statements = []
     if 'auth_provider' not in existing_columns:
@@ -43,11 +44,11 @@ def ensure_legacy_users_schema():
     if 'full_name' not in existing_columns:
         statements.append("ALTER TABLE users ADD COLUMN full_name VARCHAR(150) NULL")
     if 'created_at' not in existing_columns:
-        statements.append("ALTER TABLE users ADD COLUMN created_at DATETIME NULL")
+        statements.append(f"ALTER TABLE users ADD COLUMN created_at {datetime_type} NULL")
     if 'updated_at' not in existing_columns:
-        statements.append("ALTER TABLE users ADD COLUMN updated_at DATETIME NULL")
+        statements.append(f"ALTER TABLE users ADD COLUMN updated_at {datetime_type} NULL")
     if 'last_login_at' not in existing_columns:
-        statements.append("ALTER TABLE users ADD COLUMN last_login_at DATETIME NULL")
+        statements.append(f"ALTER TABLE users ADD COLUMN last_login_at {datetime_type} NULL")
 
     if not statements:
         return

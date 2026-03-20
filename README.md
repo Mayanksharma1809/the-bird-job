@@ -9,20 +9,26 @@ A Flask-based job portal application.
    pip install -r requirements.txt
    ```
 
-2. Create a local MySQL database:
-   ```
-   CREATE DATABASE the_bird_job;
-   ```
-
-3. Configure environment variables in `.env`:
+2. Configure environment variables in `.env`:
    ```
    SECRET_KEY=your-secret-key
    DEBUG=True
 
-   # Preferred explicit DB URL
-   DATABASE_URL=mysql+pymysql://root:yourpassword@127.0.0.1:3306/the_bird_job
+   # Recommended for deployed app (Supabase Postgres)
+   # Copy from Supabase > Project Settings > Database > Connection string
+   DATABASE_URL=postgresql://postgres:[YOUR-PASSWORD]@db.[PROJECT-REF].supabase.co:5432/postgres?sslmode=require
+   # (Optional alias supported by this app)
+   # SUPABASE_DB_URL=postgresql://...
 
-   # OR use split MySQL vars instead of DATABASE_URL
+   # Jobs API for candidate dashboard feed (optional override)
+   # Default already points to Remotive API
+   # JOBS_API_URL=https://remotive.com/api/remote-jobs
+   # JOBS_API_URL_2=https://second-provider.com/api/jobs
+   # JOBS_API_URLS=https://third-provider.com/jobs,https://fourth-provider.com/jobs
+   # JOBS_API_TIMEOUT=10
+   # CANDIDATE_DASHBOARD_JOB_LIMIT=12
+
+   # OR local MySQL fallback (if DATABASE_URL is not set)
    # MYSQL_USER=root
    # MYSQL_PASSWORD=yourpassword
    # MYSQL_HOST=127.0.0.1
@@ -34,15 +40,22 @@ A Flask-based job portal application.
    GOOGLE_REDIRECT_URI=http://127.0.0.1:5000/auth/google/callback
    ```
 
-4. Run the app:
+3. Run the app:
    ```
    python app.py
    ```
-   On first run, SQLAlchemy will create tables:
+   For production/Supabase, create tables once with:
+   ```
+   python init_db.py
+   ```
+
+   SQLAlchemy will create tables:
    - `users`
    - `candidate_profiles`
    - `employer_profiles`
    - `login_events`
+   - `employer_jobs`
+   - `candidate_job_actions`
 
 ## Configuration
 

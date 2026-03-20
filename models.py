@@ -37,6 +37,63 @@ class User(db.Model):
         back_populates='user',
         cascade='all, delete-orphan',
     )
+    employer_jobs = db.relationship(
+        'EmployerJob',
+        back_populates='employer',
+        cascade='all, delete-orphan',
+    )
+    candidate_job_actions = db.relationship(
+        'CandidateJobAction',
+        back_populates='candidate',
+        cascade='all, delete-orphan',
+    )
+
+
+class EmployerJob(db.Model):
+    __tablename__ = 'employer_jobs'
+
+    id = db.Column(db.Integer, primary_key=True)
+    employer_user_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete='CASCADE'), nullable=False, index=True)
+    title = db.Column(db.String(200), nullable=False)
+    location = db.Column(db.String(160), nullable=True)
+    job_type = db.Column(db.String(60), nullable=True)
+    salary = db.Column(db.String(120), nullable=True)
+    experience_level = db.Column(db.String(120), nullable=True)
+    min_ats_score = db.Column(db.Integer, nullable=True)
+    required_skills = db.Column(db.Text, nullable=True)
+    description = db.Column(db.Text, nullable=False)
+    status = db.Column(db.String(30), nullable=False, default='active', index=True)
+    created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    employer = db.relationship('User', back_populates='employer_jobs')
+    applications = db.relationship(
+        'CandidateJobAction',
+        back_populates='employer_job',
+        cascade='all, delete-orphan',
+    )
+
+
+class CandidateJobAction(db.Model):
+    __tablename__ = 'candidate_job_actions'
+
+    id = db.Column(db.Integer, primary_key=True)
+    candidate_user_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete='CASCADE'), nullable=False, index=True)
+    employer_job_id = db.Column(db.Integer, db.ForeignKey('employer_jobs.id', ondelete='SET NULL'), nullable=True, index=True)
+    source = db.Column(db.String(30), nullable=False, default='api')
+    external_job_id = db.Column(db.String(255), nullable=True, index=True)
+    job_title = db.Column(db.String(200), nullable=False)
+    company_name = db.Column(db.String(200), nullable=True)
+    location = db.Column(db.String(160), nullable=True)
+    salary = db.Column(db.String(120), nullable=True)
+    job_url = db.Column(db.String(500), nullable=True)
+    action = db.Column(db.String(20), nullable=False, default='applied')  # applied/saved
+    status = db.Column(db.String(20), nullable=False, default='submitted')
+    created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow, index=True)
+    updated_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    candidate = db.relationship('User', back_populates='candidate_job_actions')
+    employer_job = db.relationship('EmployerJob', back_populates='applications')
 
 
 class CandidateProfile(db.Model):
