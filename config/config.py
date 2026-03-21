@@ -32,6 +32,10 @@ def normalize_database_url(value):
     if cleaned.startswith('postgres://'):
         # SQLAlchemy expects "postgresql://".
         cleaned = cleaned.replace('postgres://', 'postgresql://', 1)
+    # Ensure SSL mode is set for PostgreSQL connections
+    if cleaned.startswith('postgresql://') and 'sslmode=' not in cleaned:
+        separator = '&' if '?' in cleaned else '?'
+        cleaned += f'{separator}sslmode=require'
     return cleaned
 
 
