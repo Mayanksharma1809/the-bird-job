@@ -72,8 +72,10 @@ def internal_error(e):
     logger.error(f'Internal error: {e}')
     return render_template('500.html'), 500  # Assuming you have a 500.html
 
+# Yeh __main__ ke BAHAR rakho
+with app.app_context():
+    db.create_all()
+    ensure_legacy_users_schema()
+
 if __name__ == '__main__':
-    with app.app_context():
-        db.create_all()
-        ensure_legacy_users_schema()
     app.run(debug=app.config['DEBUG'])
