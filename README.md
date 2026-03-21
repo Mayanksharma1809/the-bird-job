@@ -57,6 +57,22 @@ A Flask-based job portal application.
    - `employer_jobs`
    - `candidate_job_actions`
 
+## Render Deployment (Free Tier)
+
+1. Connect GitHub repo to Render.com (Web Service).
+2. **Environment Vars**:
+   ```
+   DATABASE_URL=postgresql://postgres:[YOUR-PASSWORD]@db.[PROJECT-REF].supabase.co:5432/postgres?sslmode=require
+   SECRET_KEY=sk-very-long-random-secret-key-generate-one
+   ```
+3. **Settings**:
+   - Build: `pip install -r requirements.txt`
+   - Start: `gunicorn app:app`
+   - Plan: Free
+4. Deploy → Check logs for DB connect. Run `python init_db.py` manually if tables missing.
+
+See TODO.md for step-by-step.
+
 ## Configuration
 
 Secrets and API keys are stored in the `config/` folder. Use environment variables for sensitive data.

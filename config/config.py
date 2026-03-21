@@ -79,6 +79,9 @@ class Config:
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SQLALCHEMY_ENGINE_OPTIONS = {
         'pool_pre_ping': True,
+        'pool_recycle': 300,
+        'pool_timeout': 30,
+        'echo': os.environ.get('DEBUG', 'False').lower() in ('true', '1', 'yes'),
     }
     DEBUG = os.environ.get('DEBUG', 'False').lower() in ('true', '1', 'yes')
     JOBS_API_URL = os.environ.get('JOBS_API_URL', 'https://remotive.com/api/remote-jobs')

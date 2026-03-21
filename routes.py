@@ -535,3 +535,7 @@ def register_routes(app):
     def logout():
         session.clear()
         return redirect(url_for('home'))
+
+    @app.route('/features')
+    def features():
+        return render_template('fetures.html')
