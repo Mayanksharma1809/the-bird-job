@@ -414,3 +414,152 @@ def register_candidate_dashboard_routes(app, helpers):
             'email': profile.email if profile else user.email,
         }
         return render_template('candidateform.html', oauth_data=oauth_data)
+
+    # ===== ATS SCANNER ROUTES =====
+    
+    @app.route('/candidate/ats_scanner')
+    def ats_scanner_page():
+        """Display the ATS scanner page."""
+        user = get_logged_in_user()
+        if user is None or normalize_role(user.role) != 'candidate':
+            return redirect(url_for('login'))
+        if not has_completed_profile(user):
+            flash('Please complete your candidate profile first.', 'error')
+            return redirect(url_for('candidate_form'))
+
+        dashboard_user = candidate_dashboard_user(user)
+        return render_template('Ats_scanner.html', user=dashboard_user)
+
+    @app.route('/candidate/ats/scan', methods=['POST'])
+    def ats_scan_resume():
+        """Handle ATS scanner file upload and analysis."""
+        user = get_logged_in_user()
+        if user is None or normalize_role(user.role) != 'candidate':
+            return {'success': False, 'error': 'Unauthorized'}, 401
+
+        if 'resume' not in request.files:
+            return {'success': False, 'error': 'No resume file provided'}, 400
+
+        resume_file = request.files['resume']
+        if resume_file.filename == '':
+            return {'success': False, 'error': 'No file selected'}, 400
+
+        # Get job description from form data
+        job_description = (request.form.get('job_description') or '').strip()
+        resume_text = ''
+
+        try:
+            # Handle PDF or text extraction
+            if resume_file.filename.endswith('.pdf'):
+                # For now, just indicate PDF support
+                return {
+                    'success': True,
+                    'score': 0,
+                    'message': 'PDF support coming soon. Please upload a .txt or .docx file for now.',
+                    'feedback': [],
+                }
+
+            # Read text from file
+            content = resume_file.read().decode('utf-8', errors='ignore')
+            resume_text = content.strip()
+
+            if not resume_text:
+                return {'success': False, 'error': 'Resume file is empty'}, 400
+
+            # Use AI provider for analysis with smart fallback
+            from ai_helper import analyze_resume_with_ai
+            
+            score, feedback, provider_used = analyze_resume_with_ai(
+                resume_text, 
+                job_description,
+                preferred_provider='groq'  # Try Groq first, then fallback
+            )
+
+            return {
+                'success': True,
+                'score': score,
+                'feedback': feedback,
+                'message': f'Your resume scored {score}% ATS compatibility!',
+                'provider': provider_used,
+            }, 200
+
+        except Exception as e:
+            app.logger.exception('ATS scan failed')
+            return {'success': False, 'error': f'Unable to process resume: {str(e)}'}, 500
+
+    def calculate_ats_score(resume_text, job_description=''):
+        """
+        Calculate ATS compatibility score based on resume content.
+        Returns (score, feedback_list)
+        """
+        score = 50  # Base score
+        feedback = []
+        
+        resume_lower = resume_text.lower()
+        
+        # Check for key sections
+        required_sections = {
+            'contact info': ['email', 'phone', 'address'],
+            'education': ['education', 'degree', 'university', 'college'],
+            'experience': ['experience', 'worked', 'employment', 'position'],
+            'skills': ['skills', 'proficient', 'expertise', 'technical'],
+        }
+        
+        sections_found = 0
+        for section_name, keywords in required_sections.items():
+            if any(keyword in resume_lower for keyword in keywords):
+                sections_found += 1
+                score += 5
+            else:
+                feedback.append(f'❌ Missing or unclear "{section_name}" section')
+
+        # Check for contact information
+        if '@'  in resume_text and any(char.isdigit() for char in resume_text):
+            score += 5
+            feedback.append('✅ Contact information found')
+        else:
+            feedback.append('❌ Email or phone number not clearly visible')
+
+        # Check for formatting (short lines indicate bad formatting)
+        lines = resume_text.split('\n')
+        avg_line_length = sum(len(line.strip()) for line in lines if line.strip()) / max(len(lines), 1)
+        if avg_line_length > 20:
+            score += 5
+            feedback.append('✅ Good text formatting detected')
+        else:
+            feedback.append('❌ Resume may have formatting issues')
+
+        # Job description matching
+        if job_description:
+            job_lower = job_description.lower()
+            matched_keywords = 0
+            job_keywords = [w for w in job_lower.split() if len(w) > 3]
+            
+            for keyword in job_keywords[:10]:  # Check first 10 keywords
+                if keyword in resume_lower:
+                    matched_keywords += 1
+            
+            match_percentage = (matched_keywords / max(len(job_keywords), 1)) * 10
+            score += min(10, match_percentage)
+            
+            if match_percentage > 5:
+                feedback.append(f'✅ {int(match_percentage*10)}% keyword match with job description')
+            else:
+                feedback.append('⚠️ Low keyword match with job description')
+
+        # Check for quantifiable achievements
+        if any(char.isdigit() for char in resume_text):
+            score += 5
+            feedback.append('✅ Quantifiable metrics detected')
+
+        # Ensure score doesn't exceed 100
+        score = min(100, max(0, score))
+
+        if score >= 80:
+            feedback.insert(0, f'🎉 Great resume! Score: {score}%')
+        elif score >= 60:
+            feedback.insert(0, f'👍 Good resume. Score: {score}%')
+        else:
+            feedback.insert(0, f'⚠️ Needs improvement. Score: {score}%')
+
+        return score, feedback

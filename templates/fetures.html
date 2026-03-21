@@ -433,18 +433,20 @@ nav {
 
     <div class="core-grid">
       <!-- ATS -->
-      <div class="fcard fc-orange fu" onclick="showToast('Opening ATS Scanner! 🤖')">
-        <div class="fcard-icon fi-orange">🤖</div>
-        <div class="fcard-name">AI ATS Scanner</div>
-        <div class="fcard-desc">Upload your resume and instantly see how it scores against real ATS systems. Know what recruiters' software sees — before they do.</div>
-        <ul class="fcard-bullets">
-          <li><span class="fbullet fb-orange"></span>Instant ATS compatibility score</li>
-          <li><span class="fbullet fb-orange"></span>Keyword gap analysis</li>
-          <li><span class="fbullet fb-orange"></span>AI-powered resume rewrite</li>
-          <li><span class="fbullet fb-orange"></span>Job description matching</li>
-        </ul>
-        <button class="fcard-btn fb-col-orange">Try ATS Scanner →</button>
-      </div>
+      <a href="{{ url_for('ats_scanner_page') }}" style="text-decoration: none;">
+        <div class="fcard fc-orange fu">
+          <div class="fcard-icon fi-orange">🤖</div>
+          <div class="fcard-name">AI ATS Scanner</div>
+          <div class="fcard-desc">Upload your resume and instantly see how it scores against real ATS systems. Know what recruiters' software sees — before they do.</div>
+          <ul class="fcard-bullets">
+            <li><span class="fbullet fb-orange"></span>Instant ATS compatibility score</li>
+            <li><span class="fbullet fb-orange"></span>Keyword gap analysis</li>
+            <li><span class="fbullet fb-orange"></span>AI-powered resume rewrite</li>
+            <li><span class="fbullet fb-orange"></span>Job description matching</li>
+          </ul>
+          <button class="fcard-btn fb-col-orange">Try ATS Scanner →</button>
+        </div>
+      </a>
 
       <!-- Skill Tests -->
       <div class="fcard fc-blue fu2" onclick="showToast('Opening Skill Tests! 🧠')">

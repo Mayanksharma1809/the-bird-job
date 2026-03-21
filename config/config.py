@@ -88,15 +88,32 @@ class Config:
         'echo': os.environ.get('DEBUG', 'False').lower() in ('true', '1', 'yes'),
     }
     DEBUG = os.environ.get('DEBUG', 'False').lower() in ('true', '1', 'yes')
+    
+    # Job API Configuration
     JOBS_API_URL = os.environ.get('JOBS_API_URL', 'https://remotive.com/api/remote-jobs')
     JOBS_API_URL_2 = os.environ.get('JOBS_API_URL_2')
     JOBS_API_URLS = parse_csv(os.environ.get('JOBS_API_URLS'))
     JOBS_API_TIMEOUT = parse_int(os.environ.get('JOBS_API_TIMEOUT'), 10)
     CANDIDATE_DASHBOARD_JOB_LIMIT = parse_int(os.environ.get('CANDIDATE_DASHBOARD_JOB_LIMIT'), 12)
+    
+    # Google OAuth Configuration
     GOOGLE_CLIENT_ID = os.environ.get('GOOGLE_CLIENT_ID')
     GOOGLE_CLIENT_SECRET = os.environ.get('GOOGLE_CLIENT_SECRET')
     GOOGLE_REDIRECT_URI = os.environ.get('GOOGLE_REDIRECT_URI')
     GOOGLE_DISCOVERY_URL = 'https://accounts.google.com/.well-known/openid-configuration'
-    # Add other API keys or secrets here
-    # API_KEY = os.environ.get('API_KEY')
-    # etc.
+    
+    # ===== AI/ML APIs =====
+    # Gemini API (Google)
+    GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY')
+    
+    # Groq API
+    GROQ_API_KEY = os.environ.get('GROQ_API_KEY')
+    GROQ_MODEL = 'mixtral-8x7b-32768'  # Default Groq model
+    
+    # Ollama (Local LLM)
+    OLLAMA_API_URL = os.environ.get('OLLAMA_API_URL', 'http://localhost:11434')
+    OLLAMA_MODEL = os.environ.get('OLLAMA_MODEL', 'llama2')
+    
+    # ===== ATS SERVICE =====
+    ATS_API_KEY = os.environ.get('ATS_API_KEY')
+    ATS_API_URL = os.environ.get('ATS_API_URL')

@@ -302,12 +302,12 @@
 
     <!-- NAV -->
     <nav class="top-nav">
-        <a href="/dashboard" class="brand">
+        <a href="/" class="brand">
             <div class="brand-mark">🐦</div>
             The Bird <strong>Job</strong>
         </a>
         <div class="nav-right">
-            <a href="/dashboard" class="nav-back">
+            <a href="{{ url_for('candidate_dashboard') }}" class="nav-back">
                 <i class="fa-solid fa-arrow-left"></i> Dashboard
             </a>
         </div>
@@ -597,15 +597,15 @@ We are looking for a Python Developer with experience in Django, REST APIs, and 
                 formData.append('resume', uploadedFile);
                 formData.append('job_description', jd);
 
-                const response = await fetch('/ats/analyze', {
+                const response = await fetch('/candidate/ats/scan', {
                     method: 'POST',
                     body: formData
                 });
 
                 const data = await response.json();
 
-                if (data.error) {
-                    showToast('Error: ' + data.error);
+                if (!data.success) {
+                    showToast('Error: ' + (data.error || 'Analysis failed'));
                     resetToUpload();
                     return;
                 }
@@ -614,6 +614,7 @@ We are looking for a Python Developer with experience in Django, REST APIs, and 
                 showResults(data);
 
             } catch (err) {
+                console.error(err);
                 showToast('Something went wrong! Please try again. 😅');
                 resetToUpload();
             }
@@ -647,6 +648,7 @@ We are looking for a Python Developer with experience in Django, REST APIs, and 
             document.getElementById('resultsSection').classList.add('show');
 
             const score = data.score || 75;
+            const feedback = data.feedback || [];
 
             // Animate score ring
             setTimeout(() => {
@@ -710,17 +712,19 @@ We are looking for a Python Developer with experience in Django, REST APIs, and 
                 });
             }, 200);
 
-            // Keywords
-            const present = data.present_keywords || [];
-            const missing = data.missing_keywords || [];
-            document.getElementById('presentKeywords').innerHTML = present.map(k => `<span class="kw-tag kw-present">✓ ${k}</span>`).join('');
-            document.getElementById('missingKeywords').innerHTML = missing.map(k => `<span class="kw-tag kw-missing">✗ ${k}</span>`).join('');
+            // Parse feedback array into good/bad points
+            const goodPoints = feedback.filter(f => f.includes('✅') || f.includes('👍'));
+            const badPoints = feedback.filter(f => f.includes('❌') || f.includes('⚠️'));
+
+            // Keywords (mock data based on score)
+            const present = ['Resume', 'Experience', 'Education'];
+            const missing = badPoints.length > 0 ? ['Technical Skills', 'Metrics'] : [];
 
             // Suggestions
-            const good = data.good_points || [];
-            const bad = data.bad_points || [];
-            document.getElementById('goodPoints').innerHTML = good.map(p => `<li><span class="sug-check">✓</span><span>${p}</span></li>`).join('');
-            document.getElementById('badPoints').innerHTML = bad.map(p => `<li><span class="sug-cross">✗</span><span>${p}</span></li>`).join('');
+            document.getElementById('presentKeywords').innerHTML = present.map(k => `<span class="kw-tag kw-present">✓ ${k}</span>`).join('');
+            document.getElementById('missingKeywords').innerHTML = missing.map(k => `<span class="kw-tag kw-missing">✗ ${k}</span>`).join('');
+            document.getElementById('goodPoints').innerHTML = goodPoints.map(p => `<li><span class="sug-check">✓</span><span>${p}</span></li>`).join('');
+            document.getElementById('badPoints').innerHTML = badPoints.map(p => `<li><span class="sug-cross">✗</span><span>${p}</span></li>`).join('');
         }
 
         function animateNumber(id, start, end, duration) {
