@@ -1,8 +1,12 @@
 import json
+import re
 from datetime import datetime
+from io import BytesIO
 from urllib.error import URLError
 from urllib.parse import urlencode, urlparse
 from urllib.request import Request, urlopen
+from xml.etree import ElementTree as ET
+from zipfile import BadZipFile, ZipFile
 
 from flask import flash, redirect, render_template, request, url_for
 
@@ -261,6 +265,82 @@ def register_candidate_dashboard_routes(app, helpers):
             query['level'] = level
         return redirect(url_for('candidate_dashboard', **query))
 
+    def clean_document_text(text):
+        text = str(text or '').replace('\x00', ' ')
+        text = re.sub(r'\r\n?', '\n', text)
+        text = re.sub(r'[ \t]+', ' ', text)
+        text = re.sub(r'\n{3,}', '\n\n', text)
+        return text.strip()
+
+    def decode_text_bytes(raw_bytes):
+        for encoding in ('utf-8', 'utf-16', 'latin-1'):
+            try:
+                return raw_bytes.decode(encoding)
+            except UnicodeDecodeError:
+                continue
+        return raw_bytes.decode('utf-8', errors='ignore')
+
+    def extract_docx_text(raw_bytes):
+        try:
+            with ZipFile(BytesIO(raw_bytes)) as archive:
+                document_xml = archive.read('word/document.xml')
+        except (BadZipFile, KeyError):
+            return ''
+
+        root = ET.fromstring(document_xml)
+        text_chunks = []
+        for element in root.iter():
+            if element.tag.endswith('}t') and element.text:
+                text_chunks.append(element.text)
+            elif element.tag.endswith('}p'):
+                text_chunks.append('\n')
+        return clean_document_text(' '.join(text_chunks))
+
+    def extract_pdf_text(raw_bytes):
+        for module_name in ('pypdf', 'PyPDF2'):
+            try:
+                module = __import__(module_name, fromlist=['PdfReader'])
+                reader = module.PdfReader(BytesIO(raw_bytes))
+                text = '\n'.join((page.extract_text() or '') for page in reader.pages)
+                text = clean_document_text(text)
+                if text:
+                    return text, None
+            except Exception:
+                continue
+
+        return '', 'PDF text extraction is unavailable on this server right now. Please upload DOCX/TXT or paste the job description.'
+
+    def extract_uploaded_text(uploaded_file, label):
+        filename = (uploaded_file.filename or '').strip()
+        if not filename:
+            return '', f'{label} file is missing a filename.'
+
+        raw_bytes = uploaded_file.read()
+        uploaded_file.stream.seek(0)
+
+        if not raw_bytes:
+            return '', f'{label} file is empty.'
+
+        lower_name = filename.lower()
+
+        if lower_name.endswith('.docx'):
+            text = extract_docx_text(raw_bytes)
+            if text:
+                return text, None
+            return '', f'Unable to read text from the {label.lower()} DOCX file.'
+
+        if lower_name.endswith('.pdf'):
+            return extract_pdf_text(raw_bytes)
+
+        text = clean_document_text(decode_text_bytes(raw_bytes))
+        if not text:
+            return '', f'Unable to read text from the {label.lower()} file.'
+
+        if lower_name.endswith('.doc') and len(re.sub(r'[^A-Za-z0-9\s]', '', text)) < 80:
+            return '', f'Legacy .doc files are not supported reliably for {label.lower()} uploads. Please use PDF, DOCX, or TXT.'
+
+        return text, None
+
     @app.route('/candidate_dashboard')
     def candidate_dashboard():
         user = get_logged_in_user()
@@ -444,122 +524,61 @@ def register_candidate_dashboard_routes(app, helpers):
         if resume_file.filename == '':
             return {'success': False, 'error': 'No file selected'}, 400
 
-        # Get job description from form data
         job_description = (request.form.get('job_description') or '').strip()
-        resume_text = ''
+        job_description_file = request.files.get('job_description_file')
 
         try:
-            # Handle PDF or text extraction
-            if resume_file.filename.endswith('.pdf'):
-                # For now, just indicate PDF support
-                return {
-                    'success': True,
-                    'score': 0,
-                    'message': 'PDF support coming soon. Please upload a .txt or .docx file for now.',
-                    'feedback': [],
-                }
-
-            # Read text from file
-            content = resume_file.read().decode('utf-8', errors='ignore')
-            resume_text = content.strip()
+            resume_text, resume_error = extract_uploaded_text(resume_file, 'Resume')
+            if resume_error:
+                return {'success': False, 'error': resume_error}, 400
 
             if not resume_text:
                 return {'success': False, 'error': 'Resume file is empty'}, 400
 
-            # Use AI provider for analysis with smart fallback
-            from ai_helper import analyze_resume_with_ai
-            
-            score, feedback, provider_used = analyze_resume_with_ai(
-                resume_text, 
+            if job_description_file and (job_description_file.filename or '').strip():
+                jd_file_text, jd_error = extract_uploaded_text(job_description_file, 'Job description')
+                if jd_error:
+                    return {'success': False, 'error': jd_error}, 400
+                if job_description:
+                    job_description = f'{job_description}\n\n{jd_file_text}'
+                else:
+                    job_description = jd_file_text
+
+            if not job_description:
+                return {'success': False, 'error': 'Please paste or upload the job description.'}, 400
+
+            from ai_helper import analyze_resume_with_backup
+
+            analysis, provider_used, used_fallback = analyze_resume_with_backup(
+                resume_text,
                 job_description,
-                preferred_provider='groq'  # Try Groq first, then fallback
+                preferred_provider='groq'
             )
+
+            score = analysis.get('score', 0)
+            source_note = (
+                'Backup ATS scoring was used because AI providers were unavailable.'
+                if used_fallback else
+                f'Analyzed with {provider_used.upper()} AI.'
+            )
+            fallback_reason = analysis.get('fallback_reason')
 
             return {
                 'success': True,
                 'score': score,
-                'feedback': feedback,
+                'feedback': analysis.get('feedback', []),
+                'strengths': analysis.get('strengths', []),
+                'issues': analysis.get('issues', []),
+                'present_keywords': analysis.get('present_keywords', []),
+                'missing_keywords': analysis.get('missing_keywords', []),
+                'breakdown': analysis.get('breakdown', {}),
                 'message': f'Your resume scored {score}% ATS compatibility!',
                 'provider': provider_used,
+                'analysis_mode': 'fallback' if used_fallback else 'ai',
+                'source_note': source_note,
+                'fallback_reason': fallback_reason,
             }, 200
 
         except Exception as e:
             app.logger.exception('ATS scan failed')
             return {'success': False, 'error': f'Unable to process resume: {str(e)}'}, 500
-
-    def calculate_ats_score(resume_text, job_description=''):
-        """
-        Calculate ATS compatibility score based on resume content.
-        Returns (score, feedback_list)
-        """
-        score = 50  # Base score
-        feedback = []
-        
-        resume_lower = resume_text.lower()
-        
-        # Check for key sections
-        required_sections = {
-            'contact info': ['email', 'phone', 'address'],
-            'education': ['education', 'degree', 'university', 'college'],
-            'experience': ['experience', 'worked', 'employment', 'position'],
-            'skills': ['skills', 'proficient', 'expertise', 'technical'],
-        }
-        
-        sections_found = 0
-        for section_name, keywords in required_sections.items():
-            if any(keyword in resume_lower for keyword in keywords):
-                sections_found += 1
-                score += 5
-            else:
-                feedback.append(f'❌ Missing or unclear "{section_name}" section')
-
-        # Check for contact information
-        if '@'  in resume_text and any(char.isdigit() for char in resume_text):
-            score += 5
-            feedback.append('✅ Contact information found')
-        else:
-            feedback.append('❌ Email or phone number not clearly visible')
-
-        # Check for formatting (short lines indicate bad formatting)
-        lines = resume_text.split('\n')
-        avg_line_length = sum(len(line.strip()) for line in lines if line.strip()) / max(len(lines), 1)
-        if avg_line_length > 20:
-            score += 5
-            feedback.append('✅ Good text formatting detected')
-        else:
-            feedback.append('❌ Resume may have formatting issues')
-
-        # Job description matching
-        if job_description:
-            job_lower = job_description.lower()
-            matched_keywords = 0
-            job_keywords = [w for w in job_lower.split() if len(w) > 3]
-            
-            for keyword in job_keywords[:10]:  # Check first 10 keywords
-                if keyword in resume_lower:
-                    matched_keywords += 1
-            
-            match_percentage = (matched_keywords / max(len(job_keywords), 1)) * 10
-            score += min(10, match_percentage)
-            
-            if match_percentage > 5:
-                feedback.append(f'✅ {int(match_percentage*10)}% keyword match with job description')
-            else:
-                feedback.append('⚠️ Low keyword match with job description')
-
-        # Check for quantifiable achievements
-        if any(char.isdigit() for char in resume_text):
-            score += 5
-            feedback.append('✅ Quantifiable metrics detected')
-
-        # Ensure score doesn't exceed 100
-        score = min(100, max(0, score))
-
-        if score >= 80:
-            feedback.insert(0, f'🎉 Great resume! Score: {score}%')
-        elif score >= 60:
-            feedback.insert(0, f'👍 Good resume. Score: {score}%')
-        else:
-            feedback.insert(0, f'⚠️ Needs improvement. Score: {score}%')
-
-        return score, feedback

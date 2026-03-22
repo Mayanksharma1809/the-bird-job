@@ -21,6 +21,40 @@ db.init_app(app)
 register_routes(app)
 
 
+def build_google_analytics_tag(measurement_id):
+    if not measurement_id:
+        return ''
+    return f"""
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id={measurement_id}"></script>
+    <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){{dataLayer.push(arguments);}}
+    gtag('js', new Date());
+    gtag('config', '{measurement_id}');
+    </script>
+    """.strip()
+
+
+@app.after_request
+def inject_google_analytics(response):
+    measurement_id = app.config.get('GOOGLE_ANALYTICS_ID')
+    if not measurement_id:
+        return response
+
+    content_type = (response.content_type or '').lower()
+    if 'text/html' not in content_type:
+        return response
+
+    body = response.get_data(as_text=True)
+    if '</head>' not in body or 'googletagmanager.com/gtag/js' in body:
+        return response
+
+    ga_tag = build_google_analytics_tag(measurement_id)
+    response.set_data(body.replace('</head>', f'    {ga_tag}\n</head>', 1))
+    return response
+
+
 def ensure_legacy_users_schema():
     """
     Adds newly introduced columns for legacy databases that already had a users table.

@@ -123,6 +123,16 @@
         }
         .jd-textarea::placeholder { color: var(--muted-soft); }
         .jd-counter { font-size: 11px; color: var(--muted-soft); text-align: right; margin-top: 8px; }
+        .jd-actions { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 12px; }
+        .jd-upload-btn {
+            display: inline-flex; align-items: center; gap: 7px;
+            background: rgba(96,165,250,0.1); border: 1px solid rgba(96,165,250,0.22);
+            color: var(--blue); padding: 8px 14px; border-radius: 10px;
+            font-size: 12px; font-weight: 700; cursor: pointer;
+            font-family: "Bricolage Grotesque", sans-serif; transition: all 0.2s;
+        }
+        .jd-upload-btn:hover { background: rgba(96,165,250,0.18); }
+        .jd-helper { font-size: 11px; color: var(--muted-soft); line-height: 1.5; }
 
         /* ANALYZE BTN */
         .analyze-btn {
@@ -184,6 +194,7 @@
         .score-details { flex: 1; }
         .score-grade { font-family: "Clash Display", sans-serif; font-size: 22px; font-weight: 700; margin-bottom: 6px; }
         .score-verdict { font-size: 13px; color: var(--muted); line-height: 1.7; margin-bottom: 20px; }
+        .score-meta { font-size: 12px; color: var(--blue); margin-top: -10px; margin-bottom: 18px; }
 
         /* SCORE BARS */
         .score-bars { display: flex; flex-direction: column; gap: 10px; }
@@ -320,7 +331,7 @@
             <div class="page-header">
                 <div class="page-eyebrow"><div class="eyebrow-dot"></div> AI Powered</div>
                 <h1 class="page-title">ATS Resume <em>Scanner</em></h1>
-                <p class="page-sub">Upload your resume and paste the job description. Our AI will score your resume against ATS systems and tell you exactly what to fix.</p>
+                <p class="page-sub">Upload your resume and add the job description by paste or file upload. The scanner will use AI when available, and if keys fail it will still generate a normal ATS score as backup.</p>
             </div>
 
             <!-- UPLOAD SECTION -->
@@ -336,11 +347,11 @@
                             onclick="document.getElementById('fileInput').click()">
                             <div class="drop-icon">📄</div>
                             <div class="drop-title">Upload Your Resume</div>
-                            <div class="drop-sub">Drag & drop your PDF or DOCX file here, or click to browse</div>
+                            <div class="drop-sub">Drag and drop your PDF, DOCX, or TXT resume here, or click to browse</div>
                             <div class="drop-btn">
                                 <i class="fa-solid fa-upload"></i> Choose File
                             </div>
-                            <input type="file" id="fileInput" class="file-input" accept=".pdf,.doc,.docx" onchange="handleFileSelect(event)">
+                            <input type="file" id="fileInput" class="file-input" accept=".pdf,.doc,.docx,.txt" onchange="handleFileSelect(event)">
                         </div>
                         <div class="file-selected" id="fileSelected">
                             <i class="fa-solid fa-file-pdf" style="color:var(--accent);font-size:16px"></i>
@@ -361,6 +372,20 @@
 
 Example:
 We are looking for a Python Developer with experience in Django, REST APIs, and PostgreSQL. The ideal candidate should have 2+ years of experience..." oninput="updateCounter()"></textarea>
+                        <div class="jd-actions">
+                            <div class="jd-helper">Paste the JD, or upload a JD file if you already have it.</div>
+                            <button type="button" class="jd-upload-btn" onclick="document.getElementById('jdFileInput').click()">
+                                <i class="fa-solid fa-paperclip"></i> Upload JD
+                            </button>
+                            <input type="file" id="jdFileInput" class="file-input" accept=".pdf,.doc,.docx,.txt" onchange="handleJdFileSelect(event)">
+                        </div>
+                        <div class="file-selected" id="jdFileSelected">
+                            <i class="fa-solid fa-file-lines" style="color:var(--blue);font-size:16px"></i>
+                            <span class="file-name" id="jdFileName" style="color:var(--blue)">job-description.docx</span>
+                            <button class="file-remove" type="button" onclick="removeJdFile()">
+                                <i class="fa-solid fa-times"></i>
+                            </button>
+                        </div>
                         <div class="jd-counter" id="jdCounter">0 characters</div>
                     </div>
                 </div>
@@ -425,6 +450,7 @@ We are looking for a Python Developer with experience in Django, REST APIs, and 
                     <div class="score-details">
                         <div class="score-grade" id="scoreGrade">Analyzing...</div>
                         <div class="score-verdict" id="scoreVerdict">Loading your results...</div>
+                        <div class="score-meta" id="scoreMeta"></div>
                         <div class="score-bars" id="scoreBars"></div>
                     </div>
                 </div>
@@ -521,7 +547,28 @@ We are looking for a Python Developer with experience in Django, REST APIs, and 
 
     <script>
         let uploadedFile = null;
+        let uploadedJdFile = null;
         let analysisData = null;
+
+        function isAllowedDocument(file) {
+            const allowedTypes = [
+                'application/pdf',
+                'application/msword',
+                'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                'text/plain'
+            ];
+            const lowerName = (file.name || '').toLowerCase();
+            return allowedTypes.includes(file.type) || ['.pdf', '.doc', '.docx', '.txt'].some(ext => lowerName.endsWith(ext));
+        }
+
+        function escapeHtml(text) {
+            return String(text || '')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
 
         // ===== FILE HANDLING =====
         function handleDrop(e) {
@@ -546,8 +593,8 @@ We are looking for a Python Developer with experience in Django, REST APIs, and 
         }
 
         function setFile(file) {
-            const allowed = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
-            if (!allowed.includes(file.type)) {
+            const allowed = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'text/plain'];
+            if (!allowed.includes(file.type) && !isAllowedDocument(file)) {
                 showToast('Please upload PDF or DOCX file only! 📄');
                 return;
             }
@@ -568,6 +615,25 @@ We are looking for a Python Developer with experience in Django, REST APIs, and 
             document.getElementById('fileInput').value = '';
         }
 
+        function handleJdFileSelect(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            if (!isAllowedDocument(file)) {
+                showToast('Please upload PDF, DOCX, DOC, or TXT only.');
+                e.target.value = '';
+                return;
+            }
+            uploadedJdFile = file;
+            document.getElementById('jdFileName').textContent = file.name;
+            document.getElementById('jdFileSelected').classList.add('show');
+        }
+
+        function removeJdFile() {
+            uploadedJdFile = null;
+            document.getElementById('jdFileSelected').classList.remove('show');
+            document.getElementById('jdFileInput').value = '';
+        }
+
         function updateCounter() {
             const len = document.getElementById('jobDesc').value.length;
             document.getElementById('jdCounter').textContent = len + ' characters';
@@ -580,7 +646,7 @@ We are looking for a Python Developer with experience in Django, REST APIs, and 
                 return;
             }
             const jd = document.getElementById('jobDesc').value.trim();
-            if (!jd) {
+            if (!jd && !uploadedJdFile) {
                 showToast('Please paste the job description! 💼');
                 return;
             }
@@ -596,6 +662,9 @@ We are looking for a Python Developer with experience in Django, REST APIs, and 
                 const formData = new FormData();
                 formData.append('resume', uploadedFile);
                 formData.append('job_description', jd);
+                if (uploadedJdFile) {
+                    formData.append('job_description_file', uploadedJdFile);
+                }
 
                 const response = await fetch('/candidate/ats/scan', {
                     method: 'POST',
@@ -683,6 +752,7 @@ We are looking for a Python Developer with experience in Django, REST APIs, and 
             document.getElementById('scoreNum').style.color = color;
             document.getElementById('scoreGrade').textContent = grade;
             document.getElementById('scoreVerdict').textContent = verdict;
+            document.getElementById('scoreMeta').textContent = data.source_note || data.message || '';
 
             // Score bars
             const bars = data.breakdown || {
@@ -725,6 +795,27 @@ We are looking for a Python Developer with experience in Django, REST APIs, and 
             document.getElementById('missingKeywords').innerHTML = missing.map(k => `<span class="kw-tag kw-missing">✗ ${k}</span>`).join('');
             document.getElementById('goodPoints').innerHTML = goodPoints.map(p => `<li><span class="sug-check">✓</span><span>${p}</span></li>`).join('');
             document.getElementById('badPoints').innerHTML = badPoints.map(p => `<li><span class="sug-cross">✗</span><span>${p}</span></li>`).join('');
+            const realGoodPoints = (data.strengths && data.strengths.length)
+                ? data.strengths
+                : feedback.filter(f => f.startsWith('OK:')).map(f => f.replace(/^OK:\s*/, ''));
+            const realBadPoints = (data.issues && data.issues.length)
+                ? data.issues
+                : feedback.filter(f => f.startsWith('Improve:')).map(f => f.replace(/^Improve:\s*/, ''));
+            const presentKeywords = (data.present_keywords || []).length ? data.present_keywords : present;
+            const missingKeywords = (data.missing_keywords || []).length ? data.missing_keywords : missing;
+
+            document.getElementById('presentKeywords').innerHTML = presentKeywords.length
+                ? presentKeywords.map(k => `<span class="kw-tag kw-present">${escapeHtml(k)}</span>`).join('')
+                : '<span class="kw-tag kw-present">No clear matches found yet</span>';
+            document.getElementById('missingKeywords').innerHTML = missingKeywords.length
+                ? missingKeywords.map(k => `<span class="kw-tag kw-missing">${escapeHtml(k)}</span>`).join('')
+                : '<span class="kw-tag kw-present">No major missing keywords detected</span>';
+            document.getElementById('goodPoints').innerHTML = realGoodPoints.length
+                ? realGoodPoints.map(p => `<li><span class="sug-check">+</span><span>${escapeHtml(p)}</span></li>`).join('')
+                : '<li><span class="sug-check">+</span><span>Your resume has a workable base for ATS improvement.</span></li>';
+            document.getElementById('badPoints').innerHTML = realBadPoints.length
+                ? realBadPoints.map(p => `<li><span class="sug-cross">-</span><span>${escapeHtml(p)}</span></li>`).join('')
+                : '<li><span class="sug-check">+</span><span>No major issues were returned by the scanner.</span></li>';
         }
 
         function animateNumber(id, start, end, duration) {
@@ -752,6 +843,9 @@ We are looking for a Python Developer with experience in Django, REST APIs, and 
                 const formData = new FormData();
                 formData.append('resume', uploadedFile);
                 formData.append('job_description', document.getElementById('jobDesc').value);
+                if (uploadedJdFile) {
+                    formData.append('job_description_file', uploadedJdFile);
+                }
                 if (analysisData) {
                     formData.append('analysis', JSON.stringify(analysisData));
                 }
@@ -806,7 +900,9 @@ We are looking for a Python Developer with experience in Django, REST APIs, and 
             document.getElementById('rewriteBtn').disabled = false;
             document.getElementById('jobDesc').value = '';
             document.getElementById('jdCounter').textContent = '0 characters';
+            document.getElementById('scoreMeta').textContent = '';
             removeFile();
+            removeJdFile();
             analysisData = null;
 
             // Reset steps
