@@ -14,3 +14,8 @@ google-generativeai>=0.3.0
 
 # HTTP requests (for Ollama and custom APIs)
 requests>=2.31.0
+
+# ATS resume parser support
+pypdf>=4.2.0
+pdfplumber>=0.11.0
+python-docx>=1.1.0

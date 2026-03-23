@@ -2,6 +2,7 @@ from flask import Flask, render_template
 from config.config import Config
 from models import db
 from routes import register_routes
+from ats_routes import ats_bp
 import logging
 import os
 from sqlalchemy import inspect, text
@@ -19,6 +20,7 @@ db.init_app(app)
 
 # Register routes
 register_routes(app)
+app.register_blueprint(ats_bp)
 
 
 def build_google_analytics_tag(measurement_id):

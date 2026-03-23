@@ -545,6 +545,7 @@ We are looking for a Python Developer with experience in Django, REST APIs, and 
         </div>
     </div>
 
+    <script src="{{ url_for('static', filename='js/ats-scanner.js') }}"></script>
     <script>
         let uploadedFile = null;
         let uploadedJdFile = null;
@@ -659,32 +660,23 @@ We are looking for a Python Developer with experience in Django, REST APIs, and 
             animateSteps();
 
             try {
-                const formData = new FormData();
-                formData.append('resume', uploadedFile);
-                formData.append('job_description', jd);
-                if (uploadedJdFile) {
-                    formData.append('job_description_file', uploadedJdFile);
-                }
-
-                const response = await fetch('/candidate/ats/scan', {
-                    method: 'POST',
-                    body: formData
+                const data = await scoreResumeWithScanApi({
+                    resumeFile: uploadedFile,
+                    jobDescription: jd,
+                    jobDescriptionFile: uploadedJdFile,
+                    endpoint: '/candidate/ats/scan'
                 });
 
-                const data = await response.json();
-
-                if (!data.success) {
-                    showToast('Error: ' + (data.error || 'Analysis failed'));
-                    resetToUpload();
-                    return;
-                }
-
-                analysisData = data;
+                analysisData = {
+                    ...data,
+                    resume_text: undefined,
+                    job_description_text: undefined
+                };
                 showResults(data);
 
             } catch (err) {
                 console.error(err);
-                showToast('Something went wrong! Please try again. 😅');
+                showToast('Error: ' + (err.message || 'Analysis failed'));
                 resetToUpload();
             }
         }
@@ -716,7 +708,15 @@ We are looking for a Python Developer with experience in Django, REST APIs, and 
             document.getElementById('loadingState').classList.remove('show');
             document.getElementById('resultsSection').classList.add('show');
 
-            const score = data.score || 75;
+            const ruleScores = data.rule_scores || calculateAtsScores(
+                data.resume_text || '',
+                data.job_description_text || document.getElementById('jobDesc').value || ''
+            );
+            const score = Math.round(
+                ruleScores && typeof ruleScores.overall_score === 'number'
+                    ? ruleScores.overall_score
+                    : (data.score || 75)
+            );
             const feedback = data.feedback || [];
 
             // Animate score ring
@@ -752,17 +752,22 @@ We are looking for a Python Developer with experience in Django, REST APIs, and 
             document.getElementById('scoreNum').style.color = color;
             document.getElementById('scoreGrade').textContent = grade;
             document.getElementById('scoreVerdict').textContent = verdict;
-            document.getElementById('scoreMeta').textContent = data.source_note || data.message || '';
+            const metaBits = [];
+            if (data.source_note) metaBits.push(data.source_note);
+            if (ruleScores) metaBits.push('Rule-based ATS logic applied (35/25/20/10/10).');
+            if (!metaBits.length && data.message) metaBits.push(data.message);
+            document.getElementById('scoreMeta').textContent = metaBits.join(' ');
 
             // Score bars
-            const bars = data.breakdown || {
-                'Keywords': Math.min(score + 5, 100),
-                'Formatting': Math.min(score + 8, 100),
-                'Impact Metrics': Math.max(score - 12, 20),
-                'Skills Match': Math.min(score + 2, 100),
-            };
+            const bars = ruleScores ? {
+                'Keyword Match': Math.round(ruleScores.keyword_match || 0),
+                'Skills Match': Math.round(ruleScores.skills_match || 0),
+                'Experience Match': Math.round(ruleScores.experience_match || 0),
+                'Education Match': Math.round(ruleScores.education_match || 0),
+                'Formatting': Math.round(ruleScores.formatting || 0)
+            } : (data.breakdown || {});
 
-            const barColors = ['var(--green)', 'var(--blue)', 'var(--accent)', 'var(--purple)'];
+            const barColors = ['var(--green)', 'var(--blue)', 'var(--accent)', 'var(--purple)', 'var(--gold)'];
             let barsHTML = '';
             Object.entries(bars).forEach(([name, val], i) => {
                 barsHTML += `

@@ -510,7 +510,7 @@ def register_candidate_dashboard_routes(app, helpers):
         dashboard_user = candidate_dashboard_user(user)
         return render_template('Ats_scanner.html', user=dashboard_user)
 
-    @app.route('/candidate/ats/scan', methods=['POST'])
+    @app.route('/candidate/ats/scan-legacy', methods=['POST'])
     def ats_scan_resume():
         """Handle ATS scanner file upload and analysis."""
         user = get_logged_in_user()
@@ -566,6 +566,8 @@ def register_candidate_dashboard_routes(app, helpers):
             return {
                 'success': True,
                 'score': score,
+                'resume_text': resume_text,
+                'job_description_text': job_description,
                 'feedback': analysis.get('feedback', []),
                 'strengths': analysis.get('strengths', []),
                 'issues': analysis.get('issues', []),
