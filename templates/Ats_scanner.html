@@ -708,73 +708,70 @@ We are looking for a Python Developer with experience in Django, REST APIs, and 
             document.getElementById('loadingState').classList.remove('show');
             document.getElementById('resultsSection').classList.add('show');
 
-            const ruleScores = data.rule_scores || calculateAtsScores(
-                data.resume_text || '',
-                data.job_description_text || document.getElementById('jobDesc').value || ''
-            );
+            // Backend se score lo directly
+            const ruleScores = data.rule_scores || {};
             const score = Math.round(
-                ruleScores && typeof ruleScores.overall_score === 'number'
-                    ? ruleScores.overall_score
-                    : (data.score || 75)
+                data.score ||
+                ruleScores.overall_score ||
+                0
             );
+
             const feedback = data.feedback || [];
 
-            // Animate score ring
+            // Score ring animate
             setTimeout(() => {
                 const circumference = 339.3;
                 const offset = circumference - (score / 100) * circumference;
                 document.getElementById('scoreRingFill').style.strokeDashoffset = offset;
-
-                // Animate number
                 animateNumber('scoreNum', 0, score, 1500);
             }, 100);
 
-            // Score grade & verdict
+            // Grade + verdict
             let grade, verdict, color;
             if (score >= 85) {
                 grade = '🎯 Excellent Match!';
-                verdict = 'Your resume is highly optimized for this role. You have a strong chance of passing ATS screening.';
+                verdict = 'Your resume is highly optimized for this role. Strong chance of passing ATS screening.';
                 color = 'var(--green)';
             } else if (score >= 70) {
                 grade = '👍 Good Score';
-                verdict = 'Your resume is decent but has room for improvement. Fix the issues below to increase your chances.';
+                verdict = 'Your resume is decent but has room for improvement. Fix the issues below.';
                 color = 'var(--accent-2)';
             } else if (score >= 50) {
                 grade = '⚠️ Needs Work';
-                verdict = 'Your resume needs significant improvements to pass ATS systems for this role. Use the rewriter below.';
+                verdict = 'Your resume needs improvements to pass ATS systems. Use the rewriter below.';
                 color = 'var(--accent)';
             } else {
                 grade = '❌ Poor Match';
-                verdict = 'Your resume is not optimized for this role. We strongly recommend using the AI rewriter below.';
+                verdict = 'Your resume is not optimized for this role. Use the AI rewriter below.';
                 color = 'var(--danger)';
             }
 
             document.getElementById('scoreNum').style.color = color;
             document.getElementById('scoreGrade').textContent = grade;
             document.getElementById('scoreVerdict').textContent = verdict;
-            const metaBits = [];
-            if (data.source_note) metaBits.push(data.source_note);
-            if (ruleScores) metaBits.push('Rule-based ATS logic applied (35/25/20/10/10).');
-            if (!metaBits.length && data.message) metaBits.push(data.message);
-            document.getElementById('scoreMeta').textContent = metaBits.join(' ');
+            
+            // source_note dikhao — hardcoded text nahi
+            document.getElementById('scoreMeta').textContent = data.source_note || '';
 
             // Score bars
-            const bars = ruleScores ? {
-                'Keyword Match': Math.round(ruleScores.keyword_match || 0),
-                'Skills Match': Math.round(ruleScores.skills_match || 0),
+            const bars = {
+                'Keyword Match':    Math.round(ruleScores.keyword_match    || 0),
+                'Skills Match':     Math.round(ruleScores.skills_match     || 0),
                 'Experience Match': Math.round(ruleScores.experience_match || 0),
-                'Education Match': Math.round(ruleScores.education_match || 0),
-                'Formatting': Math.round(ruleScores.formatting || 0)
-            } : (data.breakdown || {});
+                'Education Match':  Math.round(ruleScores.education_match  || 0),
+                'Formatting':       Math.round(ruleScores.formatting       || 0)
+            };
 
-            const barColors = ['var(--green)', 'var(--blue)', 'var(--accent)', 'var(--purple)', 'var(--gold)'];
+            const barColors = ['var(--green)','var(--blue)','var(--accent)','var(--purple)','var(--gold)'];
             let barsHTML = '';
             Object.entries(bars).forEach(([name, val], i) => {
                 barsHTML += `
                     <div class="score-bar-row">
                         <div class="sbar-name">${name}</div>
                         <div class="sbar-track">
-                            <div class="sbar-fill" style="width:0%;background:${barColors[i]}" data-width="${val}%"></div>
+                            <div class="sbar-fill" 
+                                 style="width:0%;background:${barColors[i]}" 
+                                 data-width="${val}%"></div>
                         </div>
                         <div class="sbar-val" style="color:${barColors[i]}">${val}</div>
                     </div>`;
@@ -787,40 +784,39 @@ We are looking for a Python Developer with experience in Django, REST APIs, and 
                 });
             }, 200);
 
-            // Parse feedback array into good/bad points
-            const goodPoints = feedback.filter(f => f.includes('✅') || f.includes('👍'));
-            const badPoints = feedback.filter(f => f.includes('❌') || f.includes('⚠️'));
-
-            // Keywords (mock data based on score)
-            const present = ['Resume', 'Experience', 'Education'];
-            const missing = badPoints.length > 0 ? ['Technical Skills', 'Metrics'] : [];
-
-            // Suggestions
-            document.getElementById('presentKeywords').innerHTML = present.map(k => `<span class="kw-tag kw-present">✓ ${k}</span>`).join('');
-            document.getElementById('missingKeywords').innerHTML = missing.map(k => `<span class="kw-tag kw-missing">✗ ${k}</span>`).join('');
-            document.getElementById('goodPoints').innerHTML = goodPoints.map(p => `<li><span class="sug-check">✓</span><span>${p}</span></li>`).join('');
-            document.getElementById('badPoints').innerHTML = badPoints.map(p => `<li><span class="sug-cross">✗</span><span>${p}</span></li>`).join('');
-            const realGoodPoints = (data.strengths && data.strengths.length)
-                ? data.strengths
-                : feedback.filter(f => f.startsWith('OK:')).map(f => f.replace(/^OK:\s*/, ''));
-            const realBadPoints = (data.issues && data.issues.length)
-                ? data.issues
-                : feedback.filter(f => f.startsWith('Improve:')).map(f => f.replace(/^Improve:\s*/, ''));
-            const presentKeywords = (data.present_keywords || []).length ? data.present_keywords : present;
-            const missingKeywords = (data.missing_keywords || []).length ? data.missing_keywords : missing;
+            // Keywords
+            const presentKeywords = data.present_keywords || [];
+            const missingKeywords = data.missing_keywords || [];
 
             document.getElementById('presentKeywords').innerHTML = presentKeywords.length
-                ? presentKeywords.map(k => `<span class="kw-tag kw-present">${escapeHtml(k)}</span>`).join('')
-                : '<span class="kw-tag kw-present">No clear matches found yet</span>';
+                ? presentKeywords.map(k => 
+                    `<span class="kw-tag kw-present">${escapeHtml(k)}</span>`
+                  ).join('')
+                : '<span class="kw-tag kw-present">Analyzing...</span>';
+
             document.getElementById('missingKeywords').innerHTML = missingKeywords.length
-                ? missingKeywords.map(k => `<span class="kw-tag kw-missing">${escapeHtml(k)}</span>`).join('')
-                : '<span class="kw-tag kw-present">No major missing keywords detected</span>';
-            document.getElementById('goodPoints').innerHTML = realGoodPoints.length
-                ? realGoodPoints.map(p => `<li><span class="sug-check">+</span><span>${escapeHtml(p)}</span></li>`).join('')
-                : '<li><span class="sug-check">+</span><span>Your resume has a workable base for ATS improvement.</span></li>';
-            document.getElementById('badPoints').innerHTML = realBadPoints.length
-                ? realBadPoints.map(p => `<li><span class="sug-cross">-</span><span>${escapeHtml(p)}</span></li>`).join('')
-                : '<li><span class="sug-check">+</span><span>No major issues were returned by the scanner.</span></li>';
+                ? missingKeywords.map(k => 
+                    `<span class="kw-tag kw-missing">${escapeHtml(k)}</span>`
+                  ).join('')
+                : '<span class="kw-tag kw-present">No major gaps found!</span>';
+
+            // Strengths + Issues
+            const strengths = data.strengths || [];
+            const issues    = data.issues    || [];
+
+            document.getElementById('goodPoints').innerHTML = strengths.length
+                ? strengths.map(p => 
+                    `<li><span class="sug-check">+</span>
+                     <span>${escapeHtml(p)}</span></li>`
+                  ).join('')
+                : '<li><span class="sug-check">+</span><span>Good foundation present.</span></li>';
+
+            document.getElementById('badPoints').innerHTML = issues.length
+                ? issues.map(p => 
+                    `<li><span class="sug-cross">-</span>
+                     <span>${escapeHtml(p)}</span></li>`
+                  ).join('')
+                : '<li><span class="sug-check">+</span><span>No major issues found!</span></li>';
         }
 
         function animateNumber(id, start, end, duration) {
@@ -870,7 +866,48 @@ We are looking for a Python Developer with experience in Django, REST APIs, and 
                     return;
                 }
 
-                document.getElementById('rewriteText').textContent = data.rewritten_resume;
+                const raw = data.rewritten_resume || '';
+                const lines = raw.split('\n');
+                let html = '';
+                lines.forEach(line => {
+                    const t = line.trim();
+                    if (!t) {
+                        html += '<div style="margin:6px 0"></div>';
+                        return;
+                    }
+                    if (t === t.toUpperCase() && t.length > 2 && 
+                        t.length < 25 && !t.includes('@')) {
+                        html += `<div style="color:#ff6b2b;font-weight:700;
+                                 font-size:13px;letter-spacing:1.5px;
+                                 margin-top:16px;margin-bottom:6px">
+                                 ${escapeHtml(t)}</div>`;
+                        return;
+                    }
+                    if (t.startsWith('•') || t.startsWith('-') || 
+                        t.startsWith('*')) {
+                        html += `<div style="padding-left:14px;margin:4px 0;
+                                 color:rgba(255,255,255,0.82);font-size:13px;
+                                 line-height:1.6">${escapeHtml(t)}</div>`;
+                        return;
+                    }
+                    if (t.includes('@') || t.includes('|') || 
+                        t.includes('linkedin') || t.includes('github')) {
+                        html += `<div style="color:rgba(255,255,255,0.55);
+                                 font-size:12px;margin-bottom:6px">
+                                 ${escapeHtml(t)}</div>`;
+                        return;
+                    }
+                    if (lines.indexOf(line) <= 1) {
+                        html += `<div style="font-size:16px;font-weight:700;
+                                 color:white;margin-bottom:2px">
+                                 ${escapeHtml(t)}</div>`;
+                        return;
+                    }
+                    html += `<div style="margin:4px 0;
+                             color:rgba(255,255,255,0.82);font-size:13px;
+                             line-height:1.6">${escapeHtml(t)}</div>`;
+                });
+                document.getElementById('rewriteText').innerHTML = html;
                 document.getElementById('rewriteOutput').classList.add('show');
                 document.getElementById('rewriteOutput').scrollIntoView({ behavior: 'smooth', block: 'start' });
 

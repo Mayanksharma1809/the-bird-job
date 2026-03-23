@@ -14,10 +14,12 @@ import google.generativeai as genai
 
 ats_bp = Blueprint('ats', __name__)
 
-GROQ_API_KEY   = os.environ.get("GROQ_API_KEY",   "your-groq-api-key")
+GROQ_API_KEY_1 = os.environ.get("GROQ_API_KEY_1", "")
+GROQ_API_KEY_2 = os.environ.get("GROQ_API_KEY_2", "")
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "your-gemini-api-key")
 
-groq_client = Groq(api_key=GROQ_API_KEY)
+groq_score_client   = Groq(api_key=GROQ_API_KEY_1)
+groq_rewrite_client = Groq(api_key=GROQ_API_KEY_2)
 genai.configure(api_key=GEMINI_API_KEY)
 gemini_model = genai.GenerativeModel("gemini-2.5-flash-lite")
 
@@ -142,7 +144,7 @@ Return ONLY this JSON — no markdown, no explanation:
   "source_note": "One sentence summary in Hinglish"
 }}"""
 
-    completion = groq_client.chat.completions.create(
+    completion = groq_score_client.chat.completions.create(
         model="llama-3.3-70b-versatile",
         temperature=0.1,
         max_tokens=2000,
@@ -288,20 +290,43 @@ ORIGINAL RESUME:
 JOB DESCRIPTION:
 {jd_text[:1500]}
 
-MISSING KEYWORDS — Every single one MUST appear in rewritten resume:
+MISSING KEYWORDS TO ADD:
 {missing_str}
 
-RULES:
-1. Every missing keyword must appear in Skills AND experience bullets
-2. Use EXACT same words — no synonyms
-3. Do NOT fabricate — rephrase existing content only
-4. Action verbs: Built, Developed, Implemented, Managed, Automated
-5. Sections: Summary | Skills | Experience | Projects | Education
-6. Plain text only — no tables, no columns
+Write the resume in EXACTLY this format:
 
-Return ONLY the rewritten resume. No explanation."""
+[CANDIDATE NAME]
+Email: [email] | Phone: [phone] | LinkedIn: [url] | GitHub: [url]
 
-        completion = groq_client.chat.completions.create(
+SUMMARY
+Write 2-3 lines here as plain sentences.
+
+SKILLS
+- Skill1, Skill2, Skill3, Skill4
+- Skill5, Skill6, Skill7, Skill8
+
+PROJECTS
+[Project Name]
+- Action verb + what you built + technology used
+- Action verb + result or impact achieved
+
+EDUCATION
+[Degree] — [University] ([Year])
+
+STRICT RULES:
+1. Every section header in CAPITAL LETTERS
+2. Use bullet point • for every list item
+3. Never write paragraphs in Skills or Projects
+4. Every missing keyword must appear at least once
+5. Use exact keywords — no synonyms
+6. Action verbs: Built, Developed, Implemented,
+   Designed, Automated, Integrated, Optimized
+7. NO markdown — no ** no ## no __
+8. Blank line between every section
+
+Return ONLY the resume. No explanation."""
+
+        completion = groq_rewrite_client.chat.completions.create(
             model="llama-3.3-70b-versatile",
             temperature=0.3,
             max_tokens=2500,
