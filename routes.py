@@ -9,7 +9,7 @@ from flask import flash, redirect, render_template, request, session, url_for
 
 from candidate_dashboard_routes import register_candidate_dashboard_routes
 from employer_dashboard_routes import register_employer_dashboard_routes
-from models import CandidateProfile, EmployerProfile, LoginEvent, User, db
+from models import CandidateProfile, EmployerJob, EmployerProfile, LoginEvent, User, db
 
 
 def register_routes(app):
@@ -214,7 +214,43 @@ def register_routes(app):
 
     @app.route('/')
     def home():
-        return render_template('index.html')
+        active_jobs_count = EmployerJob.query.filter_by(status='active').count()
+        latest_jobs = (
+            EmployerJob.query
+            .filter_by(status='active')
+            .order_by(EmployerJob.created_at.desc())
+            .limit(6)
+            .all()
+        )
+
+        homepage_jobs = []
+        for job in latest_jobs:
+            employer_profile = job.employer.employer_profile if job.employer else None
+            company_name = first_non_empty(
+                [
+                    employer_profile.company_name if employer_profile else '',
+                    job.employer.full_name if job.employer else '',
+                ],
+                fallback='Confidential Company',
+            )
+            skills = [skill.strip() for skill in (job.required_skills or '').split(',') if skill.strip()][:3]
+            homepage_jobs.append(
+                {
+                    'title': job.title,
+                    'company_name': company_name,
+                    'location': first_non_empty([job.location], fallback='Remote'),
+                    'job_type': first_non_empty([job.job_type], fallback='Full Time'),
+                    'salary': first_non_empty([job.salary], fallback='Not disclosed'),
+                    'experience_level': first_non_empty([job.experience_level], fallback='Any experience'),
+                    'skills': skills,
+                }
+            )
+
+        return render_template(
+            'index.html',
+            homepage_jobs=homepage_jobs,
+            homepage_stats={'active_jobs': active_jobs_count},
+        )
 
     @app.route('/login', methods=['GET', 'POST'])
     def login():

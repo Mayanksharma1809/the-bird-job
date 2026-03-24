@@ -1,0 +1,1160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Post a Job — HireAI</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0c;
+    --surface: #111116;
+    --surface2: #18181f;
+    --border: #2a2a35;
+    --orange: #f97316;
+    --orange-dim: rgba(249,115,22,0.12);
+    --orange-glow: rgba(249,115,22,0.35);
+    --text: #e8e8f0;
+    --muted: #6b6b80;
+    --success: #22c55e;
+    --mono: 'Space Mono', monospace;
+    --sans: 'Syne', sans-serif;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Grid background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(249,115,22,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(249,115,22,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Glow blob */
+  body::after {
+    content: '';
+    position: fixed;
+    top: -200px;
+    right: -200px;
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba(249,115,22,0.08) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* NAV */
+  nav {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 2.5rem;
+    height: 64px;
+    background: rgba(10,10,12,0.85);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .logo {
+    font-family: var(--mono);
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--orange);
+    letter-spacing: -0.03em;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .logo span {
+    color: var(--text);
+  }
+
+  .nav-links {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    list-style: none;
+  }
+
+  .nav-links a {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 0.875rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
+
+  .nav-links a:hover { color: var(--text); }
+  .nav-links a.active { color: var(--orange); }
+
+  .nav-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--orange), #ea580c);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  /* MAIN */
+  main {
+    position: relative;
+    z-index: 1;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 3rem 2rem 6rem;
+  }
+
+  .page-header {
+    margin-bottom: 2.5rem;
+    animation: fadeDown 0.5s ease both;
+  }
+
+  .page-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--orange-dim);
+    border: 1px solid rgba(249,115,22,0.25);
+    color: var(--orange);
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 4px 12px;
+    border-radius: 2px;
+    margin-bottom: 1rem;
+  }
+
+  .page-tag::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    background: var(--orange);
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+  }
+
+  h1 {
+    font-size: 2.4rem;
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: -0.03em;
+  }
+
+  h1 em {
+    font-style: normal;
+    color: var(--orange);
+  }
+
+  .page-sub {
+    color: var(--muted);
+    font-size: 0.95rem;
+    margin-top: 0.5rem;
+    font-family: var(--mono);
+  }
+
+  /* STEPS */
+  .steps-bar {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin-bottom: 2.5rem;
+    animation: fadeDown 0.5s 0.1s ease both;
+  }
+
+  .step {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding: 10px 0;
+    flex: 1;
+    position: relative;
+  }
+
+  .step::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: var(--border);
+  }
+
+  .step.active { color: var(--orange); }
+  .step.active::after { background: var(--orange); }
+  .step.done { color: var(--success); }
+  .step.done::after { background: var(--success); }
+
+  .step-num {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    border: 1.5px solid currentColor;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    flex-shrink: 0;
+  }
+
+  /* FORM CARD */
+  .form-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 2rem;
+    margin-bottom: 1.5rem;
+    position: relative;
+    overflow: hidden;
+    animation: fadeUp 0.5s 0.15s ease both;
+  }
+
+  .form-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--orange), transparent);
+  }
+
+  .card-title {
+    font-size: 0.7rem;
+    font-family: var(--mono);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--orange);
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .card-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* FORM ELEMENTS */
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.25rem;
+  }
+
+  .form-grid.single { grid-template-columns: 1fr; }
+  .form-grid.triple { grid-template-columns: 1fr 1fr 1fr; }
+
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .field.span2 { grid-column: span 2; }
+
+  label {
+    font-size: 0.72rem;
+    font-family: var(--mono);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  label .req { color: var(--orange); }
+
+  input, textarea, select {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 0.9rem;
+    padding: 10px 14px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    outline: none;
+    width: 100%;
+    appearance: none;
+  }
+
+  input:focus, textarea:focus, select:focus {
+    border-color: var(--orange);
+    box-shadow: 0 0 0 3px var(--orange-dim);
+  }
+
+  textarea {
+    resize: vertical;
+    min-height: 120px;
+    line-height: 1.6;
+  }
+
+  /* AI Suggestion bar */
+  .ai-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--orange-dim);
+    border: 1px solid rgba(249,115,22,0.2);
+    border-radius: 3px;
+    padding: 10px 14px;
+    margin-top: 8px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  .ai-bar:hover { background: rgba(249,115,22,0.18); }
+
+  .ai-icon {
+    width: 28px;
+    height: 28px;
+    background: linear-gradient(135deg, var(--orange), #ea580c);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    flex-shrink: 0;
+  }
+
+  .ai-text {
+    flex: 1;
+    font-size: 0.8rem;
+    color: var(--orange);
+    font-family: var(--mono);
+  }
+
+  .ai-text span { color: var(--muted); font-size: 0.72rem; }
+
+  .ai-btn-text {
+    font-size: 0.72rem;
+    font-family: var(--mono);
+    color: var(--orange);
+    border: 1px solid rgba(249,115,22,0.4);
+    padding: 4px 10px;
+    border-radius: 2px;
+    transition: background 0.2s;
+  }
+
+  .ai-btn-text:hover { background: var(--orange-dim); }
+
+  /* SKILLS TAGS */
+  .tags-wrapper {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    padding: 8px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    min-height: 46px;
+    align-items: center;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    cursor: text;
+  }
+
+  .tags-wrapper:focus-within {
+    border-color: var(--orange);
+    box-shadow: 0 0 0 3px var(--orange-dim);
+  }
+
+  .tag {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    background: var(--orange-dim);
+    border: 1px solid rgba(249,115,22,0.3);
+    color: var(--orange);
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    padding: 3px 8px;
+    border-radius: 2px;
+    animation: tagPop 0.2s ease;
+  }
+
+  .tag button {
+    background: none;
+    border: none;
+    color: var(--orange);
+    cursor: pointer;
+    font-size: 0.9rem;
+    line-height: 1;
+    padding: 0;
+    opacity: 0.6;
+    transition: opacity 0.2s;
+  }
+
+  .tag button:hover { opacity: 1; }
+
+  .tag-input {
+    background: none;
+    border: none;
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 0.9rem;
+    outline: none;
+    flex: 1;
+    min-width: 120px;
+    padding: 2px 4px;
+    box-shadow: none;
+  }
+
+  .suggested-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 8px;
+  }
+
+  .sug-tag {
+    background: transparent;
+    border: 1px dashed var(--border);
+    color: var(--muted);
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    padding: 3px 8px;
+    border-radius: 2px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .sug-tag:hover {
+    border-color: var(--orange);
+    color: var(--orange);
+    background: var(--orange-dim);
+  }
+
+  /* SALARY RANGE */
+  .salary-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .salary-row span {
+    color: var(--muted);
+    font-family: var(--mono);
+    font-size: 0.8rem;
+    white-space: nowrap;
+  }
+
+  .currency-select {
+    width: auto;
+    padding: 10px 10px;
+    min-width: 80px;
+  }
+
+  /* RADIO GROUPS */
+  .radio-group {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .radio-pill {
+    position: relative;
+  }
+
+  .radio-pill input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+
+  .radio-pill label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    padding: 8px 14px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    font-family: var(--mono);
+    letter-spacing: 0.04em;
+    text-transform: none;
+    color: var(--muted);
+    transition: all 0.2s;
+  }
+
+  .radio-pill input:checked + label {
+    border-color: var(--orange);
+    color: var(--orange);
+    background: var(--orange-dim);
+  }
+
+  /* PREVIEW PANEL */
+  .preview-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 1rem 1.5rem;
+    cursor: pointer;
+    margin-bottom: 1.5rem;
+    animation: fadeUp 0.5s 0.2s ease both;
+    transition: border-color 0.2s;
+  }
+
+  .preview-toggle:hover { border-color: var(--orange); }
+
+  .preview-toggle-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.8rem;
+    font-family: var(--mono);
+    color: var(--muted);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .preview-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--orange);
+  }
+
+  .preview-arrow {
+    color: var(--muted);
+    transition: transform 0.3s;
+    font-size: 1.2rem;
+  }
+
+  .preview-arrow.open { transform: rotate(180deg); }
+
+  .preview-panel {
+    display: none;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-top: none;
+    border-radius: 0 0 4px 4px;
+    padding: 1.5rem;
+    margin-top: -1.5rem;
+    margin-bottom: 1.5rem;
+    animation: fadeUp 0.3s ease;
+  }
+
+  .preview-panel.open { display: block; }
+
+  .preview-job-title {
+    font-size: 1.5rem;
+    font-weight: 800;
+    margin-bottom: 0.5rem;
+  }
+
+  .preview-meta {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-bottom: 1rem;
+  }
+
+  .preview-badge {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    padding: 3px 10px;
+    border-radius: 2px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .preview-desc {
+    color: var(--muted);
+    font-size: 0.9rem;
+    line-height: 1.7;
+    border-left: 2px solid var(--border);
+    padding-left: 1rem;
+  }
+
+  /* SUBMIT ROW */
+  .submit-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    animation: fadeUp 0.5s 0.25s ease both;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    border-radius: 3px;
+    font-family: var(--mono);
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s;
+  }
+
+  .btn-ghost {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--muted);
+  }
+
+  .btn-ghost:hover {
+    border-color: var(--text);
+    color: var(--text);
+  }
+
+  .btn-primary {
+    background: var(--orange);
+    color: #000;
+    font-weight: 800;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .btn-primary::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(255,255,255,0.15);
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+  }
+
+  .btn-primary:hover::before { transform: translateX(0); }
+
+  .btn-primary:hover {
+    box-shadow: 0 0 24px var(--orange-glow);
+    transform: translateY(-1px);
+  }
+
+  .save-draft {
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    color: var(--muted);
+    text-decoration: none;
+    letter-spacing: 0.06em;
+    cursor: pointer;
+    transition: color 0.2s;
+  }
+
+  .save-draft:hover { color: var(--text); }
+
+  /* CHAR COUNTER */
+  .field-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 4px;
+  }
+
+  .char-count {
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    color: var(--muted);
+  }
+
+  .char-count.warn { color: var(--orange); }
+
+  /* Animations */
+  @keyframes fadeDown {
+    from { opacity: 0; transform: translateY(-16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  @keyframes tagPop {
+    from { transform: scale(0.8); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+
+  /* AI typing animation */
+  @keyframes typing {
+    from { width: 0; }
+    to { width: 100%; }
+  }
+
+  .ai-typing {
+    overflow: hidden;
+    white-space: nowrap;
+    animation: typing 1.5s steps(40) forwards;
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--orange); }
+
+  /* Toast */
+  .toast {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    background: var(--surface);
+    border: 1px solid var(--orange);
+    border-radius: 4px;
+    padding: 1rem 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--mono);
+    font-size: 0.8rem;
+    z-index: 1000;
+    transform: translateY(100px);
+    opacity: 0;
+    transition: all 0.3s ease;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+  }
+
+  .toast.show {
+    transform: translateY(0);
+    opacity: 1;
+  }
+
+  .toast-icon { color: var(--orange); font-size: 1.2rem; }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="logo">⬡ <span>Hire</span>AI</div>
+  <ul class="nav-links">
+    <li><a href="applications.html">Applications</a></li>
+    <li><a href="#" class="active">Post Job</a></li>
+    <li><a href="messages.html">Messages</a></li>
+    <li><a href="top-candidates.html">Top Candidates</a></li>
+  </ul>
+  <div class="nav-avatar">RC</div>
+</nav>
+
+<main>
+  <!-- HEADER -->
+  <div class="page-header">
+    <div class="page-tag">Recruiter Dashboard</div>
+    <h1>Post a <em>New Job</em></h1>
+    <p class="page-sub">// Fill in the details — AI will help you optimize</p>
+  </div>
+
+  <!-- STEPS -->
+  <div class="steps-bar">
+    <div class="step active">
+      <div class="step-num">1</div>
+      Job Details
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      Requirements
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      Preferences
+    </div>
+    <div class="step">
+      <div class="step-num">4</div>
+      Preview & Post
+    </div>
+  </div>
+
+  <!-- CARD 1: Basic Info -->
+  <div class="form-card">
+    <div class="card-title">01 / Basic Information</div>
+    <div class="form-grid">
+      <div class="field span2">
+        <label>Job Title <span class="req">*</span></label>
+        <input type="text" id="jobTitle" placeholder="e.g. Senior Frontend Developer" oninput="updatePreview()">
+        <div class="ai-bar" onclick="aiSuggestTitle()">
+          <div class="ai-icon">✦</div>
+          <div class="ai-text">
+            AI Suggest <span>— Let AI craft an optimized job title based on your industry</span>
+          </div>
+          <div class="ai-btn-text">Generate</div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Company Name <span class="req">*</span></label>
+        <input type="text" placeholder="Your company name">
+      </div>
+
+      <div class="field">
+        <label>Department</label>
+        <input type="text" placeholder="e.g. Engineering, Design...">
+      </div>
+
+      <div class="field">
+        <label>Location <span class="req">*</span></label>
+        <input type="text" id="jobLocation" placeholder="City, Country or Remote" oninput="updatePreview()">
+      </div>
+
+      <div class="field">
+        <label>Job Type <span class="req">*</span></label>
+        <div class="radio-group">
+          <div class="radio-pill">
+            <input type="radio" name="jobtype" id="ft" value="Full-time" checked>
+            <label for="ft">Full-time</label>
+          </div>
+          <div class="radio-pill">
+            <input type="radio" name="jobtype" id="pt" value="Part-time">
+            <label for="pt">Part-time</label>
+          </div>
+          <div class="radio-pill">
+            <input type="radio" name="jobtype" id="con" value="Contract">
+            <label for="con">Contract</label>
+          </div>
+          <div class="radio-pill">
+            <input type="radio" name="jobtype" id="intern" value="Internship">
+            <label for="intern">Internship</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Work Mode</label>
+        <div class="radio-group">
+          <div class="radio-pill">
+            <input type="radio" name="workmode" id="onsite" value="On-site" checked>
+            <label for="onsite">On-site</label>
+          </div>
+          <div class="radio-pill">
+            <input type="radio" name="workmode" id="remote" value="Remote">
+            <label for="remote">Remote</label>
+          </div>
+          <div class="radio-pill">
+            <input type="radio" name="workmode" id="hybrid" value="Hybrid">
+            <label for="hybrid">Hybrid</label>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CARD 2: Description -->
+  <div class="form-card">
+    <div class="card-title">02 / Job Description</div>
+    <div class="form-grid single">
+      <div class="field">
+        <label>Description <span class="req">*</span></label>
+        <textarea id="jobDesc" placeholder="Describe the role, responsibilities, and what a day looks like..." oninput="updateDesc(this)"></textarea>
+        <div class="field-footer">
+          <div class="ai-bar" style="flex:1; margin-top:0" onclick="aiGenerateDesc()">
+            <div class="ai-icon">✦</div>
+            <div class="ai-text">
+              AI Write Description <span>— Generate a compelling JD from job title + skills</span>
+            </div>
+            <div class="ai-btn-text">✦ Generate</div>
+          </div>
+          <div class="char-count" id="descCount" style="margin-left:12px;white-space:nowrap">0 / 2000</div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Requirements</label>
+        <textarea placeholder="• 3+ years of experience...&#10;• Strong communication skills...&#10;• Proficiency in React / Vue..." style="min-height: 100px;"></textarea>
+      </div>
+
+      <div class="field">
+        <label>What We Offer</label>
+        <textarea placeholder="• Competitive salary&#10;• Flexible hours&#10;• Health insurance..." style="min-height: 80px;"></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- CARD 3: Skills -->
+  <div class="form-card">
+    <div class="card-title">03 / Required Skills</div>
+    <div class="field">
+      <label>Skills & Technologies <span class="req">*</span></label>
+      <div class="tags-wrapper" id="tagsWrapper" onclick="document.getElementById('tagInput').focus()">
+        <div class="tag">React <button onclick="removeTag(this)">×</button></div>
+        <div class="tag">Node.js <button onclick="removeTag(this)">×</button></div>
+        <input type="text" id="tagInput" class="tag-input" placeholder="Type skill + Enter...">
+      </div>
+      <div class="suggested-tags" id="suggestedTags">
+        <span style="font-family: var(--mono); font-size:0.68rem; color:var(--muted); margin-right:4px;">Suggestions:</span>
+        <span class="sug-tag" onclick="addSugTag(this)">TypeScript</span>
+        <span class="sug-tag" onclick="addSugTag(this)">PostgreSQL</span>
+        <span class="sug-tag" onclick="addSugTag(this)">Docker</span>
+        <span class="sug-tag" onclick="addSugTag(this)">AWS</span>
+        <span class="sug-tag" onclick="addSugTag(this)">GraphQL</span>
+        <span class="sug-tag" onclick="addSugTag(this)">Python</span>
+        <span class="sug-tag" onclick="addSugTag(this)">Figma</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- CARD 4: Salary & Deadline -->
+  <div class="form-card">
+    <div class="card-title">04 / Compensation & Deadline</div>
+    <div class="form-grid triple">
+      <div class="field">
+        <label>Currency</label>
+        <select class="currency-select">
+          <option>USD $</option>
+          <option>INR ₹</option>
+          <option>EUR €</option>
+          <option>GBP £</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Salary Min</label>
+        <input type="number" placeholder="e.g. 60000">
+      </div>
+      <div class="field">
+        <label>Salary Max</label>
+        <input type="number" placeholder="e.g. 90000">
+      </div>
+
+      <div class="field">
+        <label>Pay Period</label>
+        <div class="radio-group">
+          <div class="radio-pill">
+            <input type="radio" name="payperiod" id="annual" value="Annual" checked>
+            <label for="annual">Annual</label>
+          </div>
+          <div class="radio-pill">
+            <input type="radio" name="payperiod" id="monthly" value="Monthly">
+            <label for="monthly">Monthly</label>
+          </div>
+          <div class="radio-pill">
+            <input type="radio" name="payperiod" id="hourly" value="Hourly">
+            <label for="hourly">Hourly</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Application Deadline</label>
+        <input type="date" id="deadline">
+      </div>
+
+      <div class="field">
+        <label>Experience Level</label>
+        <select>
+          <option>Entry Level</option>
+          <option>Mid Level</option>
+          <option selected>Senior Level</option>
+          <option>Lead / Principal</option>
+          <option>Manager / Director</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>Openings</label>
+        <input type="number" value="1" min="1">
+      </div>
+    </div>
+  </div>
+
+  <!-- PREVIEW TOGGLE -->
+  <div class="preview-toggle" onclick="togglePreview()" id="previewToggle">
+    <div class="preview-toggle-label">
+      <div class="preview-dot"></div>
+      Preview Job Posting
+    </div>
+    <div class="preview-arrow" id="previewArrow">▾</div>
+  </div>
+
+  <div class="preview-panel" id="previewPanel">
+    <div class="preview-job-title" id="prevTitle">Senior Frontend Developer</div>
+    <div class="preview-meta">
+      <div class="preview-badge">📍 <span id="prevLocation">Location TBD</span></div>
+      <div class="preview-badge">⏱ Full-time</div>
+      <div class="preview-badge">💼 Senior Level</div>
+      <div class="preview-badge">🔥 Hiring Now</div>
+    </div>
+    <div class="preview-desc" id="prevDesc">Your job description will appear here as you type...</div>
+  </div>
+
+  <!-- SUBMIT -->
+  <div class="submit-row">
+    <span class="save-draft" onclick="saveDraft()">Save as Draft</span>
+    <div style="display:flex;gap:12px;">
+      <button class="btn btn-ghost">← Back</button>
+      <button class="btn btn-primary" onclick="postJob()">Post Job ✦</button>
+    </div>
+  </div>
+</main>
+
+<!-- TOAST -->
+<div class="toast" id="toast">
+  <span class="toast-icon">✦</span>
+  <span id="toastMsg">Job posted successfully!</span>
+</div>
+
+<script>
+  // Tag management
+  const tagInput = document.getElementById('tagInput');
+  const tagsWrapper = document.getElementById('tagsWrapper');
+
+  tagInput.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' || e.key === ',') {
+      e.preventDefault();
+      const val = this.value.trim().replace(',', '');
+      if (val) addTag(val);
+      this.value = '';
+    }
+    if (e.key === 'Backspace' && this.value === '') {
+      const tags = tagsWrapper.querySelectorAll('.tag');
+      if (tags.length > 0) tags[tags.length - 1].remove();
+    }
+  });
+
+  function addTag(name) {
+    const tag = document.createElement('div');
+    tag.className = 'tag';
+    tag.innerHTML = `${name} <button onclick="removeTag(this)">×</button>`;
+    tagsWrapper.insertBefore(tag, tagInput);
+  }
+
+  function removeTag(btn) {
+    btn.parentElement.remove();
+  }
+
+  function addSugTag(el) {
+    addTag(el.textContent);
+    el.remove();
+  }
+
+  // Preview toggle
+  function togglePreview() {
+    const panel = document.getElementById('previewPanel');
+    const arrow = document.getElementById('previewArrow');
+    panel.classList.toggle('open');
+    arrow.classList.toggle('open');
+  }
+
+  function updatePreview() {
+    const title = document.getElementById('jobTitle').value || 'Job Title';
+    const loc = document.getElementById('jobLocation').value || 'Location TBD';
+    document.getElementById('prevTitle').textContent = title;
+    document.getElementById('prevLocation').textContent = loc;
+  }
+
+  function updateDesc(el) {
+    const count = el.value.length;
+    const counter = document.getElementById('descCount');
+    counter.textContent = `${count} / 2000`;
+    counter.classList.toggle('warn', count > 1800);
+    document.getElementById('prevDesc').textContent = el.value || 'Your job description will appear here...';
+  }
+
+  // AI Suggestions (simulated)
+  const aiTitles = [
+    'Senior Full-Stack Engineer (React + Node.js)',
+    'Lead Frontend Developer — Remote',
+    'Full-Stack Software Engineer (SDE-II)',
+  ];
+
+  let titleIdx = 0;
+  function aiSuggestTitle() {
+    const input = document.getElementById('jobTitle');
+    const title = aiTitles[titleIdx % aiTitles.length];
+    titleIdx++;
+    let i = 0;
+    input.value = '';
+    const interval = setInterval(() => {
+      input.value += title[i];
+      i++;
+      if (i >= title.length) clearInterval(interval);
+      updatePreview();
+    }, 40);
+    showToast('✦ AI generated an optimized job title');
+  }
+
+  const aiDescs = [
+    `We are looking for a passionate Senior Frontend Developer to join our growing engineering team. You will be responsible for building scalable web applications, collaborating with designers to implement pixel-perfect UIs, and mentoring junior developers. You'll work with React, TypeScript, and modern tooling in a fast-paced agile environment.`,
+  ];
+
+  function aiGenerateDesc() {
+    const ta = document.getElementById('jobDesc');
+    const desc = aiDescs[0];
+    let i = 0;
+    ta.value = '';
+    const interval = setInterval(() => {
+      ta.value += desc[i];
+      i++;
+      updateDesc(ta);
+      if (i >= desc.length) clearInterval(interval);
+    }, 18);
+    showToast('✦ AI is writing your job description...');
+  }
+
+  function postJob() {
+    showToast('🎉 Job posted successfully! It\'s now live.');
+    setTimeout(() => { window.location.href = 'applications.html'; }, 2200);
+  }
+
+  function saveDraft() {
+    showToast('Draft saved');
+  }
+
+  function showToast(msg) {
+    const toast = document.getElementById('toast');
+    document.getElementById('toastMsg').textContent = msg;
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 3000);
+  }
+
+  // Set min date for deadline
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('deadline').setAttribute('min', today);
+</script>
+</body>
+</html>

@@ -281,10 +281,10 @@
         </a>
         <div class="nav-links">
             <a href="#jobs" class="nav-pill active">My Jobs</a>
-            <a href="#candidates" class="nav-pill">Candidates</a>
-            <a href="#post" class="nav-pill">Post a Job</a>
-            <a href="#applications" class="nav-pill">Applications</a>
-            <a href="#messages" class="nav-pill">Messages</a>
+            <a href="jobposting.html" class="nav-pill">Post a Job</a>
+            <a href="topcandidate.html" class="nav-pill">Candidates</a>
+            <a href="applications.html" class="nav-pill">Applications</a>
+            <a href="massage.html" class="nav-pill">Messages</a>
         </div>
         <div class="nav-actions">
             <button class="icon-btn" onclick="showToast('No new notifications')">
@@ -318,9 +318,6 @@
                     </div>
                 </div>
             </div>
-            <button class="btn btn-primary" onclick="document.getElementById('post').scrollIntoView({behavior:'smooth'})">
-                <i class="fa-solid fa-plus"></i> Post New Job
-            </button>
         </div>
 
         <!-- STATS -->
@@ -366,14 +363,11 @@
             <aside class="left-rail">
                 <section class="panel rail-card">
                     <div class="qa-title">Quick Actions</div>
-                    <button class="qa-btn qa-primary" onclick="document.getElementById('post').scrollIntoView({behavior:'smooth'})">
-                        <i class="fa-solid fa-plus"></i> Post New Job
+                    <button class="qa-btn qa-primary" onclick="document.getElementById('jobs').scrollIntoView({behavior:'smooth'})">
+                        <i class="fa-solid fa-briefcase"></i> View My Jobs
                     </button>
-                    <button class="qa-btn qa-ghost" onclick="document.getElementById('candidates').scrollIntoView({behavior:'smooth'})">
-                        <i class="fa-solid fa-users"></i> Find Candidates
-                    </button>
-                    <button class="qa-btn qa-ghost" onclick="document.getElementById('applications').scrollIntoView({behavior:'smooth'})">
-                        <i class="fa-solid fa-list-check"></i> View Applications
+                    <button class="qa-btn qa-ghost" onclick="window.location.href='jobposting.html'">
+                        <i class="fa-solid fa-plus"></i> Add Job Posting
                     </button>
                     <button class="qa-btn qa-ghost" onclick="showToast('Analytics coming soon! 📊')">
                         <i class="fa-solid fa-chart-bar"></i> Analytics
@@ -445,6 +439,10 @@
                     <div class="job-list">
                         {% if user.jobs %}
                             {% for job in user.jobs %}
+                            {% set is_active = (job.status or 'active')|lower == 'active' %}
+                            {% set candidate_visible = is_active and job.created_at and job.created_at >= visibility_cutoff %}
+                            {% set days_left = (candidate_visibility_days - (now_utc - job.created_at).days) if job.created_at else 0 %}
+                            {% set applied_count = job.applications|selectattr('action', 'equalto', 'applied')|list|length %}
                             <div class="job-card">
                                 <div class="job-top">
                                     <div class="job-main">
@@ -453,15 +451,27 @@
                                             <div class="job-title">{{ job.title }}</div>
                                             <div class="job-meta">{{ user.company_name }} &nbsp;·&nbsp; {{ job.location }} &nbsp;·&nbsp; {{ job.salary }}</div>
                                             <div class="job-chips">
-                                                <span class="chip chip-green">Active</span>
-                                                <span class="chip chip-blue">0 applicants</span>
-                                                <span class="chip chip-grey">Posted recently</span>
+                                                {% if candidate_visible %}
+                                                    <span class="chip chip-green">Visible to candidates</span>
+                                                    <span class="chip chip-blue">{{ days_left if days_left > 0 else 0 }} day(s) left</span>
+                                                {% elif is_active %}
+                                                    <span class="chip chip-red">Expired from candidate feed</span>
+                                                {% else %}
+                                                    <span class="chip chip-red">Removed from candidate feed</span>
+                                                {% endif %}
+                                                <span class="chip chip-grey">{{ applied_count }} applicants</span>
                                             </div>
                                         </div>
                                     </div>
                                     <div class="job-actions">
                                         <button class="btn btn-ghost btn-small" onclick="showToast('Opening job view...')"><i class="fa-solid fa-eye"></i> View</button>
-                                        <button class="btn btn-primary btn-small" onclick="showToast('Opening editor...')"><i class="fa-solid fa-pen"></i> Edit</button>
+                                        {% if is_active %}
+                                        <form method="post" action="{{ url_for('remove_employer_job', job_id=job.id) }}" onsubmit="return confirm('Remove this job from candidate dashboard visibility?');">
+                                            <button class="btn btn-danger btn-small" type="submit"><i class="fa-solid fa-eye-slash"></i> Remove</button>
+                                        </form>
+                                        {% else %}
+                                        <button class="btn btn-ghost btn-small" type="button" onclick="showToast('This job is already hidden from candidates')"><i class="fa-solid fa-eye-slash"></i> Hidden</button>
+                                        {% endif %}
                                     </div>
                                 </div>
                             </div>
@@ -470,199 +480,9 @@
                             <div class="empty-state">
                                 <div class="empty-icon"><i class="fa-regular fa-folder-open"></i></div>
                                 <div class="empty-title">No job posts yet</div>
-                                <div class="empty-sub">Create your first post from the section below and it will appear here.</div>
+                                <div class="empty-sub">Create your first post from the Job Posting page and it will appear here.</div>
                             </div>
                         {% endif %}
-                    </div>
-                </section>
-
-                <!-- CANDIDATES -->
-                <section id="candidates" class="panel section-block">
-                    <div class="section-head">
-                        <div>
-                            <h2>Top Candidates</h2>
-                            <p>ATS-screened applicants with verified skill scores — ready to interview.</p>
-                        </div>
-                        <span class="section-tag">{{ candidate_applications|length }} total applicants</span>
-                    </div>
-                    <div style="overflow-x:auto; border-radius:14px; border:1px solid var(--border-soft);">
-                        <table class="cand-table">
-                            <thead>
-                                <tr>
-                                    <th>Candidate</th>
-                                    <th>Applied For</th>
-                                    <th>ATS Score</th>
-                                    <th>Skill Test</th>
-                                    <th>Status</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% if candidate_applications %}
-                                {% for application in candidate_applications %}
-                                <tr>
-                                    <td>
-                                        <div class="cand-name">{{ application.candidate.full_name or application.candidate.username }}</div>
-                                        <div class="cand-role">{{ application.candidate.email }}</div>
-                                    </td>
-                                    <td style="color:var(--muted);font-size:13px">{{ application.job_title }}</td>
-                                    <td style="color:var(--muted);font-size:13px">-</td>
-                                    <td style="color:var(--muted);font-size:13px">-</td>
-                                    {% set status_key = (application.status or 'submitted')|lower %}
-                                    <td>
-                                        <span class="status-pill {% if status_key == 'hired' %}sp-hired{% elif status_key in ['review', 'in_review', 'interview'] %}sp-review{% elif status_key == 'rejected' %}sp-reject{% else %}sp-new{% endif %}">{{ status_key.replace('_', ' ')|title }}</span>
-                                    </td>
-                                    <td><button class="btn btn-ghost btn-small" onclick="showToast('Profile actions coming soon')">Review</button></td>
-                                </tr>
-                                {% endfor %}
-                                {% else %}
-                                <tr>
-                                    <td colspan="6" style="text-align:center;color:var(--muted);padding:24px">No applicants yet for your current job posts.</td>
-                                </tr>
-                                {% endif %}
-                            </tbody>
-                        </table>
-                    </div>
-                </section>
-
-                <!-- POST A JOB -->
-                <section id="post" class="panel section-block">
-                    <div class="section-head">
-                        <div>
-                            <h2>Post a New Job</h2>
-                            <p>Fill in the details and go live in minutes. Set ATS score requirements and skill test filters.</p>
-                        </div>
-                    </div>
-
-                    <form method="post" action="{{ url_for('create_employer_job') }}">
-                        <div class="form-grid">
-                            <div class="form-group">
-                                <label>Job Title *</label>
-                                <input class="form-input" type="text" name="title" placeholder="e.g. Senior ML Engineer" required>
-                            </div>
-                            <div class="form-group">
-                                <label>Location *</label>
-                                <input class="form-input" type="text" name="location" placeholder="e.g. Bangalore / Remote" required>
-                            </div>
-                            <div class="form-group">
-                                <label>Job Type</label>
-                                <select class="form-input" name="job_type">
-                                    <option value="Full-time">Full-time</option>
-                                    <option value="Part-time">Part-time</option>
-                                    <option value="Contract">Contract</option>
-                                    <option value="Internship">Internship</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label>Salary Range</label>
-                                <input class="form-input" type="text" name="salary" placeholder="e.g. 20-35 LPA">
-                            </div>
-                            <div class="form-group">
-                                <label>Experience Required</label>
-                                <select class="form-input" name="experience_level">
-                                    <option value="Fresher (0-1 yr)">Fresher (0-1 yr)</option>
-                                    <option value="1-3 years">1-3 years</option>
-                                    <option value="3-5 years">3-5 years</option>
-                                    <option value="5+ years">5+ years</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label>Min. ATS Score</label>
-                                <input class="form-input" type="number" name="min_ats_score" placeholder="e.g. 75" min="0" max="100">
-                            </div>
-                            <div class="form-group form-full">
-                                <label>Job Description *</label>
-                                <textarea class="form-input" name="description" placeholder="Describe the role, responsibilities, and requirements..." required></textarea>
-                            </div>
-                            <div class="form-group">
-                                <label>Required Skills</label>
-                                <input class="form-input" type="text" name="required_skills" placeholder="e.g. Python, TensorFlow, MLOps">
-                            </div>
-                            <div class="form-group form-full" style="margin-top:8px">
-                                <button class="btn btn-primary" type="submit" style="width:fit-content;padding:14px 36px;font-size:15px">
-                                    <i class="fa-solid fa-rocket"></i> Post Job Now
-                                </button>
-                            </div>
-                        </div>
-                    </form>
-                </section>
-
-                <!-- APPLICATIONS -->
-                <section id="applications" class="panel section-block">
-                    <div class="section-head">
-                        <div>
-                            <h2>Application Pipeline</h2>
-                            <p>Track every application across all your active job posts.</p>
-                        </div>
-                        <span class="section-tag">{{ candidate_applications|length }} total</span>
-                    </div>
-                    <div style="overflow-x:auto; border-radius:14px; border:1px solid var(--border-soft);">
-                        <table class="cand-table">
-                            <thead>
-                                <tr>
-                                    <th>Candidate</th>
-                                    <th>Job Post</th>
-                                    <th>Applied</th>
-                                    <th>Status</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% if candidate_applications %}
-                                {% for application in candidate_applications %}
-                                {% set status_key = (application.status or 'submitted')|lower %}
-                                <tr>
-                                    <td><div class="cand-name">{{ application.candidate.full_name or application.candidate.username }}</div><div class="cand-role">{{ application.candidate.email }}</div></td>
-                                    <td style="color:var(--muted);font-size:13px">{{ application.job_title }}</td>
-                                    <td style="color:var(--muted);font-size:12px">{{ application.created_at.strftime("%d %b %Y") }}</td>
-                                    <td><span class="status-pill {% if status_key == 'hired' %}sp-hired{% elif status_key in ['review', 'in_review', 'interview'] %}sp-review{% elif status_key == 'rejected' %}sp-reject{% else %}sp-new{% endif %}">{{ status_key.replace('_', ' ')|title }}</span></td>
-                                    <td><button class="btn btn-ghost btn-small" onclick="showToast('Profile actions coming soon')">Review</button></td>
-                                </tr>
-                                {% endfor %}
-                                {% else %}
-                                <tr>
-                                    <td colspan="5" style="text-align:center;color:var(--muted);padding:24px">No applications yet for your job posts.</td>
-                                </tr>
-                                {% endif %}
-                            </tbody>
-                        </table>
-                    </div>
-                </section>
-
-                <!-- MESSAGES -->
-                <section id="messages" class="panel section-block">
-                    <div class="section-head">
-                        <div>
-                            <h2>Messages</h2>
-                            <p>Direct messages from candidates who reached out via DM to HR.</p>
-                        </div>
-                        <span class="section-tag">3 unread</span>
-                    </div>
-                    <div style="display:flex;flex-direction:column;gap:10px">
-                        <div style="display:flex;align-items:center;gap:14px;padding:16px;border-radius:14px;border:1px solid var(--border-soft);background:rgba(255,255,255,0.02);transition:all 0.2s;cursor:pointer" onmouseenter="this.style.borderColor='rgba(255,107,43,0.25)'" onmouseleave="this.style.borderColor='rgba(255,255,255,0.06)'" onclick="showToast('Opening message...')">
-                            <div style="width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,var(--purple),var(--blue));display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:15px;flex-shrink:0">RK</div>
-                            <div style="flex:1">
-                                <div style="font-weight:700;font-size:14px;margin-bottom:3px">Rohan Kumar <span style="font-size:10px;background:rgba(255,107,43,0.15);color:var(--accent);padding:2px 8px;border-radius:100px;font-weight:700;margin-left:6px">New</span></div>
-                                <div style="font-size:12px;color:var(--muted)">Hi, I'm interested in the ML Engineer role. I have 3 years of...</div>
-                            </div>
-                            <div style="font-size:11px;color:var(--muted-soft)">2h ago</div>
-                        </div>
-                        <div style="display:flex;align-items:center;gap:14px;padding:16px;border-radius:14px;border:1px solid var(--border-soft);background:rgba(255,255,255,0.02);cursor:pointer" onclick="showToast('Opening message...')">
-                            <div style="width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,var(--green),var(--blue));display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:15px;flex-shrink:0">AS</div>
-                            <div style="flex:1">
-                                <div style="font-weight:700;font-size:14px;margin-bottom:3px">Ananya Singh</div>
-                                <div style="font-size:12px;color:var(--muted)">Thank you for shortlisting me! When can we schedule the...</div>
-                            </div>
-                            <div style="font-size:11px;color:var(--muted-soft)">1d ago</div>
-                        </div>
-                        <div style="display:flex;align-items:center;gap:14px;padding:16px;border-radius:14px;border:1px solid var(--border-soft);background:rgba(255,255,255,0.02);cursor:pointer" onclick="showToast('Opening message...')">
-                            <div style="width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--accent));display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:15px;flex-shrink:0">MK</div>
-                            <div style="flex:1">
-                                <div style="font-weight:700;font-size:14px;margin-bottom:3px">Mehul Kapoor</div>
-                                <div style="font-size:12px;color:var(--muted)">I saw your Data Scientist opening and believe my background...</div>
-                            </div>
-                            <div style="font-size:11px;color:var(--muted-soft)">2d ago</div>
-                        </div>
                     </div>
                 </section>
 
@@ -690,9 +510,9 @@
                     <span class="menu-icon" style="background:rgba(96,165,250,0.15);color:var(--blue)"><i class="fa-solid fa-user-gear"></i></span>
                     <span><strong>Manage Account</strong><span>Profile and settings</span></span>
                 </a>
-                <a href="#applications" onclick="toggleSidebar(true)" class="menu-item">
+                <a href="#jobs" onclick="toggleSidebar(true)" class="menu-item">
                     <span class="menu-icon" style="background:rgba(52,211,153,0.15);color:var(--green)"><i class="fa-solid fa-list-check"></i></span>
-                    <span><strong>Applications</strong><span>View all job applications</span></span>
+                    <span><strong>My Jobs</strong><span>Manage your active job posts</span></span>
                 </a>
                 <a href="{{ url_for('price') }}" class="menu-item">
                     <span class="menu-icon" style="background:rgba(167,139,250,0.15);color:var(--purple)"><i class="fa-solid fa-tags"></i></span>
@@ -741,3 +561,5 @@
     </script>
 </body>
 </html>
+
+

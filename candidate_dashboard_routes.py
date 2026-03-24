@@ -1,6 +1,6 @@
 import json
 import re
-from datetime import datetime
+from datetime import datetime, timedelta
 from io import BytesIO
 from urllib.error import URLError
 from urllib.parse import urlencode, urlparse
@@ -10,7 +10,7 @@ from zipfile import BadZipFile, ZipFile
 
 from flask import flash, redirect, render_template, request, url_for
 
-from models import CandidateJobAction, CandidateProfile, User, db
+from models import CandidateJobAction, CandidateProfile, EmployerJob, User, db
 
 
 def register_candidate_dashboard_routes(app, helpers):
@@ -179,12 +179,9 @@ def register_candidate_dashboard_routes(app, helpers):
         )
 
     def fetch_jobs_from_api(search='', location='', level=''):
-        api_sources = build_api_sources()
-        if not api_sources:
-            return [], 'Jobs API URL is not configured.'
-
         timeout = parse_int(app.config.get('JOBS_API_TIMEOUT'), 10)
         limit = parse_int(app.config.get('CANDIDATE_DASHBOARD_JOB_LIMIT'), 12)
+        visibility_days = max(parse_int(app.config.get('EMPLOYER_JOB_VISIBILITY_DAYS'), 30), 1)
         search = (search or '').strip()
         location = (location or '').strip().lower()
         level = (level or '').strip().lower()
@@ -199,6 +196,62 @@ def register_candidate_dashboard_routes(app, helpers):
 
         jobs = []
         seen_keys = set()
+
+        # Include employer-posted jobs for candidate visibility window.
+        visibility_cutoff = datetime.utcnow() - timedelta(days=visibility_days)
+        employer_jobs = (
+            EmployerJob.query
+            .filter(
+                EmployerJob.status == 'active',
+                EmployerJob.created_at >= visibility_cutoff,
+            )
+            .order_by(EmployerJob.created_at.desc())
+            .all()
+        )
+        for employer_job in employer_jobs:
+            employer_profile = employer_job.employer.employer_profile if employer_job.employer else None
+            company_name = get_text(
+                {
+                    'company_name': employer_profile.company_name if employer_profile else '',
+                    'company': employer_job.employer.full_name if employer_job.employer else '',
+                },
+                ('company_name', 'company'),
+                fallback='Employer',
+            )
+            normalized = {
+                'id': f'employer-{employer_job.id}',
+                'employer_job_id': employer_job.id,
+                'title': employer_job.title,
+                'company_name': company_name,
+                'location': employer_job.location or 'Location not specified',
+                'salary': employer_job.salary or 'Salary not disclosed',
+                'job_type': employer_job.job_type or 'Full-time',
+                'url': '',
+                'source': 'employer',
+            }
+
+            searchable = f"{normalized['title']} {normalized['company_name']} {normalized['location']} {normalized['job_type']}".lower()
+            if search and search.lower() not in searchable:
+                continue
+            if location and location not in searchable:
+                continue
+            if selected_tokens and not any(token in searchable for token in selected_tokens):
+                continue
+
+            key = dedupe_key(normalized)
+            if key in seen_keys:
+                continue
+            seen_keys.add(key)
+            jobs.append(normalized)
+            if len(jobs) >= limit:
+                return jobs, None
+
+        api_sources = build_api_sources()
+        if not api_sources:
+            if jobs:
+                return jobs, None
+            return [], 'Jobs API URL is not configured.'
+
         failed_sources = 0
 
         for index, base_url in enumerate(api_sources, start=1):
@@ -394,13 +447,20 @@ def register_candidate_dashboard_routes(app, helpers):
         job_url = request.form.get('job_url', '').strip()
         external_job_id = request.form.get('external_job_id', '').strip()
         source = (request.form.get('source') or 'api').strip().lower()
+        employer_job_id = parse_int(request.form.get('employer_job_id', '').strip(), default=None)
 
         if not job_title:
             flash('Job title is required to continue.', 'error')
             return build_candidate_redirect()
 
         existing = None
-        if external_job_id:
+        if employer_job_id:
+            existing = CandidateJobAction.query.filter_by(
+                candidate_user_id=user.id,
+                employer_job_id=employer_job_id,
+                action=action,
+            ).first()
+        if existing is None and external_job_id:
             existing = CandidateJobAction.query.filter_by(
                 candidate_user_id=user.id,
                 external_job_id=external_job_id,
@@ -421,6 +481,7 @@ def register_candidate_dashboard_routes(app, helpers):
         new_action = CandidateJobAction(
             candidate_user_id=user.id,
             source=source or 'api',
+            employer_job_id=employer_job_id,
             external_job_id=external_job_id or None,
             job_title=job_title,
             company_name=company_name or None,

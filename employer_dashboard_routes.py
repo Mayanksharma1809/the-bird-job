@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from flask import flash, redirect, render_template, request, url_for
 
@@ -64,11 +64,21 @@ def register_employer_dashboard_routes(app, helpers):
         dashboard_user = employer_dashboard_user(user)
         dashboard_user['jobs'] = jobs
         dashboard_user['stats'] = stats
+        candidate_visibility_days = 30
+        try:
+            candidate_visibility_days = int(app.config.get('EMPLOYER_JOB_VISIBILITY_DAYS', 30))
+        except (TypeError, ValueError):
+            candidate_visibility_days = 30
+        candidate_visibility_days = max(candidate_visibility_days, 1)
+        visibility_cutoff = datetime.utcnow() - timedelta(days=candidate_visibility_days)
 
         return render_template(
             'employer_dashboard.html',
             user=dashboard_user,
             candidate_applications=recent_applications,
+            candidate_visibility_days=candidate_visibility_days,
+            visibility_cutoff=visibility_cutoff,
+            now_utc=datetime.utcnow(),
         )
 
     @app.route('/employer/jobs/create', methods=['POST'])
@@ -116,6 +126,36 @@ def register_employer_dashboard_routes(app, helpers):
             return redirect(url_for('employer_dashboard'))
 
         flash('Job post created successfully.', 'success')
+        return redirect(url_for('employer_dashboard'))
+
+    @app.route('/employer/jobs/<int:job_id>/remove', methods=['POST'])
+    def remove_employer_job():
+        user = get_logged_in_user()
+        if user is None:
+            flash('Please login first.', 'error')
+            return redirect(url_for('login'))
+        if normalize_role(user.role) != 'employer':
+            return redirect(url_for(dashboard_endpoint_for_role(user.role)))
+
+        job = EmployerJob.query.filter_by(id=job_id, employer_user_id=user.id).first()
+        if job is None:
+            flash('Job post not found.', 'error')
+            return redirect(url_for('employer_dashboard'))
+
+        if (job.status or '').lower() != 'active':
+            flash('This job is already removed from candidate visibility.', 'success')
+            return redirect(url_for('employer_dashboard'))
+
+        try:
+            job.status = 'removed'
+            db.session.commit()
+        except Exception:
+            db.session.rollback()
+            app.logger.exception('Failed to remove employer job from candidate visibility')
+            flash('Unable to remove the job right now. Please try again.', 'error')
+            return redirect(url_for('employer_dashboard'))
+
+        flash('Job removed from candidate dashboard visibility.', 'success')
         return redirect(url_for('employer_dashboard'))
 
     @app.route('/employer_form', methods=['GET', 'POST'])

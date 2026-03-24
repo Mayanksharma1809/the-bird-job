@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Top Candidates — HireAI</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0c;
+    --surface: #111116;
+    --surface2: #18181f;
+    --border: #2a2a35;
+    --orange: #f97316;
+    --orange-dim: rgba(249,115,22,0.12);
+    --orange-glow: rgba(249,115,22,0.35);
+    --text: #e8e8f0;
+    --muted: #6b6b80;
+    --green: #22c55e;
+    --green-dim: rgba(34,197,94,0.1);
+    --blue: #3b82f6;
+    --mono: 'Space Mono', monospace;
+    --sans: 'Syne', sans-serif;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: var(--sans); min-height: 100vh; overflow-x: hidden; }
+
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image:
+      linear-gradient(rgba(249,115,22,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(249,115,22,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none; z-index: 0;
+  }
+
+  body::after {
+    content: '';
+    position: fixed; bottom: -200px; left: -200px;
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(249,115,22,0.06) 0%, transparent 70%);
+    pointer-events: none; z-index: 0;
+  }
+
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 2.5rem; height: 64px;
+    background: rgba(10,10,12,0.85); backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border);
+  }
+  .logo { font-family: var(--mono); font-size: 1.1rem; font-weight: 700; color: var(--orange); display: flex; align-items: center; gap: 8px; }
+  .logo span { color: var(--text); }
+  .nav-links { display: flex; align-items: center; gap: 2rem; list-style: none; }
+  .nav-links a { color: var(--muted); text-decoration: none; font-size: 0.875rem; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; transition: color 0.2s; }
+  .nav-links a:hover { color: var(--text); }
+  .nav-links a.active { color: var(--orange); }
+  .nav-avatar { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, var(--orange), #ea580c); display: flex; align-items: center; justify-content: center; font-family: var(--mono); font-size: 0.75rem; font-weight: 700; cursor: pointer; }
+
+  main { position: relative; z-index: 1; max-width: 1200px; margin: 0 auto; padding: 3rem 2rem 6rem; }
+
+  /* HEADER */
+  .page-header {
+    display: flex; align-items: flex-end; justify-content: space-between;
+    margin-bottom: 2.5rem; flex-wrap: wrap; gap: 1rem;
+    animation: fadeDown 0.5s ease;
+  }
+
+  .page-tag {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: var(--orange-dim); border: 1px solid rgba(249,115,22,0.25);
+    color: var(--orange); font-family: var(--mono); font-size: 0.7rem;
+    letter-spacing: 0.1em; text-transform: uppercase; padding: 4px 12px; border-radius: 2px;
+    margin-bottom: 0.75rem;
+  }
+
+  .page-tag::before { content: ''; width: 6px; height: 6px; background: var(--orange); border-radius: 50%; animation: pulse 2s infinite; }
+
+  h1 { font-size: 2.2rem; font-weight: 800; letter-spacing: -0.03em; line-height: 1.1; }
+  h1 em { font-style: normal; color: var(--orange); }
+
+  .page-sub { color: var(--muted); font-family: var(--mono); font-size: 0.8rem; margin-top: 4px; }
+
+  .header-controls { display: flex; align-items: center; gap: 10px; }
+
+  .filter-chip {
+    background: var(--surface); border: 1px solid var(--border);
+    color: var(--muted); font-family: var(--mono); font-size: 0.72rem;
+    padding: 8px 14px; border-radius: 3px; cursor: pointer;
+    letter-spacing: 0.05em; transition: all 0.2s; appearance: none;
+  }
+
+  .filter-chip:hover, .filter-chip.active { border-color: var(--orange); color: var(--orange); background: var(--orange-dim); }
+
+  .search-box {
+    display: flex; align-items: center;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 3px; padding: 8px 14px; gap: 8px;
+    transition: border-color 0.2s;
+  }
+
+  .search-box:focus-within { border-color: var(--orange); }
+  .search-box input { background: none; border: none; outline: none; color: var(--text); font-family: var(--sans); font-size: 0.85rem; width: 200px; }
+
+  /* TOP 3 PODIUM */
+  .podium {
+    display: grid;
+    grid-template-columns: 1fr 1.1fr 1fr;
+    gap: 16px;
+    margin-bottom: 2rem;
+    animation: fadeUp 0.5s 0.1s ease both;
+  }
+
+  .podium-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 1.5rem;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.2s, box-shadow 0.2s;
+    cursor: pointer;
+  }
+
+  .podium-card:hover { transform: translateY(-4px); box-shadow: 0 16px 40px rgba(0,0,0,0.4); }
+
+  .podium-card.rank1 {
+    border-color: var(--orange);
+    background: linear-gradient(135deg, var(--surface) 60%, rgba(249,115,22,0.06));
+    box-shadow: 0 0 0 1px var(--orange), 0 8px 32px var(--orange-glow);
+  }
+
+  .podium-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: var(--border); }
+  .podium-card.rank1::before { background: linear-gradient(90deg, var(--orange), #ea580c); }
+  .podium-card.rank2::before { background: linear-gradient(90deg, #94a3b8, transparent); }
+  .podium-card.rank3::before { background: linear-gradient(90deg, #cd7c2e, transparent); }
+
+  .rank-badge {
+    position: absolute; top: 1rem; right: 1rem;
+    font-family: var(--mono); font-size: 1.4rem; font-weight: 700;
+    opacity: 0.15;
+  }
+
+  .rank1 .rank-badge { color: var(--orange); opacity: 0.25; }
+
+  .podium-top {
+    display: flex; align-items: center; gap: 12px; margin-bottom: 1rem;
+  }
+
+  .p-avatar {
+    width: 52px; height: 52px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--mono); font-size: 1rem; font-weight: 700;
+    border: 2px solid;
+  }
+
+  .rank1 .p-avatar { border-color: var(--orange); background: var(--orange-dim); color: var(--orange); }
+  .rank2 .p-avatar { border-color: #94a3b8; background: rgba(148,163,184,0.1); color: #94a3b8; }
+  .rank3 .p-avatar { border-color: #cd7c2e; background: rgba(205,124,46,0.1); color: #cd7c2e; }
+
+  .p-name { font-size: 1.05rem; font-weight: 800; margin-bottom: 2px; }
+  .p-role { font-family: var(--mono); font-size: 0.7rem; color: var(--muted); }
+
+  .p-score-row {
+    display: flex; align-items: center; gap: 10px; margin-bottom: 1rem;
+  }
+
+  .p-score {
+    font-family: var(--mono); font-size: 2.5rem; font-weight: 700; line-height: 1;
+  }
+
+  .rank1 .p-score { color: var(--orange); }
+  .rank2 .p-score { color: #94a3b8; }
+  .rank3 .p-score { color: #cd7c2e; }
+
+  .p-score-label { font-family: var(--mono); font-size: 0.65rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; }
+
+  .p-bars { display: flex; flex-direction: column; gap: 6px; margin-bottom: 1rem; }
+
+  .p-bar { display: flex; align-items: center; gap: 8px; }
+  .p-bar-label { font-family: var(--mono); font-size: 0.62rem; color: var(--muted); width: 70px; flex-shrink: 0; }
+  .p-bar-track { flex: 1; height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; }
+  .p-bar-fill { height: 100%; border-radius: 2px; animation: barIn 0.8s ease both; }
+  .p-bar-val { font-family: var(--mono); font-size: 0.6rem; color: var(--muted); width: 24px; text-align: right; }
+
+  .p-skills { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 1rem; }
+
+  .p-skill {
+    font-family: var(--mono); font-size: 0.62rem;
+    padding: 2px 7px; border-radius: 2px;
+    background: var(--surface2); border: 1px solid var(--border); color: var(--muted);
+  }
+
+  .rank1 .p-skill { background: var(--orange-dim); border-color: rgba(249,115,22,0.3); color: var(--orange); }
+
+  .p-actions { display: flex; gap: 8px; }
+
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 8px 16px; border-radius: 3px; font-family: var(--mono); font-size: 0.72rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; cursor: pointer; border: none; transition: all 0.2s; flex: 1; }
+  .btn-primary { background: var(--orange); color: #000; }
+  .btn-primary:hover { box-shadow: 0 0 16px var(--orange-glow); transform: translateY(-1px); }
+  .btn-ghost { background: transparent; border: 1px solid var(--border); color: var(--muted); }
+  .btn-ghost:hover { border-color: var(--orange); color: var(--orange); background: var(--orange-dim); }
+
+  /* LEADERBOARD TABLE */
+  .section-title {
+    font-family: var(--mono); font-size: 0.68rem;
+    letter-spacing: 0.12em; text-transform: uppercase; color: var(--orange);
+    margin-bottom: 1rem; display: flex; align-items: center; gap: 10px;
+    animation: fadeUp 0.5s 0.15s ease both;
+  }
+
+  .section-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+  .leaderboard {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+    animation: fadeUp 0.5s 0.2s ease both;
+  }
+
+  .lb-header {
+    display: grid;
+    grid-template-columns: 48px 2.5fr 1fr 1fr 1fr 1fr 140px;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface2);
+  }
+
+  .lb-th {
+    font-family: var(--mono); font-size: 0.62rem;
+    color: var(--muted); letter-spacing: 0.1em; text-transform: uppercase;
+  }
+
+  .lb-row {
+    display: grid;
+    grid-template-columns: 48px 2.5fr 1fr 1fr 1fr 1fr 140px;
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--border);
+    align-items: center;
+    transition: background 0.15s;
+    cursor: pointer;
+  }
+
+  .lb-row:last-child { border-bottom: none; }
+  .lb-row:hover { background: var(--surface2); }
+  .lb-row.highlight { background: linear-gradient(90deg, var(--orange-dim), transparent); }
+
+  .lb-rank {
+    font-family: var(--mono); font-size: 0.85rem; font-weight: 700;
+    color: var(--muted);
+  }
+
+  .lb-row:nth-child(1) .lb-rank { color: var(--orange); }
+  .lb-row:nth-child(2) .lb-rank { color: #94a3b8; }
+  .lb-row:nth-child(3) .lb-rank { color: #cd7c2e; }
+
+  .lb-candidate { display: flex; align-items: center; gap: 10px; }
+
+  .lb-avatar {
+    width: 32px; height: 32px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--mono); font-size: 0.65rem; font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .lb-name { font-size: 0.88rem; font-weight: 700; }
+  .lb-sub { font-family: var(--mono); font-size: 0.62rem; color: var(--muted); }
+
+  .lb-score {
+    font-family: var(--mono); font-weight: 700; font-size: 1rem;
+  }
+
+  .lb-row:nth-child(1) .lb-score { color: var(--orange); }
+  .lb-row:nth-child(2) .lb-score { color: #94a3b8; }
+
+  .lb-exp, .lb-loc { font-size: 0.8rem; color: var(--muted); font-family: var(--mono); }
+
+  .lb-status-badge {
+    font-family: var(--mono); font-size: 0.6rem;
+    padding: 3px 8px; border-radius: 2px;
+    letter-spacing: 0.06em; text-transform: uppercase;
+    display: inline-flex; align-items: center; gap: 4px;
+  }
+
+  .lb-status-badge.shortlisted { background: var(--green-dim); color: var(--green); border: 1px solid rgba(34,197,94,0.25); }
+  .lb-status-badge.new { background: rgba(59,130,246,0.1); color: var(--blue); border: 1px solid rgba(59,130,246,0.25); }
+  .lb-status-badge.interviewed { background: rgba(234,179,8,0.1); color: #eab308; border: 1px solid rgba(234,179,8,0.25); }
+
+  .lb-actions { display: flex; gap: 6px; }
+
+  .lb-action {
+    background: var(--surface2); border: 1px solid var(--border);
+    color: var(--muted); font-family: var(--mono); font-size: 0.65rem;
+    padding: 5px 10px; border-radius: 2px; cursor: pointer;
+    transition: all 0.15s; letter-spacing: 0.04em;
+  }
+
+  .lb-action.primary { border-color: var(--orange); color: var(--orange); background: var(--orange-dim); }
+  .lb-action:hover { border-color: var(--orange); color: var(--orange); }
+
+  /* COMPARE PANEL */
+  .compare-bar {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    padding: 1rem 2rem;
+    display: none;
+    align-items: center;
+    justify-content: space-between;
+    z-index: 50;
+    backdrop-filter: blur(16px);
+    animation: slideUp 0.3s ease;
+  }
+
+  .compare-bar.show { display: flex; }
+
+  .compare-selected { display: flex; align-items: center; gap: 12px; }
+  .compare-label { font-family: var(--mono); font-size: 0.72rem; color: var(--orange); letter-spacing: 0.08em; text-transform: uppercase; }
+
+  .compare-avatars { display: flex; gap: 8px; }
+
+  .compare-avatar {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: var(--orange-dim); border: 1.5px solid var(--orange);
+    color: var(--orange); font-family: var(--mono); font-size: 0.72rem; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  @keyframes fadeDown { from { opacity: 0; transform: translateY(-12px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes barIn { from { width: 0 !important; } to {} }
+  @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+  .toast { position: fixed; bottom: 2rem; right: 2rem; background: var(--surface); border: 1px solid var(--orange); border-radius: 4px; padding: 1rem 1.5rem; display: flex; align-items: center; gap: 10px; font-family: var(--mono); font-size: 0.8rem; z-index: 1000; transform: translateY(100px); opacity: 0; transition: all 0.3s ease; box-shadow: 0 8px 32px rgba(0,0,0,0.4); }
+  .toast.show { transform: translateY(0); opacity: 1; }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">⬡ <span>Hire</span>AI</div>
+  <ul class="nav-links">
+    <li><a href="applications.html">Applications</a></li>
+    <li><a href="job-posting.html">Post Job</a></li>
+    <li><a href="messages.html">Messages</a></li>
+    <li><a href="top-candidates.html" class="active">Top Candidates</a></li>
+  </ul>
+  <div class="nav-avatar">RC</div>
+</nav>
+
+<main>
+  <!-- HEADER -->
+  <div class="page-header">
+    <div>
+      <div class="page-tag">AI Powered Rankings</div>
+      <h1>Top <em>Candidates</em></h1>
+      <p class="page-sub">// Ranked by HireAI across 12 signals</p>
+    </div>
+    <div class="header-controls">
+      <div class="search-box">
+        <span style="color:var(--muted)">🔍</span>
+        <input type="text" placeholder="Search candidates...">
+      </div>
+      <select class="filter-chip">
+        <option>All Jobs</option>
+        <option>Sr. Frontend Dev</option>
+        <option>Backend Engineer</option>
+        <option>UI/UX Designer</option>
+      </select>
+      <select class="filter-chip">
+        <option>All Time</option>
+        <option>This Week</option>
+        <option>This Month</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- PODIUM TOP 3 -->
+  <div class="podium">
+    <!-- RANK 2 -->
+    <div class="podium-card rank2" onclick="showToast('Viewing Aryan Sharma\'s full profile...')">
+      <div class="rank-badge">#2</div>
+      <div class="podium-top">
+        <div class="p-avatar">AS</div>
+        <div>
+          <div class="p-name">Aryan Sharma</div>
+          <div class="p-role">Sr. React Developer · 5yr</div>
+        </div>
+      </div>
+      <div class="p-score-row">
+        <div class="p-score">92</div>
+        <div class="p-score-label">AI<br>Score</div>
+      </div>
+      <div class="p-bars">
+        <div class="p-bar">
+          <div class="p-bar-label">Skills</div>
+          <div class="p-bar-track"><div class="p-bar-fill" style="width:94%;background:#94a3b8;animation-delay:0.1s"></div></div>
+          <div class="p-bar-val">94</div>
+        </div>
+        <div class="p-bar">
+          <div class="p-bar-label">Exp.</div>
+          <div class="p-bar-track"><div class="p-bar-fill" style="width:88%;background:#94a3b8;animation-delay:0.2s"></div></div>
+          <div class="p-bar-val">88</div>
+        </div>
+        <div class="p-bar">
+          <div class="p-bar-label">Culture</div>
+          <div class="p-bar-track"><div class="p-bar-fill" style="width:91%;background:#94a3b8;animation-delay:0.3s"></div></div>
+          <div class="p-bar-val">91</div>
+        </div>
+      </div>
+      <div class="p-skills">
+        <span class="p-skill">React</span>
+        <span class="p-skill">TypeScript</span>
+        <span class="p-skill">Node.js</span>
+        <span class="p-skill">AWS</span>
+      </div>
+      <div class="p-actions">
+        <button class="btn btn-ghost" onclick="event.stopPropagation();window.location.href='messages.html'">✉ Msg</button>
+        <button class="btn btn-ghost" onclick="event.stopPropagation();showToast('Scheduled!')">📅</button>
+      </div>
+    </div>
+
+    <!-- RANK 1 -->
+    <div class="podium-card rank1" onclick="showToast('Viewing Sneha Kapoor\'s full profile...')">
+      <div class="rank-badge">#1</div>
+      <div style="text-align:center;margin-bottom:0.5rem">
+        <span style="font-size:1.5rem">🏆</span>
+      </div>
+      <div class="podium-top">
+        <div class="p-avatar">SK</div>
+        <div>
+          <div class="p-name">Sneha Kapoor</div>
+          <div class="p-role">React + Node Dev · 7yr</div>
+        </div>
+      </div>
+      <div class="p-score-row">
+        <div class="p-score">96</div>
+        <div class="p-score-label">AI<br>Score</div>
+      </div>
+      <div class="p-bars">
+        <div class="p-bar">
+          <div class="p-bar-label">Skills</div>
+          <div class="p-bar-track"><div class="p-bar-fill" style="width:98%;background:var(--orange);animation-delay:0.1s"></div></div>
+          <div class="p-bar-val">98</div>
+        </div>
+        <div class="p-bar">
+          <div class="p-bar-label">Exp.</div>
+          <div class="p-bar-track"><div class="p-bar-fill" style="width:94%;background:var(--orange);animation-delay:0.2s"></div></div>
+          <div class="p-bar-val">94</div>
+        </div>
+        <div class="p-bar">
+          <div class="p-bar-label">Culture</div>
+          <div class="p-bar-track"><div class="p-bar-fill" style="width:95%;background:var(--orange);animation-delay:0.3s"></div></div>
+          <div class="p-bar-val">95</div>
+        </div>
+      </div>
+      <div class="p-skills">
+        <span class="p-skill">React</span>
+        <span class="p-skill">Node.js</span>
+        <span class="p-skill">AWS</span>
+        <span class="p-skill">GraphQL</span>
+        <span class="p-skill">TypeScript</span>
+      </div>
+      <div class="p-actions">
+        <button class="btn btn-primary" onclick="event.stopPropagation();window.location.href='messages.html'">✉ Message</button>
+        <button class="btn btn-ghost" onclick="event.stopPropagation();showToast('Interview scheduled!')">📅</button>
+      </div>
+    </div>
+
+    <!-- RANK 3 -->
+    <div class="podium-card rank3" onclick="showToast('Viewing Vikram Joshi\'s full profile...')">
+      <div class="rank-badge">#3</div>
+      <div class="podium-top">
+        <div class="p-avatar">VJ</div>
+        <div>
+          <div class="p-name">Vikram Joshi</div>
+          <div class="p-role">Sr. Frontend Dev · 6yr</div>
+        </div>
+      </div>
+      <div class="p-score-row">
+        <div class="p-score">90</div>
+        <div class="p-score-label">AI<br>Score</div>
+      </div>
+      <div class="p-bars">
+        <div class="p-bar">
+          <div class="p-bar-label">Skills</div>
+          <div class="p-bar-track"><div class="p-bar-fill" style="width:91%;background:#cd7c2e;animation-delay:0.1s"></div></div>
+          <div class="p-bar-val">91</div>
+        </div>
+        <div class="p-bar">
+          <div class="p-bar-label">Exp.</div>
+          <div class="p-bar-track"><div class="p-bar-fill" style="width:89%;background:#cd7c2e;animation-delay:0.2s"></div></div>
+          <div class="p-bar-val">89</div>
+        </div>
+        <div class="p-bar">
+          <div class="p-bar-label">Culture</div>
+          <div class="p-bar-track"><div class="p-bar-fill" style="width:87%;background:#cd7c2e;animation-delay:0.3s"></div></div>
+          <div class="p-bar-val">87</div>
+        </div>
+      </div>
+      <div class="p-skills">
+        <span class="p-skill">React</span>
+        <span class="p-skill">TypeScript</span>
+        <span class="p-skill">Next.js</span>
+        <span class="p-skill">Redux</span>
+      </div>
+      <div class="p-actions">
+        <button class="btn btn-ghost" onclick="event.stopPropagation();window.location.href='messages.html'">✉ Msg</button>
+        <button class="btn btn-ghost" onclick="event.stopPropagation();showToast('Scheduled!')">📅</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- LEADERBOARD -->
+  <div class="section-title">Full Rankings — All Candidates</div>
+
+  <div class="leaderboard">
+    <div class="lb-header">
+      <div class="lb-th">#</div>
+      <div class="lb-th">Candidate</div>
+      <div class="lb-th">AI Score</div>
+      <div class="lb-th">Experience</div>
+      <div class="lb-th">Location</div>
+      <div class="lb-th">Status</div>
+      <div class="lb-th">Actions</div>
+    </div>
+
+    <!-- Row 1 -->
+    <div class="lb-row highlight">
+      <div class="lb-rank">#1</div>
+      <div class="lb-candidate">
+        <div class="lb-avatar" style="background:var(--orange-dim);color:var(--orange)">SK</div>
+        <div>
+          <div class="lb-name">Sneha Kapoor</div>
+          <div class="lb-sub">React + Node · Mumbai</div>
+        </div>
+      </div>
+      <div class="lb-score">96</div>
+      <div class="lb-exp">7 years</div>
+      <div class="lb-loc">Mumbai</div>
+      <div><span class="lb-status-badge shortlisted">✓ Shortlisted</span></div>
+      <div class="lb-actions">
+        <span class="lb-action primary" onclick="window.location.href='messages.html'">✉ Msg</span>
+        <span class="lb-action" onclick="showToast('Profile opened')">👤</span>
+      </div>
+    </div>
+
+    <!-- Row 2 -->
+    <div class="lb-row">
+      <div class="lb-rank">#2</div>
+      <div class="lb-candidate">
+        <div class="lb-avatar" style="background:rgba(148,163,184,0.1);color:#94a3b8">AS</div>
+        <div>
+          <div class="lb-name">Aryan Sharma</div>
+          <div class="lb-sub">Sr. React Dev · Bangalore</div>
+        </div>
+      </div>
+      <div class="lb-score" style="color:#94a3b8">92</div>
+      <div class="lb-exp">5 years</div>
+      <div class="lb-loc">Bangalore</div>
+      <div><span class="lb-status-badge new">● New</span></div>
+      <div class="lb-actions">
+        <span class="lb-action" onclick="window.location.href='messages.html'">✉ Msg</span>
+        <span class="lb-action" onclick="showToast('Profile opened')">👤</span>
+      </div>
+    </div>
+
+    <!-- Row 3 -->
+    <div class="lb-row">
+      <div class="lb-rank">#3</div>
+      <div class="lb-candidate">
+        <div class="lb-avatar" style="background:rgba(205,124,46,0.1);color:#cd7c2e">VJ</div>
+        <div>
+          <div class="lb-name">Vikram Joshi</div>
+          <div class="lb-sub">Frontend Dev · Delhi</div>
+        </div>
+      </div>
+      <div class="lb-score" style="color:#cd7c2e">90</div>
+      <div class="lb-exp">6 years</div>
+      <div class="lb-loc">Delhi</div>
+      <div><span class="lb-status-badge interviewed">★ Interviewed</span></div>
+      <div class="lb-actions">
+        <span class="lb-action" onclick="window.location.href='messages.html'">✉ Msg</span>
+        <span class="lb-action" onclick="showToast('Profile opened')">👤</span>
+      </div>
+    </div>
+
+    <!-- Row 4 -->
+    <div class="lb-row">
+      <div class="lb-rank" style="color:var(--muted)">#4</div>
+      <div class="lb-candidate">
+        <div class="lb-avatar" style="background:rgba(234,179,8,0.1);color:#eab308">MK</div>
+        <div>
+          <div class="lb-name">Manish Kumar</div>
+          <div class="lb-sub">Full Stack · Hyderabad</div>
+        </div>
+      </div>
+      <div class="lb-score" style="color:var(--text);font-size:0.9rem">88</div>
+      <div class="lb-exp">4 years</div>
+      <div class="lb-loc">Hyderabad</div>
+      <div><span class="lb-status-badge shortlisted">✓ Shortlisted</span></div>
+      <div class="lb-actions">
+        <span class="lb-action" onclick="window.location.href='messages.html'">✉ Msg</span>
+        <span class="lb-action" onclick="showToast('Profile opened')">👤</span>
+      </div>
+    </div>
+
+    <!-- Row 5 -->
+    <div class="lb-row">
+      <div class="lb-rank" style="color:var(--muted)">#5</div>
+      <div class="lb-candidate">
+        <div class="lb-avatar" style="background:rgba(168,85,247,0.1);color:#a855f7">PM</div>
+        <div>
+          <div class="lb-name">Priya Mehta</div>
+          <div class="lb-sub">Frontend Eng. · Pune</div>
+        </div>
+      </div>
+      <div class="lb-score" style="color:var(--text);font-size:0.9rem">85</div>
+      <div class="lb-exp">3 years</div>
+      <div class="lb-loc">Pune</div>
+      <div><span class="lb-status-badge new">● New</span></div>
+      <div class="lb-actions">
+        <span class="lb-action" onclick="window.location.href='messages.html'">✉ Msg</span>
+        <span class="lb-action" onclick="showToast('Profile opened')">👤</span>
+      </div>
+    </div>
+
+    <!-- Row 6 -->
+    <div class="lb-row">
+      <div class="lb-rank" style="color:var(--muted)">#6</div>
+      <div class="lb-candidate">
+        <div class="lb-avatar" style="background:var(--green-dim);color:var(--green)">RD</div>
+        <div>
+          <div class="lb-name">Rohit Das</div>
+          <div class="lb-sub">JS Developer · Chennai</div>
+        </div>
+      </div>
+      <div class="lb-score" style="color:var(--text);font-size:0.9rem">72</div>
+      <div class="lb-exp">2 years</div>
+      <div class="lb-loc">Chennai</div>
+      <div><span class="lb-status-badge new">● New</span></div>
+      <div class="lb-actions">
+        <span class="lb-action" onclick="window.location.href='messages.html'">✉ Msg</span>
+        <span class="lb-action" onclick="showToast('Profile opened')">👤</span>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<!-- COMPARE BAR -->
+<div class="compare-bar" id="compareBar">
+  <div class="compare-selected">
+    <div class="compare-label">✦ Compare</div>
+    <div class="compare-avatars" id="compareAvatars"></div>
+    <span style="font-family:var(--mono);font-size:0.75rem;color:var(--muted)">Select up to 3 candidates</span>
+  </div>
+  <div style="display:flex;gap:10px">
+    <button class="btn btn-ghost" onclick="clearCompare()" style="flex:none;padding:8px 16px">Clear</button>
+    <button class="btn btn-primary" onclick="showToast('Comparison view coming soon!')" style="flex:none;padding:8px 16px">Compare ✦</button>
+  </div>
+</div>
+
+<div class="toast" id="toast">
+  <span style="color:var(--orange)">✦</span>
+  <span id="toastMsg">Done!</span>
+</div>
+
+<script>
+  const compareList = [];
+
+  document.querySelectorAll('.lb-row').forEach((row, i) => {
+    row.addEventListener('click', () => {
+      const name = row.querySelector('.lb-name').textContent;
+      const initials = name.split(' ').map(n=>n[0]).join('');
+      if (compareList.includes(initials)) {
+        compareList.splice(compareList.indexOf(initials), 1);
+        row.classList.remove('highlight');
+      } else if (compareList.length < 3) {
+        compareList.push(initials);
+        row.classList.add('highlight');
+      }
+      updateCompareBar();
+    });
+  });
+
+  function updateCompareBar() {
+    const bar = document.getElementById('compareBar');
+    const avatarsEl = document.getElementById('compareAvatars');
+    avatarsEl.innerHTML = compareList.map(i => `<div class="compare-avatar">${i}</div>`).join('');
+    bar.classList.toggle('show', compareList.length > 1);
+  }
+
+  function clearCompare() {
+    compareList.length = 0;
+    document.querySelectorAll('.lb-row.highlight').forEach(r => r.classList.remove('highlight'));
+    document.getElementById('compareBar').classList.remove('show');
+  }
+
+  function showToast(msg) {
+    const toast = document.getElementById('toast');
+    document.getElementById('toastMsg').textContent = msg;
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 3000);
+  }
+</script>
+</body>
+</html>
