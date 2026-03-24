@@ -88,6 +88,20 @@ class Config:
         'echo': os.environ.get('DEBUG', 'False').lower() in ('true', '1', 'yes'),
     }
     DEBUG = os.environ.get('DEBUG', 'False').lower() in ('true', '1', 'yes')
+
+    # Public branding/SEO configuration
+    SITE_NAME = os.environ.get('SITE_NAME', 'The Bird Job')
+    SITE_DESCRIPTION = os.environ.get(
+        'SITE_DESCRIPTION',
+        'The Bird Job helps candidates find jobs and employers hire faster.',
+    )
+    SITE_URL = (os.environ.get('SITE_URL') or '').strip()
+    SITE_LOGO_PATH = os.environ.get('SITE_LOGO_PATH', '/static/brand/logo-512.png')
+    SITE_FAVICON_PATH = os.environ.get('SITE_FAVICON_PATH', '/static/brand/favicon-48.png')
+    SITE_APPLE_TOUCH_ICON_PATH = os.environ.get(
+        'SITE_APPLE_TOUCH_ICON_PATH',
+        '/static/brand/apple-touch-icon-180.png',
+    )
     
     # Job API Configuration
     JOBS_API_URL = os.environ.get('JOBS_API_URL', 'https://remotive.com/api/remote-jobs')

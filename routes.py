@@ -4,8 +4,9 @@ import secrets
 from datetime import datetime
 from urllib.parse import urlencode
 from urllib.request import Request, urlopen
+from xml.sax.saxutils import escape as xml_escape
 
-from flask import flash, redirect, render_template, request, session, url_for
+from flask import Response, flash, redirect, render_template, request, session, url_for
 
 from candidate_dashboard_routes import register_candidate_dashboard_routes
 from employer_dashboard_routes import register_employer_dashboard_routes
@@ -55,6 +56,12 @@ def register_routes(app):
 
     def google_redirect_uri():
         return app.config.get('GOOGLE_REDIRECT_URI') or url_for('google_callback', _external=True)
+
+    def resolve_public_site_url():
+        configured_url = (app.config.get('SITE_URL') or '').strip()
+        if configured_url:
+            return configured_url.rstrip('/')
+        return request.url_root.rstrip('/')
 
     def get_logged_in_user():
         user_id = session.get('user_id')
@@ -571,6 +578,58 @@ def register_routes(app):
     def logout():
         session.clear()
         return redirect(url_for('home'))
+
+    @app.route('/robots.txt')
+    def robots_txt():
+        sitemap_url = f"{resolve_public_site_url()}/sitemap.xml"
+        robots_content = "\n".join(
+            [
+                'User-agent: *',
+                'Allow: /',
+                f'Sitemap: {sitemap_url}',
+            ]
+        )
+        return Response(robots_content, mimetype='text/plain')
+
+    @app.route('/sitemap.xml')
+    def sitemap_xml():
+        endpoints = [
+            'home',
+            'features',
+            'login',
+            'signup',
+            'signup_candidate',
+            'signup_employer',
+        ]
+
+        urls = []
+        for endpoint in endpoints:
+            try:
+                urls.append(url_for(endpoint, _external=True))
+            except Exception:
+                app.logger.warning('Skipping sitemap endpoint %s (not available)', endpoint)
+
+        lastmod = datetime.utcnow().date().isoformat()
+        items = ''.join(
+            [
+                (
+                    '<url>'
+                    f'<loc>{xml_escape(url)}</loc>'
+                    f'<lastmod>{lastmod}</lastmod>'
+                    '<changefreq>weekly</changefreq>'
+                    '<priority>0.7</priority>'
+                    '</url>'
+                )
+                for url in urls
+            ]
+        )
+        xml_content = (
+            '<?xml version="1.0" encoding="UTF-8"?>'
+            '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'
+            f'{items}'
+            '</urlset>'
+        )
+        return Response(xml_content, mimetype='application/xml')
 
     @app.route('/features')
     def features():
