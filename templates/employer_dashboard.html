@@ -49,7 +49,7 @@
         }
         .brand { display: inline-flex; align-items: center; gap: 11px; font-family: "Clash Display", sans-serif; font-size: 22px; font-weight: 600; letter-spacing: -0.5px; }
         .brand strong { color: var(--accent); font-weight: 700; }
-        .brand-mark { width: 36px; height: 36px; border-radius: 11px; display: inline-flex; align-items: center; justify-content: center; color: white; background: linear-gradient(135deg, var(--accent), var(--accent-2)); box-shadow: 0 10px 30px rgba(255,107,43,0.35); font-size: 18px; }
+        .brand-mark { width: 36px; height: 36px; border-radius: 11px; display: inline-flex; align-items: center; justify-content: center; color: white; background: linear-gradient(135deg, var(--accent), var(--accent-2)); box-shadow: 0 10px 30px rgba(255,107,43,0.35); font-size: 16px; }
         .nav-links { display: flex; gap: 6px; }
         .nav-pill { border: 1px solid var(--border); background: rgba(255,255,255,0.02); color: var(--muted); font-size: 13px; font-weight: 500; padding: 8px 14px; border-radius: 10px; transition: all 0.2s ease; font-family: "Bricolage Grotesque", sans-serif; }
         .nav-pill:hover { color: white; border-color: rgba(255,255,255,0.2); transform: translateY(-1px); }
@@ -275,16 +275,16 @@
 
     <!-- NAV -->
     <nav class="top-nav">
-        <a href="#" class="brand">
-            <div class="brand-mark">🐦</div>
+        <a href="{{ url_for('employer_dashboard') }}" class="brand">
+            <span class="brand-mark"><i class="fa-solid fa-dove"></i></span>
             <span>The Bird <strong>Job</strong></span>
         </a>
         <div class="nav-links">
             <a href="#jobs" class="nav-pill active">My Jobs</a>
-            <a href="jobposting.html" class="nav-pill">Post a Job</a>
-            <a href="topcandidate.html" class="nav-pill">Candidates</a>
-            <a href="applications.html" class="nav-pill">Applications</a>
-            <a href="massage.html" class="nav-pill">Messages</a>
+            <a href="{{ url_for('employer_jobposting_page') }}" class="nav-pill">Post a Job</a>
+            <a href="{{ url_for('employer_top_candidates_page') }}" class="nav-pill">Candidates</a>
+            <a href="{{ url_for('employer_applications_page') }}" class="nav-pill">Applications</a>
+            <a href="{{ url_for('employer_messages_page') }}" class="nav-pill">Messages</a>
         </div>
         <div class="nav-actions">
             <button class="icon-btn" onclick="showToast('No new notifications')">
@@ -366,7 +366,7 @@
                     <button class="qa-btn qa-primary" onclick="document.getElementById('jobs').scrollIntoView({behavior:'smooth'})">
                         <i class="fa-solid fa-briefcase"></i> View My Jobs
                     </button>
-                    <button class="qa-btn qa-ghost" onclick="window.location.href='jobposting.html'">
+                    <button class="qa-btn qa-ghost" onclick="window.location.href='{{ url_for('employer_jobposting_page') }}'">
                         <i class="fa-solid fa-plus"></i> Add Job Posting
                     </button>
                     <button class="qa-btn qa-ghost" onclick="showToast('Analytics coming soon! 📊')">

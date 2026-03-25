@@ -52,14 +52,23 @@ def register_employer_dashboard_routes(app, helpers):
         }
         return jobs, stats, recent_applications
 
+    def ensure_employer_access(require_profile=True):
+        user = get_logged_in_user()
+        if user is None:
+            flash('Please login first.', 'error')
+            return None, redirect(url_for('login'))
+        if normalize_role(user.role) != 'employer':
+            return None, redirect(url_for(dashboard_endpoint_for_role(user.role)))
+        if require_profile and not has_completed_profile(user):
+            flash('Please complete your employer profile first.', 'error')
+            return None, redirect(url_for('employer_form'))
+        return user, None
+
     @app.route('/employer_dashboard')
     def employer_dashboard():
-        user = get_logged_in_user()
-        if user is None or normalize_role(user.role) != 'employer':
-            return redirect(url_for('login'))
-        if not has_completed_profile(user):
-            flash('Please complete your employer profile first.', 'error')
-            return redirect(url_for('employer_form'))
+        user, redirect_response = ensure_employer_access(require_profile=True)
+        if redirect_response:
+            return redirect_response
         jobs, stats, recent_applications = employer_dashboard_data(user)
         dashboard_user = employer_dashboard_user(user)
         dashboard_user['jobs'] = jobs
@@ -80,6 +89,34 @@ def register_employer_dashboard_routes(app, helpers):
             visibility_cutoff=visibility_cutoff,
             now_utc=datetime.utcnow(),
         )
+
+    @app.route('/jobposting.html')
+    def employer_jobposting_page():
+        _, redirect_response = ensure_employer_access(require_profile=True)
+        if redirect_response:
+            return redirect_response
+        return render_template('jobposting.html')
+
+    @app.route('/applications.html')
+    def employer_applications_page():
+        _, redirect_response = ensure_employer_access(require_profile=True)
+        if redirect_response:
+            return redirect_response
+        return render_template('applications.html')
+
+    @app.route('/topcandidate.html')
+    def employer_top_candidates_page():
+        _, redirect_response = ensure_employer_access(require_profile=True)
+        if redirect_response:
+            return redirect_response
+        return render_template('topcandidate.html')
+
+    @app.route('/massage.html')
+    def employer_messages_page():
+        _, redirect_response = ensure_employer_access(require_profile=True)
+        if redirect_response:
+            return redirect_response
+        return render_template('massage.html')
 
     @app.route('/employer/jobs/create', methods=['POST'])
     def create_employer_job():

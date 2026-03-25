@@ -428,18 +428,18 @@
 <body>
 
 <nav>
-  <a href="employer_dashboard.html" class="logo">
+  <a href="{{ url_for('employer_dashboard') }}" class="logo">
     <span class="brand-mark"><i class="fa-solid fa-dove"></i></span>
     <span>The Bird <strong>Job</strong></span>
   </a>
   <ul class="nav-links">
-    <li><a href="employer_dashboard.html">My Jobs</a></li>
+    <li><a href="{{ url_for('employer_dashboard') }}">My Jobs</a></li>
     <li><a href="jobposting.html">Post a Job</a></li>
     <li><a href="topcandidate.html" class="active">Top Candidates</a></li>
     <li><a href="applications.html">Applications</a></li>
     <li><a href="massage.html">Messages</a></li>
   </ul>
-  <a class="nav-avatar" href="employer_dashboard.html" title="Employer Dashboard">
+  <a class="nav-avatar" href="{{ url_for('employer_dashboard') }}" title="Employer Dashboard">
     <i class="fa-solid fa-user-gear"></i>
   </a>
 </nav>
@@ -802,4 +802,3 @@
 </script>
 </body>
 </html>
-
