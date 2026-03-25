@@ -3,24 +3,27 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Top Candidates — HireAI</title>
-<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<title>Top Candidates — The Bird Job</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Clash+Display:wght@400;500;600;700&family=Bricolage+Grotesque:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
   :root {
-    --bg: #0a0a0c;
-    --surface: #111116;
-    --surface2: #18181f;
-    --border: #2a2a35;
-    --orange: #f97316;
-    --orange-dim: rgba(249,115,22,0.12);
-    --orange-glow: rgba(249,115,22,0.35);
-    --text: #e8e8f0;
-    --muted: #6b6b80;
+    --bg: #07070e;
+    --surface: #0e0f1a;
+    --surface2: #181a2b;
+    --border: rgba(255,255,255,0.1);
+    --orange: #ff6b2b;
+    --orange-dim: rgba(255,107,43,0.12);
+    --orange-glow: rgba(255,107,43,0.35);
+    --text: rgba(255,255,255,0.92);
+    --muted: rgba(255,255,255,0.55);
     --green: #22c55e;
     --green-dim: rgba(34,197,94,0.1);
     --blue: #3b82f6;
-    --mono: 'Space Mono', monospace;
-    --sans: 'Syne', sans-serif;
+    --mono: 'Clash Display', sans-serif;
+    --sans: 'Bricolage Grotesque', sans-serif;
   }
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   body { background: var(--bg); color: var(--text); font-family: var(--sans); min-height: 100vh; overflow-x: hidden; }
@@ -340,19 +343,105 @@
 
   .toast { position: fixed; bottom: 2rem; right: 2rem; background: var(--surface); border: 1px solid var(--orange); border-radius: 4px; padding: 1rem 1.5rem; display: flex; align-items: center; gap: 10px; font-family: var(--mono); font-size: 0.8rem; z-index: 1000; transform: translateY(100px); opacity: 0; transition: all 0.3s ease; box-shadow: 0 8px 32px rgba(0,0,0,0.4); }
   .toast.show { transform: translateY(0); opacity: 1; }
+
+  /* Employer Theme Nav */
+  nav {
+    position: sticky;
+    top: 0;
+    z-index: 120;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 28px;
+    height: 74px;
+    background: rgba(7,7,14,0.9);
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    backdrop-filter: blur(20px);
+  }
+  .logo {
+    font-family: "Clash Display", sans-serif;
+    font-size: 22px;
+    font-weight: 600;
+    letter-spacing: -0.5px;
+    color: var(--text);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 11px;
+  }
+  .logo .brand-mark {
+    width: 36px;
+    height: 36px;
+    border-radius: 11px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    background: linear-gradient(135deg, var(--orange), #ffb347);
+    box-shadow: 0 10px 30px rgba(255,107,43,0.35);
+    font-size: 16px;
+  }
+  .logo > span:last-child { color: var(--text); }
+  .logo strong { color: var(--orange); font-weight: 700; }
+  .nav-links { display: flex; align-items: center; gap: 6px; list-style: none; }
+  .nav-links a {
+    border: 1px solid rgba(255,255,255,0.1);
+    background: rgba(255,255,255,0.02);
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 500;
+    font-family: "Bricolage Grotesque", sans-serif;
+    letter-spacing: 0;
+    text-transform: none;
+    padding: 8px 14px;
+    border-radius: 10px;
+    transition: all 0.2s ease;
+  }
+  .nav-links a:hover { color: #fff; border-color: rgba(255,255,255,0.22); transform: translateY(-1px); }
+  .nav-links a.active {
+    color: #fff;
+    background: linear-gradient(135deg, rgba(255,107,43,0.25), rgba(255,179,71,0.12));
+    border-color: rgba(255,107,43,0.35);
+  }
+  .nav-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 11px;
+    border: 1px solid rgba(255,255,255,0.1);
+    background: rgba(255,255,255,0.03);
+    color: var(--text);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    text-decoration: none;
+    transition: all 0.2s ease;
+  }
+  .nav-avatar:hover { border-color: rgba(255,255,255,0.22); transform: translateY(-1px); }
+  @media (max-width: 980px) {
+    nav { padding: 0 14px; }
+    .nav-links { display: none; }
+  }
 </style>
 </head>
 <body>
 
 <nav>
-  <div class="logo">⬡ <span>Hire</span>AI</div>
+  <a href="employer_dashboard.html" class="logo">
+    <span class="brand-mark"><i class="fa-solid fa-dove"></i></span>
+    <span>The Bird <strong>Job</strong></span>
+  </a>
   <ul class="nav-links">
+    <li><a href="employer_dashboard.html">My Jobs</a></li>
+    <li><a href="jobposting.html">Post a Job</a></li>
+    <li><a href="topcandidate.html" class="active">Top Candidates</a></li>
     <li><a href="applications.html">Applications</a></li>
-    <li><a href="job-posting.html">Post Job</a></li>
-    <li><a href="messages.html">Messages</a></li>
-    <li><a href="top-candidates.html" class="active">Top Candidates</a></li>
+    <li><a href="massage.html">Messages</a></li>
   </ul>
-  <div class="nav-avatar">RC</div>
+  <a class="nav-avatar" href="employer_dashboard.html" title="Employer Dashboard">
+    <i class="fa-solid fa-user-gear"></i>
+  </a>
 </nav>
 
 <main>
@@ -361,7 +450,7 @@
     <div>
       <div class="page-tag">AI Powered Rankings</div>
       <h1>Top <em>Candidates</em></h1>
-      <p class="page-sub">// Ranked by HireAI across 12 signals</p>
+      <p class="page-sub">// Ranked by The Bird Job across 12 signals</p>
     </div>
     <div class="header-controls">
       <div class="search-box">
@@ -422,7 +511,7 @@
         <span class="p-skill">AWS</span>
       </div>
       <div class="p-actions">
-        <button class="btn btn-ghost" onclick="event.stopPropagation();window.location.href='messages.html'">✉ Msg</button>
+        <button class="btn btn-ghost" onclick="event.stopPropagation();window.location.href='massage.html'">✉ Msg</button>
         <button class="btn btn-ghost" onclick="event.stopPropagation();showToast('Scheduled!')">📅</button>
       </div>
     </div>
@@ -469,7 +558,7 @@
         <span class="p-skill">TypeScript</span>
       </div>
       <div class="p-actions">
-        <button class="btn btn-primary" onclick="event.stopPropagation();window.location.href='messages.html'">✉ Message</button>
+        <button class="btn btn-primary" onclick="event.stopPropagation();window.location.href='massage.html'">✉ Message</button>
         <button class="btn btn-ghost" onclick="event.stopPropagation();showToast('Interview scheduled!')">📅</button>
       </div>
     </div>
@@ -512,7 +601,7 @@
         <span class="p-skill">Redux</span>
       </div>
       <div class="p-actions">
-        <button class="btn btn-ghost" onclick="event.stopPropagation();window.location.href='messages.html'">✉ Msg</button>
+        <button class="btn btn-ghost" onclick="event.stopPropagation();window.location.href='massage.html'">✉ Msg</button>
         <button class="btn btn-ghost" onclick="event.stopPropagation();showToast('Scheduled!')">📅</button>
       </div>
     </div>
@@ -547,7 +636,7 @@
       <div class="lb-loc">Mumbai</div>
       <div><span class="lb-status-badge shortlisted">✓ Shortlisted</span></div>
       <div class="lb-actions">
-        <span class="lb-action primary" onclick="window.location.href='messages.html'">✉ Msg</span>
+        <span class="lb-action primary" onclick="window.location.href='massage.html'">✉ Msg</span>
         <span class="lb-action" onclick="showToast('Profile opened')">👤</span>
       </div>
     </div>
@@ -567,7 +656,7 @@
       <div class="lb-loc">Bangalore</div>
       <div><span class="lb-status-badge new">● New</span></div>
       <div class="lb-actions">
-        <span class="lb-action" onclick="window.location.href='messages.html'">✉ Msg</span>
+        <span class="lb-action" onclick="window.location.href='massage.html'">✉ Msg</span>
         <span class="lb-action" onclick="showToast('Profile opened')">👤</span>
       </div>
     </div>
@@ -587,7 +676,7 @@
       <div class="lb-loc">Delhi</div>
       <div><span class="lb-status-badge interviewed">★ Interviewed</span></div>
       <div class="lb-actions">
-        <span class="lb-action" onclick="window.location.href='messages.html'">✉ Msg</span>
+        <span class="lb-action" onclick="window.location.href='massage.html'">✉ Msg</span>
         <span class="lb-action" onclick="showToast('Profile opened')">👤</span>
       </div>
     </div>
@@ -607,7 +696,7 @@
       <div class="lb-loc">Hyderabad</div>
       <div><span class="lb-status-badge shortlisted">✓ Shortlisted</span></div>
       <div class="lb-actions">
-        <span class="lb-action" onclick="window.location.href='messages.html'">✉ Msg</span>
+        <span class="lb-action" onclick="window.location.href='massage.html'">✉ Msg</span>
         <span class="lb-action" onclick="showToast('Profile opened')">👤</span>
       </div>
     </div>
@@ -627,7 +716,7 @@
       <div class="lb-loc">Pune</div>
       <div><span class="lb-status-badge new">● New</span></div>
       <div class="lb-actions">
-        <span class="lb-action" onclick="window.location.href='messages.html'">✉ Msg</span>
+        <span class="lb-action" onclick="window.location.href='massage.html'">✉ Msg</span>
         <span class="lb-action" onclick="showToast('Profile opened')">👤</span>
       </div>
     </div>
@@ -647,7 +736,7 @@
       <div class="lb-loc">Chennai</div>
       <div><span class="lb-status-badge new">● New</span></div>
       <div class="lb-actions">
-        <span class="lb-action" onclick="window.location.href='messages.html'">✉ Msg</span>
+        <span class="lb-action" onclick="window.location.href='massage.html'">✉ Msg</span>
         <span class="lb-action" onclick="showToast('Profile opened')">👤</span>
       </div>
     </div>
@@ -713,3 +802,4 @@
 </script>
 </body>
 </html>
+

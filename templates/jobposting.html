@@ -3,22 +3,25 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Post a Job — HireAI</title>
-<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<title>Post a Job — The Bird Job</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Clash+Display:wght@400;500;600;700&family=Bricolage+Grotesque:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
   :root {
-    --bg: #0a0a0c;
-    --surface: #111116;
-    --surface2: #18181f;
-    --border: #2a2a35;
-    --orange: #f97316;
-    --orange-dim: rgba(249,115,22,0.12);
-    --orange-glow: rgba(249,115,22,0.35);
-    --text: #e8e8f0;
-    --muted: #6b6b80;
+    --bg: #07070e;
+    --surface: #0e0f1a;
+    --surface2: #181a2b;
+    --border: rgba(255,255,255,0.1);
+    --orange: #ff6b2b;
+    --orange-dim: rgba(255,107,43,0.12);
+    --orange-glow: rgba(255,107,43,0.35);
+    --text: rgba(255,255,255,0.92);
+    --muted: rgba(255,255,255,0.55);
     --success: #22c55e;
-    --mono: 'Space Mono', monospace;
-    --sans: 'Syne', sans-serif;
+    --mono: 'Clash Display', sans-serif;
+    --sans: 'Bricolage Grotesque', sans-serif;
   }
 
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -768,20 +771,106 @@
   }
 
   .toast-icon { color: var(--orange); font-size: 1.2rem; }
+
+  /* Employer Theme Nav */
+  nav {
+    position: sticky;
+    top: 0;
+    z-index: 120;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 28px;
+    height: 74px;
+    background: rgba(7,7,14,0.9);
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    backdrop-filter: blur(20px);
+  }
+  .logo {
+    font-family: "Clash Display", sans-serif;
+    font-size: 22px;
+    font-weight: 600;
+    letter-spacing: -0.5px;
+    color: var(--text);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 11px;
+  }
+  .logo .brand-mark {
+    width: 36px;
+    height: 36px;
+    border-radius: 11px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    background: linear-gradient(135deg, var(--orange), #ffb347);
+    box-shadow: 0 10px 30px rgba(255,107,43,0.35);
+    font-size: 16px;
+  }
+  .logo > span:last-child { color: var(--text); }
+  .logo strong { color: var(--orange); font-weight: 700; }
+  .nav-links { display: flex; align-items: center; gap: 6px; list-style: none; }
+  .nav-links a {
+    border: 1px solid rgba(255,255,255,0.1);
+    background: rgba(255,255,255,0.02);
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 500;
+    font-family: "Bricolage Grotesque", sans-serif;
+    letter-spacing: 0;
+    text-transform: none;
+    padding: 8px 14px;
+    border-radius: 10px;
+    transition: all 0.2s ease;
+  }
+  .nav-links a:hover { color: #fff; border-color: rgba(255,255,255,0.22); transform: translateY(-1px); }
+  .nav-links a.active {
+    color: #fff;
+    background: linear-gradient(135deg, rgba(255,107,43,0.25), rgba(255,179,71,0.12));
+    border-color: rgba(255,107,43,0.35);
+  }
+  .nav-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 11px;
+    border: 1px solid rgba(255,255,255,0.1);
+    background: rgba(255,255,255,0.03);
+    color: var(--text);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    text-decoration: none;
+    transition: all 0.2s ease;
+  }
+  .nav-avatar:hover { border-color: rgba(255,255,255,0.22); transform: translateY(-1px); }
+  @media (max-width: 980px) {
+    nav { padding: 0 14px; }
+    .nav-links { display: none; }
+  }
 </style>
 </head>
 <body>
 
 <!-- NAV -->
 <nav>
-  <div class="logo">⬡ <span>Hire</span>AI</div>
+  <a href="employer_dashboard.html" class="logo">
+    <span class="brand-mark"><i class="fa-solid fa-dove"></i></span>
+    <span>The Bird <strong>Job</strong></span>
+  </a>
   <ul class="nav-links">
+    <li><a href="employer_dashboard.html">My Jobs</a></li>
+    <li><a href="jobposting.html" class="active">Post a Job</a></li>
+    <li><a href="topcandidate.html">Top Candidates</a></li>
     <li><a href="applications.html">Applications</a></li>
-    <li><a href="#" class="active">Post Job</a></li>
-    <li><a href="messages.html">Messages</a></li>
-    <li><a href="top-candidates.html">Top Candidates</a></li>
+    <li><a href="massage.html">Messages</a></li>
   </ul>
-  <div class="nav-avatar">RC</div>
+  <a class="nav-avatar" href="employer_dashboard.html" title="Employer Dashboard">
+    <i class="fa-solid fa-user-gear"></i>
+  </a>
 </nav>
 
 <main>
@@ -1158,3 +1247,4 @@
 </script>
 </body>
 </html>
+
