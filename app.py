@@ -176,6 +176,34 @@ def ensure_legacy_users_schema():
 
     logger.info('Legacy users schema check complete. Added %s columns.', len(statements))
 
+
+def ensure_legacy_employer_profiles_schema():
+    """
+    Adds newly introduced columns for legacy employer_profiles tables.
+    """
+    inspector = inspect(db.engine)
+    table_names = inspector.get_table_names()
+    if 'employer_profiles' not in table_names:
+        return
+
+    existing_columns = {col['name'] for col in inspector.get_columns('employer_profiles')}
+    statements = []
+
+    if 'plan_tier' not in existing_columns:
+        statements.append("ALTER TABLE employer_profiles ADD COLUMN plan_tier VARCHAR(30) NULL")
+
+    if not statements:
+        return
+
+    with db.engine.begin() as conn:
+        for stmt in statements:
+            conn.execute(text(stmt))
+        conn.execute(
+            text("UPDATE employer_profiles SET plan_tier = 'starter' WHERE plan_tier IS NULL OR plan_tier = ''")
+        )
+
+    logger.info('Legacy employer_profiles schema check complete. Added %s columns.', len(statements))
+
 # Error handlers
 @app.errorhandler(404)
 def page_not_found(e):
@@ -190,6 +218,7 @@ def internal_error(e):
 with app.app_context():
     db.create_all()
     ensure_legacy_users_schema()
+    ensure_legacy_employer_profiles_schema()
 
 
 @app.route('/favicon.ico')

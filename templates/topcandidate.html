@@ -287,9 +287,10 @@
     display: inline-flex; align-items: center; gap: 4px;
   }
 
-  .lb-status-badge.shortlisted { background: var(--green-dim); color: var(--green); border: 1px solid rgba(34,197,94,0.25); }
-  .lb-status-badge.new { background: rgba(59,130,246,0.1); color: var(--blue); border: 1px solid rgba(59,130,246,0.25); }
-  .lb-status-badge.interviewed { background: rgba(234,179,8,0.1); color: #eab308; border: 1px solid rgba(234,179,8,0.25); }
+  .lb-status-badge.shortlisted, .lb-status-badge.hired { background: var(--green-dim); color: var(--green); border: 1px solid rgba(34,197,94,0.25); }
+  .lb-status-badge.new, .lb-status-badge.submitted { background: rgba(59,130,246,0.1); color: var(--blue); border: 1px solid rgba(59,130,246,0.25); }
+  .lb-status-badge.interview, .lb-status-badge.interviewed { background: rgba(234,179,8,0.1); color: #eab308; border: 1px solid rgba(234,179,8,0.25); }
+  .lb-status-badge.rejected { background: rgba(239,68,68,0.1); color: #ef4444; border: 1px solid rgba(239,68,68,0.25); }
 
   .lb-actions { display: flex; gap: 6px; }
 
@@ -423,6 +424,15 @@
     nav { padding: 0 14px; }
     .nav-links { display: none; }
   }
+
+  .bg-rank-1 { background: var(--orange-dim) !important; color: var(--orange) !important; }
+  .bg-rank-2 { background: rgba(148,163,184,0.1) !important; color: #94a3b8 !important; }
+  .bg-rank-3 { background: rgba(205,124,46,0.1) !important; color: #cd7c2e !important; }
+  .bg-rank-default { background: rgba(168,85,247,0.1); color: #a855f7; }
+  .score-rank-1, .score-rank-2, .score-rank-3 { color: var(--orange); }
+  .score-rank-2 { color: #94a3b8; }
+  .score-rank-3 { color: #cd7c2e; }
+  .lb-score { color: var(--text); font-size: 0.9rem; }
 </style>
 </head>
 <body>
@@ -434,10 +444,10 @@
   </a>
   <ul class="nav-links">
     <li><a href="{{ url_for('employer_dashboard') }}">My Jobs</a></li>
-    <li><a href="jobposting.html">Post a Job</a></li>
-    <li><a href="topcandidate.html" class="active">Top Candidates</a></li>
-    <li><a href="applications.html">Applications</a></li>
-    <li><a href="massage.html">Messages</a></li>
+    <li><a href="{{ url_for('employer_jobposting_page') }}">Post a Job</a></li>
+    <li><a href="{{ url_for('employer_top_candidates_page') }}" class="active">Top Candidates</a></li>
+    <li><a href="{{ url_for('employer_applications_page') }}">Applications</a></li>
+    <li><a href="{{ url_for('employer_messages_page') }}">Messages</a></li>
   </ul>
   <a class="nav-avatar" href="{{ url_for('employer_dashboard') }}" title="Employer Dashboard">
     <i class="fa-solid fa-user-gear"></i>
@@ -471,140 +481,126 @@
     </div>
   </div>
 
+  {% if candidates %}
   <!-- PODIUM TOP 3 -->
   <div class="podium">
     <!-- RANK 2 -->
-    <div class="podium-card rank2" onclick="showToast('Viewing Aryan Sharma\'s full profile...')">
+    {% if candidates|length >= 2 %}
+    {% set c2 = candidates[1] %}
+    {% set parts = (c2.candidate_name or 'Unknown').split() %}
+    {% set initials2 = ((parts[0][0] if parts else '?') + (parts[1][0] if parts|length > 1 else '')) | upper %}
+    <div class="podium-card rank2" data-candidate-name="{{ c2.candidate_name }}" onclick="showCandidateProfile(this, 'Viewing')">
       <div class="rank-badge">#2</div>
       <div class="podium-top">
-        <div class="p-avatar">AS</div>
+        <div class="p-avatar">{{ initials2 }}</div>
         <div>
-          <div class="p-name">Aryan Sharma</div>
-          <div class="p-role">Sr. React Developer · 5yr</div>
+          <div class="p-name">{{ c2.candidate_name }}</div>
+          <div class="p-role">{{ c2.job_title }} · {{ c2.candidate_experience }}</div>
         </div>
       </div>
       <div class="p-score-row">
-        <div class="p-score">92</div>
+        <div class="p-score">{{ c2.match_score }}</div>
         <div class="p-score-label">AI<br>Score</div>
       </div>
       <div class="p-bars">
         <div class="p-bar">
-          <div class="p-bar-label">Skills</div>
-          <div class="p-bar-track"><div class="p-bar-fill" style="width:94%;background:#94a3b8;animation-delay:0.1s"></div></div>
-          <div class="p-bar-val">94</div>
-        </div>
-        <div class="p-bar">
-          <div class="p-bar-label">Exp.</div>
-          <div class="p-bar-track"><div class="p-bar-fill" style="width:88%;background:#94a3b8;animation-delay:0.2s"></div></div>
-          <div class="p-bar-val">88</div>
-        </div>
-        <div class="p-bar">
-          <div class="p-bar-label">Culture</div>
-          <div class="p-bar-track"><div class="p-bar-fill" style="width:91%;background:#94a3b8;animation-delay:0.3s"></div></div>
-          <div class="p-bar-val">91</div>
+          <div class="p-bar-label">Match %</div>
+          <div class="p-bar-track">
+            <div class="p-bar-fill js-width" data-width="{{ c2.match_score }}%" style="background:#94a3b8;animation-delay:0.1s"></div>
+          </div>
+          <div class="p-bar-val">{{ c2.match_score }}</div>
         </div>
       </div>
       <div class="p-skills">
-        <span class="p-skill">React</span>
-        <span class="p-skill">TypeScript</span>
-        <span class="p-skill">Node.js</span>
-        <span class="p-skill">AWS</span>
+        {% for skill in (c2.candidate_skills[:4] if c2.candidate_skills else []) %}
+        <span class="p-skill">{{ skill }}</span>
+        {% endfor %}
       </div>
       <div class="p-actions">
-        <button class="btn btn-ghost" onclick="event.stopPropagation();window.location.href='massage.html'">✉ Msg</button>
+        <button class="btn btn-ghost" data-url="{{ url_for('employer_messages_page') }}" onclick="handleMsg(this, event)">✉ Msg</button>
         <button class="btn btn-ghost" onclick="event.stopPropagation();showToast('Scheduled!')">📅</button>
       </div>
     </div>
+    {% else %}
+    <div></div>
+    {% endif %}
 
     <!-- RANK 1 -->
-    <div class="podium-card rank1" onclick="showToast('Viewing Sneha Kapoor\'s full profile...')">
+    {% if candidates|length >= 1 %}
+    {% set c1 = candidates[0] %}
+    {% set parts = (c1.candidate_name or 'Unknown').split() %}
+    {% set initials1 = ((parts[0][0] if parts else '?') + (parts[1][0] if parts|length > 1 else '')) | upper %}
+    <div class="podium-card rank1" data-candidate-name="{{ c1.candidate_name }}" onclick="showCandidateProfile(this, 'Viewing')">
       <div class="rank-badge">#1</div>
       <div style="text-align:center;margin-bottom:0.5rem">
         <span style="font-size:1.5rem">🏆</span>
       </div>
       <div class="podium-top">
-        <div class="p-avatar">SK</div>
+        <div class="p-avatar">{{ initials1 }}</div>
         <div>
-          <div class="p-name">Sneha Kapoor</div>
-          <div class="p-role">React + Node Dev · 7yr</div>
+          <div class="p-name">{{ c1.candidate_name }}</div>
+          <div class="p-role">{{ c1.job_title }} · {{ c1.candidate_experience }}</div>
         </div>
       </div>
       <div class="p-score-row">
-        <div class="p-score">96</div>
+        <div class="p-score">{{ c1.match_score }}</div>
         <div class="p-score-label">AI<br>Score</div>
       </div>
       <div class="p-bars">
         <div class="p-bar">
-          <div class="p-bar-label">Skills</div>
-          <div class="p-bar-track"><div class="p-bar-fill" style="width:98%;background:var(--orange);animation-delay:0.1s"></div></div>
-          <div class="p-bar-val">98</div>
-        </div>
-        <div class="p-bar">
-          <div class="p-bar-label">Exp.</div>
-          <div class="p-bar-track"><div class="p-bar-fill" style="width:94%;background:var(--orange);animation-delay:0.2s"></div></div>
-          <div class="p-bar-val">94</div>
-        </div>
-        <div class="p-bar">
-          <div class="p-bar-label">Culture</div>
-          <div class="p-bar-track"><div class="p-bar-fill" style="width:95%;background:var(--orange);animation-delay:0.3s"></div></div>
-          <div class="p-bar-val">95</div>
+          <div class="p-bar-label">Match %</div>
+          <div class="p-bar-track"><div class="p-bar-fill js-width" data-width="{{ c1.match_score }}%" style="background:var(--orange);animation-delay:0.1s"></div></div>
+          <div class="p-bar-val">{{ c1.match_score }}</div>
         </div>
       </div>
       <div class="p-skills">
-        <span class="p-skill">React</span>
-        <span class="p-skill">Node.js</span>
-        <span class="p-skill">AWS</span>
-        <span class="p-skill">GraphQL</span>
-        <span class="p-skill">TypeScript</span>
+        {% for skill in (c1.candidate_skills[:5] if c1.candidate_skills else []) %}
+        <span class="p-skill">{{ skill }}</span>
+        {% endfor %}
       </div>
       <div class="p-actions">
-        <button class="btn btn-primary" onclick="event.stopPropagation();window.location.href='massage.html'">✉ Message</button>
+        <button class="btn btn-primary" data-url="{{ url_for('employer_messages_page') }}" onclick="handleMsg(this, event)">✉ Message</button>
         <button class="btn btn-ghost" onclick="event.stopPropagation();showToast('Interview scheduled!')">📅</button>
       </div>
     </div>
+    {% endif %}
 
     <!-- RANK 3 -->
-    <div class="podium-card rank3" onclick="showToast('Viewing Vikram Joshi\'s full profile...')">
+    {% if candidates|length >= 3 %}
+    {% set c3 = candidates[2] %}
+    {% set parts = (c3.candidate_name or 'Unknown').split() %}
+    {% set initials3 = ((parts[0][0] if parts else '?') + (parts[1][0] if parts|length > 1 else '')) | upper %}
+    <div class="podium-card rank3" data-candidate-name="{{ c3.candidate_name }}" onclick="showCandidateProfile(this, 'Viewing')">
       <div class="rank-badge">#3</div>
       <div class="podium-top">
-        <div class="p-avatar">VJ</div>
+        <div class="p-avatar">{{ initials3 }}</div>
         <div>
-          <div class="p-name">Vikram Joshi</div>
-          <div class="p-role">Sr. Frontend Dev · 6yr</div>
+          <div class="p-name">{{ c3.candidate_name }}</div>
+          <div class="p-role">{{ c3.job_title }} · {{ c3.candidate_experience }}</div>
         </div>
       </div>
       <div class="p-score-row">
-        <div class="p-score">90</div>
+        <div class="p-score">{{ c3.match_score }}</div>
         <div class="p-score-label">AI<br>Score</div>
       </div>
       <div class="p-bars">
         <div class="p-bar">
-          <div class="p-bar-label">Skills</div>
-          <div class="p-bar-track"><div class="p-bar-fill" style="width:91%;background:#cd7c2e;animation-delay:0.1s"></div></div>
-          <div class="p-bar-val">91</div>
-        </div>
-        <div class="p-bar">
-          <div class="p-bar-label">Exp.</div>
-          <div class="p-bar-track"><div class="p-bar-fill" style="width:89%;background:#cd7c2e;animation-delay:0.2s"></div></div>
-          <div class="p-bar-val">89</div>
-        </div>
-        <div class="p-bar">
-          <div class="p-bar-label">Culture</div>
-          <div class="p-bar-track"><div class="p-bar-fill" style="width:87%;background:#cd7c2e;animation-delay:0.3s"></div></div>
-          <div class="p-bar-val">87</div>
+          <div class="p-bar-label">Match %</div>
+          <div class="p-bar-track"><div class="p-bar-fill js-width" data-width="{{ c3.match_score }}%" style="background:#cd7c2e;animation-delay:0.1s"></div></div>
+          <div class="p-bar-val">{{ c3.match_score }}</div>
         </div>
       </div>
       <div class="p-skills">
-        <span class="p-skill">React</span>
-        <span class="p-skill">TypeScript</span>
-        <span class="p-skill">Next.js</span>
-        <span class="p-skill">Redux</span>
+        {% for skill in (c3.candidate_skills[:4] if c3.candidate_skills else []) %}
+        <span class="p-skill">{{ skill }}</span>
+        {% endfor %}
       </div>
       <div class="p-actions">
-        <button class="btn btn-ghost" onclick="event.stopPropagation();window.location.href='massage.html'">✉ Msg</button>
+        <button class="btn btn-ghost" data-url="{{ url_for('employer_messages_page') }}" onclick="handleMsg(this, event)">✉ Msg</button>
         <button class="btn btn-ghost" onclick="event.stopPropagation();showToast('Scheduled!')">📅</button>
       </div>
     </div>
+    {% endif %}
   </div>
 
   <!-- LEADERBOARD -->
@@ -621,127 +617,39 @@
       <div class="lb-th">Actions</div>
     </div>
 
-    <!-- Row 1 -->
-    <div class="lb-row highlight">
-      <div class="lb-rank">#1</div>
+    {% for c in candidates %}
+    {% set parts = (c.candidate_name or 'Unknown').split() %}
+    {% set initials = ((parts[0][0] if parts else '?') + (parts[1][0] if parts|length > 1 else '')) | upper %}
+    {% set rank = loop.index %}
+    
+    <div class="lb-row {% if rank == 1 %}highlight{% endif %}">
+      <div class="lb-rank" {% if rank > 3 %}style="color:var(--muted)"{% endif %}>#{{ rank }}</div>
       <div class="lb-candidate">
-        <div class="lb-avatar" style="background:var(--orange-dim);color:var(--orange)">SK</div>
+        <div class="lb-avatar {% if rank == 1 %}bg-rank-1{% elif rank == 2 %}bg-rank-2{% elif rank == 3 %}bg-rank-3{% else %}bg-rank-default{% endif %}">{{ initials }}</div>
         <div>
-          <div class="lb-name">Sneha Kapoor</div>
-          <div class="lb-sub">React + Node · Mumbai</div>
+          <div class="lb-name">{{ c.candidate_name }}</div>
+          <div class="lb-sub">{{ c.job_title }}</div>
         </div>
       </div>
-      <div class="lb-score">96</div>
-      <div class="lb-exp">7 years</div>
-      <div class="lb-loc">Mumbai</div>
-      <div><span class="lb-status-badge shortlisted">✓ Shortlisted</span></div>
+      <div class="lb-score {% if rank <= 3 %}score-rank-{{ rank }}{% endif %}">{{ c.match_score }}</div>
+      <div class="lb-exp">{{ c.candidate_experience }}</div>
+      <div class="lb-loc">{{ c.job_location }}</div>
+      <div><span class="lb-status-badge {{ c.status }}">
+        {% if c.status in ['shortlisted', 'hired'] %}✓ {% elif c.status in ['interview', 'interviewed'] %}★ {% else %}● {% endif %}{{ c.status | title }}
+      </span></div>
       <div class="lb-actions">
-        <span class="lb-action primary" onclick="window.location.href='massage.html'">✉ Msg</span>
-        <span class="lb-action" onclick="showToast('Profile opened')">👤</span>
+        <span class="lb-action {% if rank == 1 %}primary{% endif %}" data-url="{{ url_for('employer_messages_page') }}" onclick="handleMsg(this, event)">✉ Msg</span>
+        <span class="lb-action" data-candidate-name="{{ c.candidate_name }}" onclick="showCandidateProfile(this, 'Profile opened')">👤</span>
       </div>
     </div>
-
-    <!-- Row 2 -->
-    <div class="lb-row">
-      <div class="lb-rank">#2</div>
-      <div class="lb-candidate">
-        <div class="lb-avatar" style="background:rgba(148,163,184,0.1);color:#94a3b8">AS</div>
-        <div>
-          <div class="lb-name">Aryan Sharma</div>
-          <div class="lb-sub">Sr. React Dev · Bangalore</div>
-        </div>
-      </div>
-      <div class="lb-score" style="color:#94a3b8">92</div>
-      <div class="lb-exp">5 years</div>
-      <div class="lb-loc">Bangalore</div>
-      <div><span class="lb-status-badge new">● New</span></div>
-      <div class="lb-actions">
-        <span class="lb-action" onclick="window.location.href='massage.html'">✉ Msg</span>
-        <span class="lb-action" onclick="showToast('Profile opened')">👤</span>
-      </div>
-    </div>
-
-    <!-- Row 3 -->
-    <div class="lb-row">
-      <div class="lb-rank">#3</div>
-      <div class="lb-candidate">
-        <div class="lb-avatar" style="background:rgba(205,124,46,0.1);color:#cd7c2e">VJ</div>
-        <div>
-          <div class="lb-name">Vikram Joshi</div>
-          <div class="lb-sub">Frontend Dev · Delhi</div>
-        </div>
-      </div>
-      <div class="lb-score" style="color:#cd7c2e">90</div>
-      <div class="lb-exp">6 years</div>
-      <div class="lb-loc">Delhi</div>
-      <div><span class="lb-status-badge interviewed">★ Interviewed</span></div>
-      <div class="lb-actions">
-        <span class="lb-action" onclick="window.location.href='massage.html'">✉ Msg</span>
-        <span class="lb-action" onclick="showToast('Profile opened')">👤</span>
-      </div>
-    </div>
-
-    <!-- Row 4 -->
-    <div class="lb-row">
-      <div class="lb-rank" style="color:var(--muted)">#4</div>
-      <div class="lb-candidate">
-        <div class="lb-avatar" style="background:rgba(234,179,8,0.1);color:#eab308">MK</div>
-        <div>
-          <div class="lb-name">Manish Kumar</div>
-          <div class="lb-sub">Full Stack · Hyderabad</div>
-        </div>
-      </div>
-      <div class="lb-score" style="color:var(--text);font-size:0.9rem">88</div>
-      <div class="lb-exp">4 years</div>
-      <div class="lb-loc">Hyderabad</div>
-      <div><span class="lb-status-badge shortlisted">✓ Shortlisted</span></div>
-      <div class="lb-actions">
-        <span class="lb-action" onclick="window.location.href='massage.html'">✉ Msg</span>
-        <span class="lb-action" onclick="showToast('Profile opened')">👤</span>
-      </div>
-    </div>
-
-    <!-- Row 5 -->
-    <div class="lb-row">
-      <div class="lb-rank" style="color:var(--muted)">#5</div>
-      <div class="lb-candidate">
-        <div class="lb-avatar" style="background:rgba(168,85,247,0.1);color:#a855f7">PM</div>
-        <div>
-          <div class="lb-name">Priya Mehta</div>
-          <div class="lb-sub">Frontend Eng. · Pune</div>
-        </div>
-      </div>
-      <div class="lb-score" style="color:var(--text);font-size:0.9rem">85</div>
-      <div class="lb-exp">3 years</div>
-      <div class="lb-loc">Pune</div>
-      <div><span class="lb-status-badge new">● New</span></div>
-      <div class="lb-actions">
-        <span class="lb-action" onclick="window.location.href='massage.html'">✉ Msg</span>
-        <span class="lb-action" onclick="showToast('Profile opened')">👤</span>
-      </div>
-    </div>
-
-    <!-- Row 6 -->
-    <div class="lb-row">
-      <div class="lb-rank" style="color:var(--muted)">#6</div>
-      <div class="lb-candidate">
-        <div class="lb-avatar" style="background:var(--green-dim);color:var(--green)">RD</div>
-        <div>
-          <div class="lb-name">Rohit Das</div>
-          <div class="lb-sub">JS Developer · Chennai</div>
-        </div>
-      </div>
-      <div class="lb-score" style="color:var(--text);font-size:0.9rem">72</div>
-      <div class="lb-exp">2 years</div>
-      <div class="lb-loc">Chennai</div>
-      <div><span class="lb-status-badge new">● New</span></div>
-      <div class="lb-actions">
-        <span class="lb-action" onclick="window.location.href='massage.html'">✉ Msg</span>
-        <span class="lb-action" onclick="showToast('Profile opened')">👤</span>
-      </div>
-    </div>
-
+    {% endfor %}
   </div>
+
+  {% else %}
+  <div style="padding: 2rem; border: 1px dashed var(--border); border-radius: 4px; color: var(--muted); text-align: center; margin-bottom: 2rem;">
+    No candidates have applied yet. Return later when candidates start rolling in!
+  </div>
+  {% endif %}
 </main>
 
 <!-- COMPARE BAR -->
@@ -799,6 +707,20 @@
     toast.classList.add('show');
     setTimeout(() => toast.classList.remove('show'), 3000);
   }
+
+  function showCandidateProfile(el, action) {
+    const name = el.getAttribute('data-candidate-name');
+    showToast(`${action === 'Viewing' ? 'Viewing' : action} ${name ? name + '\\'s profile...' : ''}`);
+  }
+
+  function handleMsg(el, e) {
+    e.stopPropagation();
+    window.location.href = el.getAttribute('data-url');
+  }
+
+  document.querySelectorAll('.js-width').forEach(el => {
+    el.style.width = el.getAttribute('data-width');
+  });
 </script>
 </body>
 </html>

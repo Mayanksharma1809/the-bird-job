@@ -11,6 +11,40 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>The Bird Job | Find Your Dream Job & Hire Top Talent</title>
+    
+    <!-- Branding & SEO for Google -->
+    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='brand/favicon.svg') }}">
+    <link rel="icon" type="image/png" sizes="48x48" href="{{ url_for('static', filename='brand/favicon-48.png') }}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='brand/apple-touch-icon-180.png') }}">
+    <meta name="theme-color" content="#ff6b2b">
+    
+    <script type="application/ld+json">
+    [
+      {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "The Bird Job",
+        "url": "{{ request.url_root }}",
+        "logo": "{{ request.url_root }}static/brand/logo-512.png",
+        "sameAs": [
+          "https://twitter.com/thebirdjob",
+          "https://linkedin.com/company/thebirdjob"
+        ]
+      },
+      {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "The Bird Job",
+        "url": "{{ request.url_root }}",
+        "potentialAction": {
+          "@type": "SearchAction",
+          "target": "{{ request.url_root }}search?q={search_term_string}",
+          "query-input": "required name=search_term_string"
+        }
+      }
+    ]
+    </script>
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">

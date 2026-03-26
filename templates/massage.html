@@ -37,20 +37,79 @@
   }
 
   nav {
-    position: relative; z-index: 100;
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 0 2.5rem; height: 64px;
-    background: rgba(10,10,12,0.95);
-    border-bottom: 1px solid var(--border);
-    flex-shrink: 0;
+    position: sticky;
+    top: 0;
+    z-index: 120;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 28px;
+    height: 74px;
+    background: rgba(7,7,14,0.9);
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    backdrop-filter: blur(20px);
   }
-  .logo { font-family: var(--mono); font-size: 1.1rem; font-weight: 700; color: var(--orange); display: flex; align-items: center; gap: 8px; }
-  .logo span { color: var(--text); }
-  .nav-links { display: flex; align-items: center; gap: 2rem; list-style: none; }
-  .nav-links a { color: var(--muted); text-decoration: none; font-size: 0.875rem; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; transition: color 0.2s; }
-  .nav-links a:hover { color: var(--text); }
-  .nav-links a.active { color: var(--orange); }
-  .nav-avatar { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, var(--orange), #ea580c); display: flex; align-items: center; justify-content: center; font-family: var(--mono); font-size: 0.75rem; font-weight: 700; cursor: pointer; }
+  .logo {
+    font-family: "Clash Display", sans-serif;
+    font-size: 22px;
+    font-weight: 600;
+    letter-spacing: -0.5px;
+    color: var(--text);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 11px;
+  }
+  .logo .brand-mark {
+    width: 36px;
+    height: 36px;
+    border-radius: 11px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    background: linear-gradient(135deg, var(--orange), #ffb347);
+    box-shadow: 0 10px 30px rgba(255,107,43,0.35);
+    font-size: 16px;
+  }
+  .logo > span:last-child { color: var(--text); }
+  .logo strong { color: var(--orange); font-weight: 700; }
+  .nav-links { display: flex; align-items: center; gap: 6px; list-style: none; }
+  .nav-links a {
+    border: 1px solid rgba(255,255,255,0.1);
+    background: rgba(255,255,255,0.02);
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 500;
+    font-family: "Bricolage Grotesque", sans-serif;
+    letter-spacing: 0;
+    text-transform: none;
+    padding: 8px 14px;
+    border-radius: 10px;
+    transition: all 0.2s ease;
+  }
+  .nav-links a:hover { color: #fff; border-color: rgba(255,255,255,0.22); transform: translateY(-1px); }
+  .nav-links a.active {
+    color: #fff;
+    background: linear-gradient(135deg, rgba(255,107,43,0.25), rgba(255,179,71,0.12));
+    border-color: rgba(255,107,43,0.35);
+  }
+  .nav-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 11px;
+    border: 1px solid rgba(255,255,255,0.1);
+    background: rgba(255,255,255,0.03);
+    color: var(--text);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    text-decoration: none;
+    transition: all 0.2s ease;
+  }
+  .nav-avatar:hover { border-color: rgba(255,255,255,0.22); transform: translateY(-1px); }
 
   .chat-layout {
     display: flex;
@@ -132,6 +191,9 @@
     display: flex; align-items: center; justify-content: center;
     font-family: var(--mono); font-size: 0.8rem; font-weight: 700;
     flex-shrink: 0; position: relative;
+    background: var(--surface2);
+    color: var(--orange);
+    border: 1px solid var(--border);
   }
 
   .online-dot {
@@ -150,7 +212,7 @@
 
   .convo-time { font-family: var(--mono); font-size: 0.6rem; color: var(--muted); }
   .convo-last { font-size: 0.76rem; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .convo-last.unread { color: var(--text); }
+  .convo-last.unread { color: var(--text); font-weight: 600; }
 
   .unread-badge {
     background: var(--orange); color: #000;
@@ -195,7 +257,6 @@
 
   .chat-user-info .name { font-size: 0.95rem; font-weight: 700; }
   .chat-user-info .sub { font-family: var(--mono); font-size: 0.68rem; color: var(--muted); }
-  .chat-user-info .online { color: var(--green); }
 
   .chat-actions { display: flex; gap: 8px; }
 
@@ -208,34 +269,6 @@
   }
 
   .icon-btn:hover { border-color: var(--orange); color: var(--orange); background: var(--orange-dim); }
-
-  /* JOB CONTEXT BANNER */
-  .job-banner {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 10px 1.5rem;
-    background: var(--orange-dim);
-    border-bottom: 1px solid rgba(249,115,22,0.2);
-    flex-shrink: 0;
-  }
-
-  .job-banner-left {
-    display: flex; align-items: center; gap: 10px;
-    font-size: 0.78rem; font-family: var(--mono); color: var(--orange);
-  }
-
-  .job-banner-role { font-weight: 700; }
-  .job-banner-sep { color: var(--muted); }
-  .job-banner-status { font-size: 0.68rem; color: var(--muted); }
-
-  .ai-quick-btn {
-    display: flex; align-items: center; gap: 6px;
-    background: var(--surface); border: 1px solid rgba(249,115,22,0.3);
-    color: var(--orange); font-family: var(--mono); font-size: 0.68rem;
-    padding: 4px 10px; border-radius: 2px; cursor: pointer;
-    transition: background 0.2s;
-  }
-
-  .ai-quick-btn:hover { background: var(--orange-dim); }
 
   /* MESSAGES */
   .messages-body {
@@ -251,6 +284,7 @@
     display: flex; align-items: center; gap: 12px;
     font-family: var(--mono); font-size: 0.62rem; color: var(--muted);
     letter-spacing: 0.1em; text-transform: uppercase;
+    margin: 10px 0;
   }
 
   .date-divider::before, .date-divider::after {
@@ -295,19 +329,19 @@
 
   .msg-time {
     font-family: var(--mono); font-size: 0.58rem; color: var(--muted);
-    margin-top: 4px; text-align: right;
+    margin-top: 4px;
   }
 
-  .msg-row.mine .msg-time { text-align: right; color: rgba(0,0,0,0.4); }
+  .msg-row.mine .msg-time { text-align: right; color: rgba(255,255,255,0.4); }
 
-  /* AI SUGGESTED REPLIES */
+  /* AI SUGGESTIONS */
   .ai-suggestions {
     background: var(--surface);
     border: 1px solid var(--border);
     border-left: 3px solid var(--orange);
     border-radius: 3px;
     padding: 12px 14px;
-    margin: 0 1.5rem;
+    margin: 0 1.5rem 1rem;
     flex-shrink: 0;
   }
 
@@ -356,33 +390,16 @@
     padding: 2px 0;
   }
 
-  .input-tools { display: flex; gap: 6px; align-items: center; }
-
-  .tool-icon {
-    color: var(--muted); cursor: pointer; font-size: 1rem;
-    transition: color 0.2s; padding: 4px;
-    width: 28px; height: 28px; display: flex; align-items: center; justify-content: center;
-    border-radius: 50%;
-  }
-
-  .tool-icon:hover { color: var(--orange); background: var(--orange-dim); }
-
   .send-btn {
     width: 36px; height: 36px; border-radius: 50%;
     background: var(--orange); border: none; cursor: pointer;
     display: flex; align-items: center; justify-content: center;
     font-size: 0.9rem; color: #000; font-weight: 700;
-    transition: box-shadow 0.2s, transform 0.15s;
+    transition: all 0.2s;
     flex-shrink: 0;
   }
 
-  .send-btn:hover { box-shadow: 0 0 16px var(--orange-glow); transform: scale(1.05); }
-
-  .input-footer {
-    display: flex; align-items: center; justify-content: space-between;
-    margin-top: 6px;
-    font-family: var(--mono); font-size: 0.62rem; color: var(--muted);
-  }
+  .send-btn:disabled { opacity: 0.3; cursor: not-allowed; }
 
   /* EMPTY STATE */
   .empty-chat {
@@ -401,86 +418,6 @@
   ::-webkit-scrollbar { width: 4px; }
   ::-webkit-scrollbar-track { background: transparent; }
   ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
-
-  /* Employer Theme Nav */
-  nav {
-    position: sticky;
-    top: 0;
-    z-index: 120;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 28px;
-    height: 74px;
-    background: rgba(7,7,14,0.9);
-    border-bottom: 1px solid rgba(255,255,255,0.06);
-    backdrop-filter: blur(20px);
-  }
-  .logo {
-    font-family: "Clash Display", sans-serif;
-    font-size: 22px;
-    font-weight: 600;
-    letter-spacing: -0.5px;
-    color: var(--text);
-    text-decoration: none;
-    display: inline-flex;
-    align-items: center;
-    gap: 11px;
-  }
-  .logo .brand-mark {
-    width: 36px;
-    height: 36px;
-    border-radius: 11px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    color: #fff;
-    background: linear-gradient(135deg, var(--orange), #ffb347);
-    box-shadow: 0 10px 30px rgba(255,107,43,0.35);
-    font-size: 16px;
-  }
-  .logo > span:last-child { color: var(--text); }
-  .logo strong { color: var(--orange); font-weight: 700; }
-  .nav-links { display: flex; align-items: center; gap: 6px; list-style: none; }
-  .nav-links a {
-    border: 1px solid rgba(255,255,255,0.1);
-    background: rgba(255,255,255,0.02);
-    color: var(--muted);
-    text-decoration: none;
-    font-size: 13px;
-    font-weight: 500;
-    font-family: "Bricolage Grotesque", sans-serif;
-    letter-spacing: 0;
-    text-transform: none;
-    padding: 8px 14px;
-    border-radius: 10px;
-    transition: all 0.2s ease;
-  }
-  .nav-links a:hover { color: #fff; border-color: rgba(255,255,255,0.22); transform: translateY(-1px); }
-  .nav-links a.active {
-    color: #fff;
-    background: linear-gradient(135deg, rgba(255,107,43,0.25), rgba(255,179,71,0.12));
-    border-color: rgba(255,107,43,0.35);
-  }
-  .nav-avatar {
-    width: 40px;
-    height: 40px;
-    border-radius: 11px;
-    border: 1px solid rgba(255,255,255,0.1);
-    background: rgba(255,255,255,0.03);
-    color: var(--text);
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 14px;
-    text-decoration: none;
-    transition: all 0.2s ease;
-  }
-  .nav-avatar:hover { border-color: rgba(255,255,255,0.22); transform: translateY(-1px); }
-  @media (max-width: 980px) {
-    nav { padding: 0 14px; }
-    .nav-links { display: none; }
-  }
 </style>
 </head>
 <body>
@@ -492,10 +429,10 @@
   </a>
   <ul class="nav-links">
     <li><a href="{{ url_for('employer_dashboard') }}">My Jobs</a></li>
-    <li><a href="jobposting.html">Post a Job</a></li>
-    <li><a href="topcandidate.html">Top Candidates</a></li>
-    <li><a href="applications.html">Applications</a></li>
-    <li><a href="massage.html" class="active">Messages</a></li>
+    <li><a href="{{ url_for('employer_jobposting_page') }}">Post a Job</a></li>
+    <li><a href="{{ url_for('employer_top_candidates_page') }}">Top Candidates</a></li>
+    <li><a href="{{ url_for('employer_applications_page') }}">Applications</a></li>
+    <li><a href="{{ url_for('employer_messages_page') }}" class="active">Messages</a></li>
   </ul>
   <a class="nav-avatar" href="{{ url_for('employer_dashboard') }}" title="Employer Dashboard">
     <i class="fa-solid fa-user-gear"></i>
@@ -509,208 +446,92 @@
     <div class="convo-header">
       <div class="convo-title-row">
         <div class="convo-title">// Messages</div>
-        <button class="new-chat-btn">+</button>
+        <button class="new-chat-btn" onclick="window.location.href='/applications.html'">+</button>
       </div>
       <div class="search-convo">
         <span>🔍</span>
-        <input type="text" placeholder="Search conversations...">
+        <input type="text" placeholder="Search conversations..." oninput="filterConversations(this.value)">
       </div>
     </div>
 
-    <div class="convo-items">
-
-      <div class="convo-item active" onclick="selectConvo(this, 'Sneha Kapoor', 'SK', '#f97316')">
-        <div class="convo-avatar" style="background:var(--orange-dim);color:var(--orange)">
-          SK
+    <div class="convo-items" id="convoItems">
+      {% for convo in conversations %}
+      <div class="convo-item" data-candidate-id="{{ convo.id }}" onclick="loadChat({{ convo.id }}, '{{ convo.name }}', '{{ convo.initials }}')">
+        <div class="convo-avatar">
+          {{ convo.initials }}
+          {% if convo.unread_count > 0 %}
           <div class="online-dot"></div>
+          {% endif %}
         </div>
         <div class="convo-info">
-          <div class="convo-role">Sr. Frontend Dev</div>
+          <div class="convo-role">{{ convo.role }}</div>
           <div class="convo-name">
-            Sneha Kapoor
-            <span class="convo-time">2m</span>
+            {{ convo.name }}
+            <span class="convo-time" data-time="{{ convo.last_time }}"></span>
           </div>
-          <div class="convo-last unread">Sounds great! I'm available on Friday</div>
-        </div>
-        <div class="unread-badge">2</div>
-      </div>
-
-      <div class="convo-item" onclick="selectConvo(this, 'Aryan Sharma', 'AS', '#3b82f6')">
-        <div class="convo-avatar" style="background:rgba(59,130,246,0.15);color:#3b82f6">
-          AS
-        </div>
-        <div class="convo-info">
-          <div class="convo-role">Sr. Frontend Dev</div>
-          <div class="convo-name">
-            Aryan Sharma
-            <span class="convo-time">1h</span>
+          <div class="convo-last {% if convo.unread_count > 0 %}unread{% endif %}">
+            {{ convo.last_message or "Start a conversation" }}
           </div>
-          <div class="convo-last">Thank you for reaching out...</div>
         </div>
+        {% if convo.unread_count > 0 %}
+        <div class="unread-badge">{{ convo.unread_count }}</div>
+        {% endif %}
       </div>
+      {% endfor %}
 
-      <div class="convo-item" onclick="selectConvo(this, 'Priya Mehta', 'PM', '#a855f7')">
-        <div class="convo-avatar" style="background:rgba(168,85,247,0.15);color:#a855f7">
-          PM
-          <div class="online-dot"></div>
-        </div>
-        <div class="convo-info">
-          <div class="convo-role">Frontend Engineer</div>
-          <div class="convo-name">
-            Priya Mehta
-            <span class="convo-time">3h</span>
-          </div>
-          <div class="convo-last">Can you share the JD?</div>
-        </div>
-        <div class="unread-badge">1</div>
+      {% if not conversations %}
+      <div class="empty-chat" style="padding: 2rem; text-align: center;">
+        <div class="empty-text">No messages yet.</div>
+        <div style="font-size: 0.75rem; margin-top: 0.5rem;">Go to Applications to start a chat with candidates.</div>
       </div>
-
-      <div class="convo-item" onclick="selectConvo(this, 'Vikram Joshi', 'VJ', '#eab308')">
-        <div class="convo-avatar" style="background:rgba(234,179,8,0.15);color:#eab308">
-          VJ
-        </div>
-        <div class="convo-info">
-          <div class="convo-role">Sr. Frontend Dev</div>
-          <div class="convo-name">
-            Vikram Joshi
-            <span class="convo-time">1d</span>
-          </div>
-          <div class="convo-last">Looking forward to the interview</div>
-        </div>
-      </div>
-
-      <div class="convo-item" onclick="selectConvo(this, 'Rohit Das', 'RD', '#22c55e')">
-        <div class="convo-avatar" style="background:var(--green-dim);color:var(--green)">
-          RD
-        </div>
-        <div class="convo-info">
-          <div class="convo-role">JS Developer</div>
-          <div class="convo-name">
-            Rohit Das
-            <span class="convo-time">2d</span>
-          </div>
-          <div class="convo-last">You: We'll be in touch soon</div>
-        </div>
-      </div>
-
+      {% endif %}
     </div>
   </div>
 
   <!-- CHAT AREA -->
   <div class="chat-area">
-    <!-- Chat Header -->
-    <div class="chat-header">
-      <div class="chat-user">
-        <div class="chat-avatar" id="chatAvatar">SK</div>
-        <div class="chat-user-info">
-          <div class="name" id="chatName">Sneha Kapoor</div>
-          <div class="sub"><span class="online">● Online</span> · Sr. Frontend Dev · AI Score: 96</div>
-        </div>
-      </div>
-      <div class="chat-actions">
-        <div class="icon-btn" title="Schedule Interview">📅</div>
-        <div class="icon-btn" title="View Profile" onclick="window.location.href='applications.html'">👤</div>
-        <div class="icon-btn" title="More options">⋯</div>
-      </div>
+    <div id="chatPlaceholder" class="empty-chat">
+      <div class="empty-icon">💬</div>
+      <div class="empty-text">Select a conversation to start chatting</div>
     </div>
 
-    <!-- Job Banner -->
-    <div class="job-banner">
-      <div class="job-banner-left">
-        <span>📌</span>
-        <span class="job-banner-role">Sr. Frontend Developer</span>
-        <span class="job-banner-sep">·</span>
-        <span class="job-banner-status">Applied 3 days ago · Shortlisted</span>
-      </div>
-      <div class="ai-quick-btn" onclick="aiSuggest()">✦ AI Suggest Reply</div>
-    </div>
-
-    <!-- Messages -->
-    <div class="messages-body" id="messagesBody">
-
-      <div class="date-divider">Today</div>
-
-      <!-- Received -->
-      <div class="msg-row">
-        <div class="msg-avatar" style="background:var(--orange-dim);color:var(--orange)">SK</div>
-        <div>
-          <div class="msg-bubble">
-            Hi! I saw your job posting for the Senior Frontend Developer position. I'm very interested and would love to discuss further. I have 7 years of experience with React and TypeScript.
+    <div id="chatContent" style="display:none; flex:1; flex-direction:column; overflow:hidden;">
+      <!-- Chat Header -->
+      <div class="chat-header">
+        <div class="chat-user">
+          <div class="chat-avatar" id="chatAvatar">??</div>
+          <div class="chat-user-info">
+            <div class="name" id="chatName">Candidate Name</div>
+            <div class="sub">Active Conversation</div>
           </div>
-          <div class="msg-time">10:32 AM</div>
+        </div>
+        <div class="chat-actions">
+          <div class="icon-btn" title="View Profile" id="viewProfileBtn">👤</div>
+          <div class="icon-btn" title="Close" onclick="closeChat()">✕</div>
         </div>
       </div>
 
-      <!-- Sent -->
-      <div class="msg-row mine">
-        <div class="msg-avatar" style="background:var(--orange);color:#000">RC</div>
-        <div>
-          <div class="msg-bubble">
-            Hi Sneha! Thanks for applying. We've reviewed your profile and are very impressed. Our AI system ranked you 96/100 — one of our top candidates! 🎉
-          </div>
-          <div class="msg-time">10:45 AM · ✓✓</div>
+      <!-- Messages Body -->
+      <div class="messages-body" id="messagesBody">
+        <!-- Messages will be loaded here -->
+      </div>
+
+      <!-- AI Suggestions -->
+      <div class="ai-suggestions" id="aiSuggestions" style="display:none">
+        <div class="ai-sug-label">✦ AI Suggested Replies</div>
+        <div class="ai-sug-chips">
+          <div class="ai-chip" onclick="useChip('Thanks for your application! Are you available for a quick call?')">Schedule Call</div>
+          <div class="ai-chip" onclick="useChip('We really liked your profile. When can you start?')">Check Availability</div>
+          <div class="ai-chip" onclick="useChip('Could you please share your updated portfolio?')">Request Portfolio</div>
         </div>
       </div>
 
-      <!-- Received -->
-      <div class="msg-row">
-        <div class="msg-avatar" style="background:var(--orange-dim);color:var(--orange)">SK</div>
-        <div>
-          <div class="msg-bubble">
-            That's wonderful to hear! Thank you. I'm very excited about this opportunity. What are the next steps?
-          </div>
-          <div class="msg-time">10:47 AM</div>
+      <!-- Input Area -->
+      <div class="input-area">
+        <div class="input-box">
+          <textarea id="msgInput" rows="1" placeholder="Type a message..." oninput="autoResize(this)" onkeydown="sendOnEnter(event)"></textarea>
+          <button class="send-btn" id="sendBtn" onclick="sendMessage()">➤</button>
         </div>
-      </div>
-
-      <!-- Sent -->
-      <div class="msg-row mine">
-        <div class="msg-avatar" style="background:var(--orange);color:#000">RC</div>
-        <div>
-          <div class="msg-bubble">
-            We'd like to schedule a technical interview. Are you available this week? We're flexible on timings.
-          </div>
-          <div class="msg-time">11:02 AM · ✓✓</div>
-        </div>
-      </div>
-
-      <!-- Received -->
-      <div class="msg-row">
-        <div class="msg-avatar" style="background:var(--orange-dim);color:var(--orange)">SK</div>
-        <div>
-          <div class="msg-bubble">
-            Sounds great! I'm available on Friday afternoon or anytime on Saturday. Would either work for your team?
-          </div>
-          <div class="msg-time">11:15 AM</div>
-        </div>
-      </div>
-
-    </div>
-
-    <!-- AI Suggestions -->
-    <div class="ai-suggestions" id="aiSuggestions" style="display:none">
-      <div class="ai-sug-label">✦ AI Quick Replies</div>
-      <div class="ai-sug-chips">
-        <div class="ai-chip" onclick="useChip(this)">Friday 3 PM works great! We'll send a calendar invite.</div>
-        <div class="ai-chip" onclick="useChip(this)">Saturday 11 AM is perfect. Expect a Google Meet link shortly.</div>
-        <div class="ai-chip" onclick="useChip(this)">Let me check with the team and confirm by EOD today.</div>
-      </div>
-    </div>
-
-    <!-- Input Area -->
-    <div class="input-area">
-      <div class="input-box">
-        <textarea id="msgInput" rows="1" placeholder="Type a message..." oninput="autoResize(this)" onkeydown="sendOnEnter(event)"></textarea>
-        <div class="input-tools">
-          <div class="tool-icon" title="Attach" onclick="showToast('Attach feature coming soon')">📎</div>
-          <div class="tool-icon" title="Schedule Message">🕐</div>
-          <div class="tool-icon" title="AI Assist" onclick="aiSuggest()">✦</div>
-        </div>
-        <button class="send-btn" onclick="sendMessage()">➤</button>
-      </div>
-      <div class="input-footer">
-        <span>Enter to send · Shift+Enter for newline</span>
-        <span id="typingIndicator" style="color:var(--green);display:none">Sneha is typing...</span>
       </div>
     </div>
   </div>
@@ -718,15 +539,8 @@
 </div>
 
 <script>
-  function selectConvo(el, name, initials, color) {
-    document.querySelectorAll('.convo-item').forEach(i => i.classList.remove('active'));
-    el.classList.add('active');
-    el.querySelector('.unread-badge')?.remove();
-    document.getElementById('chatName').textContent = name;
-    document.getElementById('chatAvatar').textContent = initials;
-    document.getElementById('chatAvatar').style.color = color;
-    document.getElementById('aiSuggestions').style.display = 'none';
-  }
+  let currentCandidateId = null;
+  let pollingInterval = null;
 
   function autoResize(el) {
     el.style.height = 'auto';
@@ -740,70 +554,155 @@
     }
   }
 
-  function sendMessage() {
-    const input = document.getElementById('msgInput');
-    const text = input.value.trim();
-    if (!text) return;
+  async function loadChat(candidateId, name, initials) {
+    currentCandidateId = candidateId;
+    document.getElementById('chatPlaceholder').style.display = 'none';
+    document.getElementById('chatContent').style.display = 'flex';
+    document.getElementById('chatName').textContent = name;
+    document.getElementById('chatAvatar').textContent = initials;
+    
+    // UI selection
+    document.querySelectorAll('.convo-item').forEach(el => {
+      el.classList.toggle('active', el.dataset.candidateId == candidateId);
+      if (el.dataset.candidateId == candidateId) {
+        el.querySelector('.unread-badge')?.remove();
+        el.querySelector('.convo-last')?.classList.remove('unread');
+      }
+    });
 
+    await fetchMessages();
+    
+    // Start polling
+    if (pollingInterval) clearInterval(pollingInterval);
+    pollingInterval = setInterval(fetchMessages, 5000);
+  }
+
+  function closeChat() {
+    currentCandidateId = null;
+    document.getElementById('chatPlaceholder').style.display = 'flex';
+    document.getElementById('chatContent').style.display = 'none';
+    if (pollingInterval) clearInterval(pollingInterval);
+  }
+
+  async function fetchMessages() {
+    if (!currentCandidateId) return;
+    try {
+      const response = await fetch(`/api/employer/messages/${currentCandidateId}`);
+      const messages = await response.json();
+      renderMessages(messages);
+    } catch (err) {
+      console.error('Failed to fetch messages:', err);
+    }
+  }
+
+  function renderMessages(messages) {
     const body = document.getElementById('messagesBody');
+    const wasAtBottom = body.scrollHeight - body.scrollTop <= body.clientHeight + 100;
+    
+    let html = '';
+    let lastDate = null;
 
-    const row = document.createElement('div');
-    row.className = 'msg-row mine';
-    row.innerHTML = `
-      <div class="msg-avatar" style="background:var(--orange);color:#000">RC</div>
-      <div>
-        <div class="msg-bubble">${text}</div>
-        <div class="msg-time">Just now · ✓</div>
-      </div>
-    `;
-    body.appendChild(row);
-    input.value = '';
-    input.style.height = 'auto';
-    body.scrollTop = body.scrollHeight;
+    messages.forEach(msg => {
+      const date = new Date(msg.timestamp).toLocaleDateString();
+      if (date !== lastDate) {
+        html += `<div class="date-divider">${date}</div>`;
+        lastDate = date;
+      }
 
-    document.getElementById('aiSuggestions').style.display = 'none';
-
-    // Simulate typing + reply
-    setTimeout(() => {
-      document.getElementById('typingIndicator').style.display = 'block';
-    }, 800);
-
-    setTimeout(() => {
-      document.getElementById('typingIndicator').style.display = 'none';
-      const replies = [
-        "That sounds perfect! Looking forward to it.",
-        "Great, I'll make sure to prepare thoroughly.",
-        "Thanks for the quick response! Really appreciate it.",
-        "Understood. I'll be ready. 🙌"
-      ];
-      const reply = document.createElement('div');
-      reply.className = 'msg-row';
-      reply.innerHTML = `
-        <div class="msg-avatar" style="background:var(--orange-dim);color:var(--orange)">SK</div>
-        <div>
-          <div class="msg-bubble">${replies[Math.floor(Math.random()*replies.length)]}</div>
-          <div class="msg-time">Just now</div>
+      const time = new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      
+      html += `
+        <div class="msg-row ${msg.mine ? 'mine' : ''}">
+          <div class="msg-bubble">
+            ${msg.content}
+            <div class="msg-time">${time}</div>
+          </div>
         </div>
       `;
-      body.appendChild(reply);
-      body.scrollTop = body.scrollHeight;
-    }, 2500);
+    });
+
+    body.innerHTML = html;
+    if (wasAtBottom) body.scrollTop = body.scrollHeight;
   }
 
-  function aiSuggest() {
-    const sug = document.getElementById('aiSuggestions');
-    sug.style.display = sug.style.display === 'none' ? 'block' : 'none';
+  async function sendMessage() {
+    const input = document.getElementById('msgInput');
+    const content = input.value.trim();
+    if (!content || !currentCandidateId) return;
+
+    const btn = document.getElementById('sendBtn');
+    btn.disabled = true;
+
+    try {
+      const response = await fetch('/api/employer/messages/send', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ candidate_id: currentCandidateId, content: content })
+      });
+
+      if (response.ok) {
+        input.value = '';
+        input.style.height = 'auto';
+        await fetchMessages();
+        updateConvoPreview(currentCandidateId, content);
+      }
+    } catch (err) {
+      console.error('Failed to send message:', err);
+    } finally {
+      btn.disabled = false;
+    }
   }
 
-  function useChip(el) {
-    document.getElementById('msgInput').value = el.textContent;
-    document.getElementById('aiSuggestions').style.display = 'none';
+  function updateConvoPreview(candidateId, content) {
+    const item = document.querySelector(`.convo-item[data-candidate-id="${candidateId}"]`);
+    if (item) {
+      item.querySelector('.convo-last').textContent = content;
+      item.querySelector('.convo-time').textContent = 'Just now';
+      // Move to top
+      const parent = item.parentNode;
+      parent.prepend(item);
+    }
+  }
+
+  function filterConversations(val) {
+    const query = val.toLowerCase();
+    document.querySelectorAll('.convo-item').forEach(el => {
+      const name = el.querySelector('.convo-name').textContent.toLowerCase();
+      el.style.display = name.includes(query) ? 'flex' : 'none';
+    });
+  }
+
+  function useChip(text) {
+    document.getElementById('msgInput').value = text;
     document.getElementById('msgInput').focus();
+    autoResize(document.getElementById('msgInput'));
   }
 
-  function showToast(msg) {
-    alert(msg);
-  }
+  // Initial time formatting
+  document.querySelectorAll('.convo-time').forEach(el => {
+    const timeStr = el.dataset.time;
+    if (timeStr) {
+      const d = new Date(timeStr);
+      el.textContent = d.toLocaleDateString([], { month: 'short', day: 'numeric' });
+    }
+  });
+
+  // Auto-open if candidate_id is in URL
+  window.addEventListener('DOMContentLoaded', () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const candId = urlParams.get('candidate_id');
+    if (candId) {
+      const item = document.querySelector(`.convo-item[data-candidate-id="${candId}"]`);
+      if (item) {
+        item.click();
+      } else {
+        // If not in list, maybe it's a new chat. We can load it anyway if the API supports it.
+        // For now just console log.
+        console.log("Candidate not found in recent conversations list.");
+      }
+    }
+  });
 </script>
+
 </body>
 </html>

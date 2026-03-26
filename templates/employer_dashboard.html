@@ -178,37 +178,7 @@
         .empty-title { font-family: "Clash Display", sans-serif; font-size: 22px; font-weight: 700; margin-bottom: 8px; }
         .empty-sub { font-size: 14px; color: var(--muted); margin-bottom: 24px; }
 
-        /* CANDIDATES TABLE */
-        .cand-table { width: 100%; border-collapse: collapse; }
-        .cand-table th { text-align: left; padding: 10px 14px; font-size: 11px; font-weight: 700; color: var(--muted-soft); text-transform: uppercase; letter-spacing: 1px; border-bottom: 1px solid var(--border-soft); background: rgba(255,255,255,0.02); }
-        .cand-table td { padding: 14px; font-size: 13px; border-bottom: 1px solid var(--border-soft); vertical-align: middle; }
-        .cand-table tr:last-child td { border-bottom: none; }
-        .cand-table tr:hover td { background: rgba(255,255,255,0.02); }
-        .cand-name { font-weight: 600; color: var(--text); }
-        .cand-role { font-size: 12px; color: var(--muted); margin-top: 2px; }
-        .score-wrap { display: flex; align-items: center; gap: 8px; }
-        .score-bar-track { width: 72px; height: 5px; background: var(--border-soft); border-radius: 3px; overflow: hidden; }
-        .score-bar-fill { height: 100%; border-radius: 3px; background: linear-gradient(90deg, var(--accent), var(--accent-2)); }
-        .score-num { font-size: 12px; font-weight: 700; color: var(--text); }
-        .status-pill { display: inline-block; padding: 4px 10px; border-radius: 100px; font-size: 11px; font-weight: 700; }
-        .sp-new { background: rgba(96,165,250,0.14); color: var(--blue); }
-        .sp-review { background: rgba(255,179,71,0.14); color: var(--accent-2); }
-        .sp-hired { background: rgba(52,211,153,0.14); color: var(--green); }
-        .sp-reject { background: rgba(248,113,113,0.12); color: var(--danger); }
-
-        /* POST JOB FORM */
-        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-        .form-group { display: flex; flex-direction: column; gap: 7px; }
-        .form-group label { font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.8px; }
-        .form-input { background: rgba(255,255,255,0.04); border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px; color: var(--text); font-family: "Bricolage Grotesque", sans-serif; font-size: 14px; outline: none; transition: border-color 0.2s; }
-        .form-input:focus { border-color: var(--accent); background: rgba(255,107,43,0.04); }
-        .form-input::placeholder { color: var(--muted-soft); }
-        textarea.form-input { resize: vertical; min-height: 100px; }
-        select.form-input { cursor: pointer; }
-        select.form-input option { background: var(--panel); }
-        .form-full { grid-column: 1 / -1; }
-
-        /* SIDEBAR */
+        /* PROFILE SIDEBAR */
         .profile-sidebar { position: fixed; top: 0; right: 0; width: min(370px, 94vw); height: 100vh; z-index: 160; border-left: 1px solid var(--border); background: linear-gradient(175deg, #101223, #0d0f1a 72%); transform: translateX(102%); transition: transform 0.3s ease; box-shadow: -20px 0 50px rgba(0,0,0,0.45); overflow-y: auto; }
         .profile-sidebar.open { transform: translateX(0); }
         .sidebar-inner { padding: 22px; }
@@ -232,12 +202,6 @@
         /* OVERLAY / MODAL */
         .overlay { position: fixed; inset: 0; background: rgba(2,4,10,0.75); opacity: 0; visibility: hidden; transition: opacity 0.25s; z-index: 140; }
         .overlay.show { opacity: 1; visibility: visible; }
-        .modal-wrap { position: fixed; inset: 0; z-index: 170; display: grid; place-items: center; opacity: 0; visibility: hidden; transition: all 0.25s; padding: 16px; }
-        .modal-wrap.show { opacity: 1; visibility: visible; }
-        .modal-card { width: min(480px, 100%); border-radius: 22px; border: 1px solid var(--border); background: linear-gradient(170deg, var(--panel), #0f1220); padding: 32px; box-shadow: var(--shadow); }
-        .modal-icon { width: 58px; height: 58px; margin: 0 auto 16px; border-radius: 16px; display: grid; place-items: center; font-size: 24px; }
-        .modal-card h3 { font-family: "Clash Display", sans-serif; font-size: 28px; margin-bottom: 8px; letter-spacing: -0.6px; text-align: center; }
-        .modal-card p { color: var(--muted); font-size: 14px; margin-bottom: 20px; line-height: 1.7; text-align: center; }
 
         /* TOAST */
         .toast { position: fixed; right: 18px; bottom: 18px; z-index: 200; background: rgba(255,255,255,0.95); color: #12131d; border-radius: 11px; padding: 12px 18px; font-size: 13px; font-weight: 600; box-shadow: 0 10px 28px rgba(0,0,0,0.3); transform: translateY(12px); opacity: 0; pointer-events: none; transition: all 0.2s; }
@@ -254,7 +218,6 @@
         @media(max-width:980px) {
             .nav-links { display: none; }
             .stats-row { grid-template-columns: 1fr 1fr; }
-            .form-grid { grid-template-columns: 1fr; }
             .search-row { grid-template-columns: 1fr; }
         }
         @media(max-width:700px) {
@@ -303,7 +266,6 @@
     </nav>
 
     <main class="page">
-
         <!-- PROFILE HERO -->
         <div class="profile-hero panel" style="margin-bottom:18px">
             <div class="profile-left">
@@ -358,7 +320,6 @@
 
         <!-- CONTENT GRID -->
         <div class="content-grid">
-
             <!-- LEFT RAIL -->
             <aside class="left-rail">
                 <section class="panel rail-card">
@@ -377,41 +338,31 @@
                 <section class="panel rail-card">
                     <div class="qa-title" style="margin-bottom:16px">Recent Activity</div>
                     <div class="activity-list">
-                        <div class="activity-item">
-                            <div class="act-icon" style="background:rgba(52,211,153,0.12);color:var(--green)"><i class="fa-solid fa-user-plus"></i></div>
-                            <div>
-                                <div class="act-text">New application received</div>
-                                <div class="act-meta">ML Engineer role · 2 hours ago</div>
+                        {% if candidate_applications %}
+                            {% for app in candidate_applications[:5] %}
+                            <div class="activity-item">
+                                <div class="act-icon" style="background:rgba(52,211,153,0.12);color:var(--green)"><i class="fa-solid fa-user-plus"></i></div>
+                                <div>
+                                    <div class="act-text">New application: {{ app.candidate_name if app.candidate_name else "Candidate" }}</div>
+                                    <div class="act-meta">{{ app.job_title }} · {{ app.applied_at.strftime('%H:%M %p') if app.applied_at else 'N/A' }}</div>
+                                </div>
                             </div>
-                        </div>
-                        <div class="activity-item">
-                            <div class="act-icon" style="background:rgba(96,165,250,0.12);color:var(--blue)"><i class="fa-solid fa-calendar-check"></i></div>
-                            <div>
-                                <div class="act-text">Interview scheduled</div>
-                                <div class="act-meta">Data Scientist · Tomorrow 2 PM</div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="activity-item">
+                                <div class="act-icon" style="background:rgba(255,255,255,0.05);color:var(--muted)"><i class="fa-solid fa-clock-rotate-left"></i></div>
+                                <div>
+                                    <div class="act-text">No recent activity</div>
+                                    <div class="act-meta">Check back later for new applicants.</div>
+                                </div>
                             </div>
-                        </div>
-                        <div class="activity-item">
-                            <div class="act-icon" style="background:rgba(167,139,250,0.12);color:var(--purple)"><i class="fa-solid fa-eye"></i></div>
-                            <div>
-                                <div class="act-text">48 profile views today</div>
-                                <div class="act-meta">Backend Engineer post · active</div>
-                            </div>
-                        </div>
-                        <div class="activity-item">
-                            <div class="act-icon" style="background:rgba(255,107,43,0.12);color:var(--accent)"><i class="fa-solid fa-trophy"></i></div>
-                            <div>
-                                <div class="act-text">Candidate hired! 🎉</div>
-                                <div class="act-meta">Sneha Joshi · ML Engineer</div>
-                            </div>
-                        </div>
+                        {% endif %}
                     </div>
                 </section>
             </aside>
 
             <!-- MAIN FEED -->
             <div class="main-feed">
-
                 <!-- MY JOB POSTS -->
                 <section id="jobs" class="panel section-block">
                     <div class="section-head">
@@ -485,7 +436,6 @@
                         {% endif %}
                     </div>
                 </section>
-
             </div>
         </div>
     </main>
@@ -561,5 +511,3 @@
     </script>
 </body>
 </html>
-
-

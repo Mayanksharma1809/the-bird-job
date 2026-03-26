@@ -47,6 +47,18 @@ class User(db.Model):
         back_populates='candidate',
         cascade='all, delete-orphan',
     )
+    sent_messages = db.relationship(
+        'Message',
+        foreign_keys='Message.sender_id',
+        back_populates='sender',
+        cascade='all, delete-orphan',
+    )
+    received_messages = db.relationship(
+        'Message',
+        foreign_keys='Message.receiver_id',
+        back_populates='receiver',
+        cascade='all, delete-orphan',
+    )
 
 
 class EmployerJob(db.Model):
@@ -122,10 +134,25 @@ class EmployerProfile(db.Model):
     email = db.Column(db.String(255), nullable=False)
     phone = db.Column(db.String(40), nullable=True)
     company_size = db.Column(db.String(120), nullable=True)
+    plan_tier = db.Column(db.String(30), nullable=False, default='starter')
     created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     user = db.relationship('User', back_populates='employer_profile')
+
+
+class Message(db.Model):
+    __tablename__ = 'messages'
+
+    id = db.Column(db.Integer, primary_key=True)
+    sender_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete='CASCADE'), nullable=False, index=True)
+    receiver_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete='CASCADE'), nullable=False, index=True)
+    content = db.Column(db.Text, nullable=False)
+    timestamp = db.Column(db.DateTime, nullable=False, default=datetime.utcnow, index=True)
+    is_read = db.Column(db.Boolean, default=False)
+
+    sender = db.relationship('User', foreign_keys=[sender_id], back_populates='sent_messages')
+    receiver = db.relationship('User', foreign_keys=[receiver_id], back_populates='received_messages')
 
 
 class LoginEvent(db.Model):

@@ -650,26 +650,17 @@
   <aside class="sidebar">
     <div class="sidebar-title">Active Jobs</div>
     <div class="job-filter">
-      <div class="jf-item active" onclick="selectJob(this)">
-        <span class="jf-name">Sr. Frontend Dev</span>
-        <span class="jf-count">24</span>
+      <div class="jf-item active" onclick="selectJob(this, 'all')">
+        <span class="jf-name">All Job Posts</span>
+        <span class="jf-count">{{ applications|length }}</span>
       </div>
-      <div class="jf-item" onclick="selectJob(this)">
-        <span class="jf-name">Backend Engineer</span>
-        <span class="jf-count">18</span>
-      </div>
-      <div class="jf-item" onclick="selectJob(this)">
-        <span class="jf-name">UI/UX Designer</span>
-        <span class="jf-count">31</span>
-      </div>
-      <div class="jf-item" onclick="selectJob(this)">
-        <span class="jf-name">Product Manager</span>
-        <span class="jf-count">12</span>
-      </div>
-      <div class="jf-item" onclick="selectJob(this)">
-        <span class="jf-name">DevOps Engineer</span>
-        <span class="jf-count">9</span>
-      </div>
+      {% for job in jobs %}
+        {% set app_count = job.applications|selectattr('action', 'equalto', 'applied')|list|length %}
+        <div class="jf-item" onclick="selectJob(this, '{{ job.id }}')" data-job-id="{{ job.id }}">
+          <span class="jf-name">{{ job.title }}</span>
+          <span class="jf-count">{{ app_count }}</span>
+        </div>
+      {% endfor %}
     </div>
 
     <div class="sidebar-title">Filter by Status</div>
@@ -720,305 +711,89 @@
     <!-- STATS -->
     <div class="stats-strip">
       <div class="stat-box total">
-        <div class="stat-num">24</div>
+        <div class="stat-num">{{ status_counts.total }}</div>
         <div class="stat-label">Total</div>
-        <div class="stat-delta">↑ +6 this week</div>
+        <div class="stat-delta">Overall Received</div>
       </div>
       <div class="stat-box new">
-        <div class="stat-num">8</div>
+        <div class="stat-num">{{ status_counts.submitted }}</div>
         <div class="stat-label">New</div>
-        <div class="stat-delta">↑ +3 today</div>
       </div>
       <div class="stat-box shortlisted">
-        <div class="stat-num">11</div>
+        <div class="stat-num">{{ status_counts.shortlisted }}</div>
         <div class="stat-label">Shortlisted</div>
       </div>
       <div class="stat-box rejected">
-        <div class="stat-num">5</div>
+        <div class="stat-num">{{ status_counts.rejected }}</div>
         <div class="stat-label">Rejected</div>
       </div>
     </div>
 
     <!-- KANBAN -->
     <div class="kanban" id="kanban">
-
-      <!-- NEW -->
+      {% for status in ['new', 'shortlisted', 'interviewed', 'rejected'] %}
       <div class="kanban-col">
         <div class="col-header">
           <div class="col-label">
-            <div class="col-dot" style="background:var(--blue)"></div>
-            New
+            <div class="col-dot" style="background:{% if status == 'new' %}var(--blue){% elif status == 'shortlisted' %}var(--green){% elif status == 'interviewed' %}var(--yellow){% else %}var(--red){% endif %}"></div>
+            {{ status|capitalize }}
           </div>
-          <div class="col-count">8</div>
+          {% set status_results = applications|selectattr('status', 'equalto', status)|list %}
+          <div class="col-count">{{ status_results|length }}</div>
         </div>
-        <div class="col-body">
-          <div class="app-card" onclick="openDrawer('Aryan Sharma','aryan')">
+        <div class="col-body" id="col-{{ status }}">
+          {% for app in status_results %}
+          <div class="app-card" onclick='openDrawer({{ app|tojson|safe }})' data-job-id="{{ app.job_id }}">
             <div class="app-card-top">
-              <div class="app-avatar" style="background:rgba(59,130,246,0.15);color:var(--blue)">AS</div>
+              <div class="app-avatar" style="background:rgba(59,130,246,0.15);color:var(--blue)">
+                {{ app.candidate_name[:2].upper() }}
+              </div>
               <div class="app-info">
-                <div class="app-name">Aryan Sharma</div>
-                <div class="app-role">Sr. React Developer</div>
+                <div class="app-name">{{ app.candidate_name }}</div>
+                <div class="app-role">{{ app.job_title }}</div>
               </div>
               <div class="ai-score">
                 <div class="score-ring">
                   <svg viewBox="0 0 36 36">
                     <circle class="bg" cx="18" cy="18" r="15.9"/>
-                    <circle class="fg" cx="18" cy="18" r="15.9" stroke="var(--orange)" stroke-dasharray="92 100"/>
+                    {% set display_score = 75 %}{# Placeholder or real score if available #}
+                    <circle class="fg" cx="18" cy="18" r="15.9" stroke="var(--orange)" stroke-dasharray="{{ display_score }} 100"/>
                   </svg>
-                  <div class="score-num">92</div>
+                  <div class="score-num">{{ display_score }}</div>
                 </div>
                 <div class="score-label">AI</div>
               </div>
             </div>
             <div class="app-tags">
-              <span class="app-tag">React</span>
-              <span class="app-tag">TypeScript</span>
-              <span class="app-tag">5yr exp</span>
+              {% for skill in app.candidate_skills[:3] %}
+              <span class="app-tag">{{ skill }}</span>
+              {% endfor %}
+              {% if app.candidate_skills|length > 3 %}
+              <span class="app-tag">+{{ app.candidate_skills|length - 3 }}</span>
+              {% endif %}
             </div>
             <div class="app-footer">
-              <span class="app-time">2h ago</span>
+              <span class="app-time">{{ app.applied_at.strftime('%b %d') if app.applied_at else 'N/A' }}</span>
               <div class="app-actions">
-                <div class="action-btn accept" title="Shortlist">✓</div>
-                <div class="action-btn msg" title="Message" onclick="event.stopPropagation(); window.location.href='massage.html'">✉</div>
-                <div class="action-btn reject" title="Reject">✕</div>
+                <form method="POST" action="{{ url_for('update_employer_application_status', application_id=app.id) }}" style="display:inline;">
+                  <input type="hidden" name="status" value="shortlisted">
+                  <button type="submit" class="action-btn accept" title="Shortlist" onclick="event.stopPropagation()">✓</button>
+                </form>
+                <div class="action-btn msg" title="Message" onclick="event.stopPropagation(); window.location.href='{{ url_for('employer_messages_page') }}'">✉</div>
+                <form method="POST" action="{{ url_for('update_employer_application_status', application_id=app.id) }}" style="display:inline;">
+                  <input type="hidden" name="status" value="rejected">
+                  <button type="submit" class="action-btn reject" title="Reject" onclick="event.stopPropagation()">✕</button>
+                </form>
               </div>
             </div>
           </div>
-
-          <div class="app-card" onclick="openDrawer('Priya Mehta','priya')">
-            <div class="app-card-top">
-              <div class="app-avatar" style="background:rgba(168,85,247,0.15);color:#a855f7">PM</div>
-              <div class="app-info">
-                <div class="app-name">Priya Mehta</div>
-                <div class="app-role">Frontend Engineer</div>
-              </div>
-              <div class="ai-score">
-                <div class="score-ring">
-                  <svg viewBox="0 0 36 36">
-                    <circle class="bg" cx="18" cy="18" r="15.9"/>
-                    <circle class="fg" cx="18" cy="18" r="15.9" stroke="var(--orange)" stroke-dasharray="85 100"/>
-                  </svg>
-                  <div class="score-num">85</div>
-                </div>
-                <div class="score-label">AI</div>
-              </div>
-            </div>
-            <div class="app-tags">
-              <span class="app-tag">Vue.js</span>
-              <span class="app-tag">CSS</span>
-              <span class="app-tag">3yr exp</span>
-            </div>
-            <div class="app-footer">
-              <span class="app-time">5h ago</span>
-              <div class="app-actions">
-                <div class="action-btn accept">✓</div>
-                <div class="action-btn msg" onclick="event.stopPropagation(); window.location.href='massage.html'">✉</div>
-                <div class="action-btn reject">✕</div>
-              </div>
-            </div>
-          </div>
-
-          <div class="app-card" onclick="openDrawer('Rohit Das','rohit')">
-            <div class="app-card-top">
-              <div class="app-avatar" style="background:var(--green-dim);color:var(--green)">RD</div>
-              <div class="app-info">
-                <div class="app-name">Rohit Das</div>
-                <div class="app-role">JS Developer</div>
-              </div>
-              <div class="ai-score">
-                <div class="score-ring">
-                  <svg viewBox="0 0 36 36">
-                    <circle class="bg" cx="18" cy="18" r="15.9"/>
-                    <circle class="fg" cx="18" cy="18" r="15.9" stroke="var(--orange)" stroke-dasharray="72 100"/>
-                  </svg>
-                  <div class="score-num">72</div>
-                </div>
-                <div class="score-label">AI</div>
-              </div>
-            </div>
-            <div class="app-tags">
-              <span class="app-tag">JavaScript</span>
-              <span class="app-tag">Node.js</span>
-              <span class="app-tag">2yr exp</span>
-            </div>
-            <div class="app-footer">
-              <span class="app-time">1d ago</span>
-              <div class="app-actions">
-                <div class="action-btn accept">✓</div>
-                <div class="action-btn msg" onclick="event.stopPropagation(); window.location.href='massage.html'">✉</div>
-                <div class="action-btn reject">✕</div>
-              </div>
-            </div>
-          </div>
+          {% endfor %}
+          {% if not status_results %}
+          <div style="padding: 1rem; color: var(--muted); font-size: 0.8rem; text-align: center; border: 1px dashed var(--border);">No candidates here</div>
+          {% endif %}
         </div>
       </div>
-
-      <!-- SHORTLISTED -->
-      <div class="kanban-col">
-        <div class="col-header">
-          <div class="col-label">
-            <div class="col-dot" style="background:var(--green)"></div>
-            Shortlisted
-          </div>
-          <div class="col-count">11</div>
-        </div>
-        <div class="col-body">
-          <div class="app-card" onclick="openDrawer('Sneha Kapoor','sneha')">
-            <div class="app-card-top">
-              <div class="app-avatar" style="background:var(--orange-dim);color:var(--orange)">SK</div>
-              <div class="app-info">
-                <div class="app-name">Sneha Kapoor</div>
-                <div class="app-role">React + Node Dev</div>
-              </div>
-              <div class="ai-score">
-                <div class="score-ring">
-                  <svg viewBox="0 0 36 36">
-                    <circle class="bg" cx="18" cy="18" r="15.9"/>
-                    <circle class="fg" cx="18" cy="18" r="15.9" stroke="var(--green)" stroke-dasharray="96 100"/>
-                  </svg>
-                  <div class="score-num" style="color:var(--green)">96</div>
-                </div>
-                <div class="score-label">AI</div>
-              </div>
-            </div>
-            <div class="app-tags">
-              <span class="app-tag">React</span>
-              <span class="app-tag">Node.js</span>
-              <span class="app-tag">AWS</span>
-              <span class="app-tag">7yr exp</span>
-            </div>
-            <div class="app-footer">
-              <span class="app-time">3d ago</span>
-              <div class="app-actions">
-                <div class="action-btn accept" style="color:var(--green)">✓</div>
-                <div class="action-btn msg" onclick="event.stopPropagation(); window.location.href='massage.html'">✉</div>
-                <div class="action-btn reject">✕</div>
-              </div>
-            </div>
-          </div>
-
-          <div class="app-card">
-            <div class="app-card-top">
-              <div class="app-avatar" style="background:rgba(234,179,8,0.15);color:var(--yellow)">MK</div>
-              <div class="app-info">
-                <div class="app-name">Manish Kumar</div>
-                <div class="app-role">Full Stack Dev</div>
-              </div>
-              <div class="ai-score">
-                <div class="score-ring">
-                  <svg viewBox="0 0 36 36">
-                    <circle class="bg" cx="18" cy="18" r="15.9"/>
-                    <circle class="fg" cx="18" cy="18" r="15.9" stroke="var(--green)" stroke-dasharray="88 100"/>
-                  </svg>
-                  <div class="score-num" style="color:var(--green)">88</div>
-                </div>
-                <div class="score-label">AI</div>
-              </div>
-            </div>
-            <div class="app-tags">
-              <span class="app-tag">React</span>
-              <span class="app-tag">Python</span>
-              <span class="app-tag">4yr exp</span>
-            </div>
-            <div class="app-footer">
-              <span class="app-time">4d ago</span>
-              <div class="app-actions">
-                <div class="action-btn accept">✓</div>
-                <div class="action-btn msg" onclick="event.stopPropagation(); window.location.href='massage.html'">✉</div>
-                <div class="action-btn reject">✕</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- INTERVIEWED -->
-      <div class="kanban-col">
-        <div class="col-header">
-          <div class="col-label">
-            <div class="col-dot" style="background:var(--yellow)"></div>
-            Interviewed
-          </div>
-          <div class="col-count">4</div>
-        </div>
-        <div class="col-body">
-          <div class="app-card">
-            <div class="app-card-top">
-              <div class="app-avatar" style="background:rgba(234,179,8,0.15);color:var(--yellow)">VJ</div>
-              <div class="app-info">
-                <div class="app-name">Vikram Joshi</div>
-                <div class="app-role">Sr. Frontend Dev</div>
-              </div>
-              <div class="ai-score">
-                <div class="score-ring">
-                  <svg viewBox="0 0 36 36">
-                    <circle class="bg" cx="18" cy="18" r="15.9"/>
-                    <circle class="fg" cx="18" cy="18" r="15.9" stroke="var(--yellow)" stroke-dasharray="90 100"/>
-                  </svg>
-                  <div class="score-num" style="color:var(--yellow)">90</div>
-                </div>
-                <div class="score-label">AI</div>
-              </div>
-            </div>
-            <div class="app-tags">
-              <span class="app-tag">React</span>
-              <span class="app-tag">TypeScript</span>
-              <span class="app-tag">6yr exp</span>
-            </div>
-            <div class="app-footer">
-              <span class="app-time">1w ago</span>
-              <div class="app-actions">
-                <div class="action-btn accept">✓</div>
-                <div class="action-btn msg" onclick="event.stopPropagation(); window.location.href='massage.html'">✉</div>
-                <div class="action-btn reject">✕</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- REJECTED -->
-      <div class="kanban-col">
-        <div class="col-header">
-          <div class="col-label">
-            <div class="col-dot" style="background:var(--red)"></div>
-            Rejected
-          </div>
-          <div class="col-count">5</div>
-        </div>
-        <div class="col-body">
-          <div class="app-card" style="opacity:0.5">
-            <div class="app-card-top">
-              <div class="app-avatar" style="background:var(--red-dim);color:var(--red)">AK</div>
-              <div class="app-info">
-                <div class="app-name">Amit Kumar</div>
-                <div class="app-role">Frontend Dev</div>
-              </div>
-              <div class="ai-score">
-                <div class="score-ring">
-                  <svg viewBox="0 0 36 36">
-                    <circle class="bg" cx="18" cy="18" r="15.9"/>
-                    <circle class="fg" cx="18" cy="18" r="15.9" stroke="var(--red)" stroke-dasharray="45 100"/>
-                  </svg>
-                  <div class="score-num" style="color:var(--red)">45</div>
-                </div>
-                <div class="score-label">AI</div>
-              </div>
-            </div>
-            <div class="app-tags">
-              <span class="app-tag">HTML/CSS</span>
-              <span class="app-tag">1yr exp</span>
-            </div>
-            <div class="app-footer">
-              <span class="app-time">5d ago</span>
-              <div class="app-actions">
-                <div class="action-btn" title="Restore">↩</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
+      {% endfor %}
     </div>
   </div>
 </div>
@@ -1029,15 +804,14 @@
   <div class="drawer-close" onclick="closeDrawer()">✕</div>
   <div class="drawer-header">
     <div class="drawer-avatar-row">
-      <div class="drawer-avatar" id="dAvatar">AS</div>
+      <div class="drawer-avatar" id="dAvatar">??</div>
       <div>
-        <div class="drawer-name" id="dName">Aryan Sharma</div>
-        <div class="drawer-sub">Senior React Developer · 5 years experience</div>
+        <div class="drawer-name" id="dName">Candidate Name</div>
+        <div class="drawer-sub" id="dSub">Role · Experience</div>
       </div>
     </div>
-    <div style="display:flex;gap:8px;flex-wrap:wrap;">
-      <span class="status-badge new">● New</span>
-      <span class="status-badge shortlisted">✦ AI Top Pick</span>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;" id="dBadges">
+      <span class="status-badge new" id="dStatusBadge">● Status</span>
     </div>
   </div>
 
@@ -1046,73 +820,52 @@
     <div class="info-grid">
       <div class="info-item">
         <div class="info-item-label">Email</div>
-        <div class="info-item-val" style="font-size:0.75rem">aryan@gmail.com</div>
+        <div class="info-item-val" style="font-size:0.75rem" id="dEmail">email@example.com</div>
       </div>
       <div class="info-item">
         <div class="info-item-label">Location</div>
-        <div class="info-item-val">Mumbai, IN</div>
+        <div class="info-item-val" id="dLocation">Not specified</div>
       </div>
       <div class="info-item">
-        <div class="info-item-label">Experience</div>
-        <div class="info-item-val">5 Years</div>
-      </div>
-      <div class="info-item">
-        <div class="info-item-label">Current CTC</div>
-        <div class="info-item-val">₹18 LPA</div>
-      </div>
-      <div class="info-item">
-        <div class="info-item-label">Expected</div>
-        <div class="info-item-val">₹28 LPA</div>
-      </div>
-      <div class="info-item">
-        <div class="info-item-label">Notice Period</div>
-        <div class="info-item-val">30 Days</div>
+        <div class="info-item-label">Applied At</div>
+        <div class="info-item-val" id="dAppliedAt">Date</div>
       </div>
     </div>
   </div>
 
   <div class="drawer-section">
     <div class="drawer-section-title">Skills</div>
-    <div class="skills-row">
-      <span class="skill-chip">React</span>
-      <span class="skill-chip">TypeScript</span>
-      <span class="skill-chip">Next.js</span>
-      <span class="skill-chip">Node.js</span>
-      <span class="skill-chip">GraphQL</span>
-      <span class="skill-chip">AWS</span>
+    <div class="skills-row" id="dSkills">
+      <!-- Skills populated by JS -->
     </div>
   </div>
 
   <div class="drawer-section">
-    <div class="drawer-section-title">AI Analysis</div>
+    <div class="drawer-section-title">Experience & Resume</div>
     <div class="ai-analysis">
-      <div class="ai-analysis-header">✦ The Bird Job Score: 92/100</div>
-      <p>Strong match for the role. 5 years of React experience with TypeScript aligns perfectly. Has worked on large-scale apps at 2 previous companies. Minor gap: limited AWS experience, but overall an excellent candidate.</p>
+      <p id="dExperience" style="white-space: pre-wrap;"></p>
     </div>
-    <div class="score-bar-row" style="margin-top:12px">
-      <div class="score-bar">
-        <div class="score-bar-label">Skills</div>
-        <div class="score-bar-track"><div class="score-bar-fill" style="width:94%;--d:0.1s"></div></div>
-        <div class="score-bar-val">94%</div>
-      </div>
-      <div class="score-bar">
-        <div class="score-bar-label">Experience</div>
-        <div class="score-bar-track"><div class="score-bar-fill" style="width:88%;--d:0.2s"></div></div>
-        <div class="score-bar-val">88%</div>
-      </div>
-      <div class="score-bar">
-        <div class="score-bar-label">Culture Fit</div>
-        <div class="score-bar-track"><div class="score-bar-fill" style="width:90%;--d:0.3s"></div></div>
-        <div class="score-bar-val">90%</div>
-      </div>
+  </div>
+
+  <div class="drawer-section">
+    <div class="drawer-section-title">AI Quick Scan</div>
+    <div class="ai-analysis">
+      <div class="ai-analysis-header" id="dScoreHeader">✦ The Bird Job Score: --/100</div>
+      <p>AI Matching analysis is based on candidate skills vs job requirements.</p>
     </div>
   </div>
 
   <div class="drawer-actions">
-    <button class="btn btn-danger" onclick="showToast('Candidate rejected')">✕ Reject</button>
-    <button class="btn btn-success" onclick="showToast('✓ Candidate shortlisted!')">✓ Shortlist</button>
-    <button class="btn btn-ghost" onclick="window.location.href='massage.html'">✉ Message</button>
-    <button class="btn btn-primary" onclick="showToast('Interview scheduled!')">📅 Schedule</button>
+    <form method="POST" id="dRejectForm">
+      <input type="hidden" name="status" value="rejected">
+      <button type="submit" class="btn btn-danger" style="width: 100%;">✕ Reject</button>
+    </form>
+    <form method="POST" id="dShortlistForm">
+      <input type="hidden" name="status" value="shortlisted">
+      <button type="submit" class="btn btn-success" style="width: 100%;">✓ Shortlist</button>
+    </form>
+    <button class="btn btn-ghost" id="dMessageBtn">✉ Message</button>
+    <button class="btn btn-primary" onclick="showToast('Interview feature coming soon!')">📅 Schedule</button>
   </div>
 </div>
 
@@ -1122,9 +875,49 @@
 </div>
 
 <script>
-  function openDrawer(name, id) {
-    document.getElementById('dName').textContent = name;
-    document.getElementById('dAvatar').textContent = name.split(' ').map(n=>n[0]).join('');
+  function openDrawer(app) {
+    if (!app) return;
+    
+    document.getElementById('dName').textContent = app.candidate_name;
+    document.getElementById('dAvatar').textContent = app.candidate_name.split(' ').map(n=>n[0]).join('').substring(0,2).toUpperCase();
+    document.getElementById('dSub').textContent = `${app.job_title} · ${app.job_location || 'Remote'}`;
+    document.getElementById('dEmail').textContent = app.candidate_email;
+    document.getElementById('dLocation').textContent = app.job_location || 'Not specified';
+    document.getElementById('dAppliedAt').textContent = app.applied_at;
+    document.getElementById('dExperience').textContent = app.candidate_experience || 'No detailed experience provided.';
+    
+    // Status Badge
+    const statusBadge = document.getElementById('dStatusBadge');
+    statusBadge.className = 'status-badge ' + app.status;
+    statusBadge.textContent = '● ' + app.status.charAt(0).toUpperCase() + app.status.slice(1);
+    
+    // Skills
+    const skillsRow = document.getElementById('dSkills');
+    skillsRow.innerHTML = '';
+    if (app.candidate_skills && app.candidate_skills.length) {
+      app.candidate_skills.forEach(skill => {
+        const span = document.createElement('span');
+        span.className = 'skill-chip';
+        span.textContent = skill;
+        skillsRow.appendChild(span);
+      });
+    } else {
+      skillsRow.innerHTML = '<span style="color:var(--muted); font-size:0.8rem;">No skills listed</span>';
+    }
+
+    // Forms
+    const baseUrl = "{{ url_for('update_employer_application_status', application_id=0) }}".replace('/0/', '/' + app.id + '/');
+    document.getElementById('dRejectForm').action = baseUrl;
+    document.getElementById('dShortlistForm').action = baseUrl;
+
+    document.getElementById('dMessageBtn').onclick = () => {
+      if (app.candidate_user_id) {
+        window.location.href = `{{ url_for('employer_messages_page') }}?candidate_id=${app.candidate_user_id}`;
+      } else {
+        showToast('Candidate user ID not found.');
+      }
+    };
+
     document.getElementById('drawer').classList.add('open');
     document.getElementById('overlay').classList.add('open');
   }
@@ -1134,14 +927,42 @@
     document.getElementById('overlay').classList.remove('open');
   }
 
-  function selectJob(el) {
+  function selectJob(el, jobId) {
     document.querySelectorAll('.jf-item').forEach(i => i.classList.remove('active'));
     el.classList.add('active');
+
+    const cards = document.querySelectorAll('.app-card');
+    cards.forEach(card => {
+      if (jobId === 'all' || card.getAttribute('data-job-id') == jobId) {
+        card.style.display = 'block';
+      } else {
+        card.style.display = 'none';
+      }
+    });
+
+    // Update Top Tag
+    const tagName = el.querySelector('.jf-name').textContent;
+    const count = el.querySelector('.jf-count').textContent;
+    document.querySelector('.page-tag').textContent = `${tagName} — ${count} Applications`;
   }
 
-  function filterStatus(el) {
+  function filterStatus(el, status) {
     document.querySelectorAll('.sf-item').forEach(i => i.classList.remove('active'));
     el.classList.add('active');
+    
+    // In a real kanban, we might filter columns or cards across columns.
+    // For now let's just highlight.
+    const columns = document.querySelectorAll('.kanban-col');
+    columns.forEach(col => {
+      const colStatus = col.querySelector('.col-label').textContent.trim().toLowerCase();
+      if (status === 'all' || colStatus === status) {
+        col.style.opacity = '1';
+        col.style.pointerEvents = 'all';
+      } else {
+        col.style.opacity = '0.3';
+        // col.style.pointerEvents = 'none';
+      }
+    });
   }
 
   function showToast(msg) {
