@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Pricing — The Bird Job</title>
 <link href="https://fonts.googleapis.com/css2?family=Clash+Display:wght@400;500;600;700&family=Bricolage+Grotesque:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
 :root {
   --bg: #FAFAF7;
@@ -451,14 +452,22 @@ nav {
 
 <!-- NAV -->
 <nav>
-  <a class="nav-brand" href="#">
-    <div class="bird-icon">🐦</div>
+  <a class="nav-brand" href="{{ url_for('home') }}">
+    <div class="bird-icon">
+      <i class="fa-solid fa-dove" style="color:white;font-size:14px"></i>
+    </div>
     The Bird Job
   </a>
   <div class="nav-right">
-    <button class="nav-link">Find Jobs</button>
-    <button class="nav-link">For Candidates</button>
-    <button class="nav-cta" onclick="showToast('Starting free trial! 🎉')">Start Free</button>
+    <a href="{{ url_for('employer_dashboard') }}" class="nav-link">Dashboard</a>
+    <a href="{{ url_for('employer_jobposting_page') }}" class="nav-link">Post Job</a>
+    {% if user %}
+      <div class="nav-avatar" style="width:36px;height:36px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:white;cursor:pointer" onclick="window.location.href='{{ url_for('employer_dashboard') }}'">
+        {{ user.initials }}
+      </div>
+    {% else %}
+      <button class="nav-cta" onclick="window.location.href='{{ url_for('login') }}'">Login</button>
+    {% endif %}
   </div>
 </nav>
 
@@ -493,7 +502,11 @@ nav {
       <li><span class="fx">–</span><span>No skill test results</span></li>
       <li><span class="fx">–</span><span>No priority listing</span></li>
     </ul>
-    <button class="plan-btn btn-free-plan" onclick="showToast('Starting free trial! 🎉')">Start Free Trial</button>
+    {% if plan_tier == 'free' %}
+      <button class="plan-btn btn-free-plan" style="background:var(--border); font-style:italic" disabled>Current Plan</button>
+    {% else %}
+      <button class="plan-btn btn-free-plan" onclick="showToast('You are already on a higher plan! 🚀')">Start Free Trial</button>
+    {% endif %}
   </div>
 
   <!-- STARTER -->
@@ -512,7 +525,11 @@ nav {
       <li><span class="fx">–</span><span>No priority boost</span></li>
       <li><span class="fx">–</span><span>No verified badge</span></li>
     </ul>
-    <button class="plan-btn btn-starter" onclick="showToast('Redirecting to payment... 💳')">Buy Now</button>
+    {% if plan_tier == 'starter' %}
+      <button class="plan-btn btn-starter" style="background:var(--border); font-style:italic" disabled>Current Plan</button>
+    {% else %}
+      <button class="plan-btn btn-starter" onclick="showToast('Redirecting to payment... 💳')">Buy Now</button>
+    {% endif %}
   </div>
 
   <!-- GROWTH POPULAR -->
@@ -532,7 +549,11 @@ nav {
       <li><span class="fc">✓</span><span>Verified Recruiter badge</span></li>
       <li><span class="fc">✓</span><span>Priority support</span></li>
     </ul>
-    <button class="plan-btn btn-popular" onclick="showToast('Redirecting to payment... 💳')">Get Growth Plan</button>
+    {% if plan_tier == 'pro' %}
+      <button class="plan-btn btn-popular" style="background:rgba(255,255,255,0.2)" disabled>Current Plan</button>
+    {% else %}
+      <button class="plan-btn btn-popular" onclick="showToast('Redirecting to payment... 💳')">Get Growth Plan</button>
+    {% endif %}
   </div>
 
   <!-- PRO -->
@@ -551,7 +572,11 @@ nav {
       <li><span class="fc">✓</span><span>Verified Recruiter badge</span></li>
       <li><span class="fc">✓</span><span>Dedicated support</span></li>
     </ul>
-    <button class="plan-btn btn-pro" onclick="showToast('Redirecting to payment... 💳')">Get Pro Plan</button>
+    {% if plan_tier == 'enterprise' %}
+      <button class="plan-btn btn-pro" style="background:var(--accent)" disabled>Current Plan</button>
+    {% else %}
+      <button class="plan-btn btn-pro" onclick="showToast('Redirecting to payment... 💳')">Get Pro Plan</button>
+    {% endif %}
   </div>
 
 </div>

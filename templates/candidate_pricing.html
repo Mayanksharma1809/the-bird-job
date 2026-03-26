@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>For Job Seekers — The Bird Job</title>
 <link href="https://fonts.googleapis.com/css2?family=Clash+Display:wght@400;500;600;700&family=Bricolage+Grotesque:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
 :root {
   --bg: #08080F;
@@ -52,8 +53,7 @@ nav {
   font-size: 20px; font-weight: 700; color: white; text-decoration: none;
 }
 .bird-icon {
-  width: 32px; height: 32px; background: var(--accent);
-  border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 16px;
+  width: 36px; height: 36px; border-radius: 11px; display: inline-flex; align-items: center; justify-content: center; color: white; background: linear-gradient(135deg, var(--accent), var(--accent2)); box-shadow: 0 10px 30px rgba(255, 107, 43, 0.35); font-size: 16px;
 }
 .nav-right { display: flex; align-items: center; gap: 8px; }
 .nav-pill {
@@ -497,14 +497,13 @@ nav {
 
 <!-- NAV -->
 <nav>
-  <a class="nav-brand" href="#">
-    <div class="bird-icon">🐦</div>
+  <a class="nav-brand" href="{{ url_for('candidate_dashboard') }}">
+    <div class="bird-icon"><i class="fa-solid fa-dove"></i></div>
     The Bird Job
   </a>
   <div class="nav-right">
-    <button class="nav-pill">Browse Jobs</button>
-    <button class="nav-pill">For Recruiters</button>
-    <button class="nav-cta" onclick="showToast('Creating free account! 🎉')">Get Started Free</button>
+    <a href="{{ url_for('candidate_dashboard') }}#jobs" class="nav-pill" style="text-decoration:none">Browse Jobs</a>
+    <a href="{{ url_for('signup') }}" class="nav-cta" style="text-decoration:none">Get Started Free</a>
   </div>
 </nav>
 

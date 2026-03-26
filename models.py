@@ -117,7 +117,12 @@ class CandidateProfile(db.Model):
     email = db.Column(db.String(255), nullable=False)
     phone = db.Column(db.String(40), nullable=True)
     skills = db.Column(db.Text, nullable=True)
-    experience = db.Column(db.Text, nullable=True)
+    experience = db.Column(db.Text, nullable=True)  # Experience summary
+    experience_years = db.Column(db.String(50), nullable=True)  # Fresher, 1 year, etc
+    education_level = db.Column(db.String(100), nullable=True)  # 12th, Bachelors, etc
+    specialization = db.Column(db.String(255), nullable=True)  # Computer Science, etc
+    location = db.Column(db.String(255), nullable=True)
+    job_title = db.Column(db.String(150), nullable=True)  # Preferred/Current Title
     created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow, onupdate=datetime.utcnow)
 

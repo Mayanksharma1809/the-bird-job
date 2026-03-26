@@ -397,7 +397,7 @@
             <aside class="left">
                 <div>
                     <div class="brand">
-                        <span class="brand-mark"><i class="fa-solid fa-feather-pointed"></i></span>
+                        <span class="brand-mark"><i class="fa-solid fa-dove"></i></span>
                         <span>The Bird <strong>Job</strong></span>
                     </div>
                     <h1>Create your premium account.</h1>
@@ -448,9 +448,30 @@
                                 <input type="text" name="name" value="{{ request.form.get('name', '') }}" placeholder="Rahul S." required>
                             </div>
                             <div class="field">
+                                <label>Current Location</label>
+                                <input type="text" name="location" value="{{ request.form.get('location', '') }}" placeholder="Mumbai, India" required>
+                            </div>
+                        </div>
+                        <div class="grid-2">
+                            <div class="field">
+                                <label>Experience Level</label>
+                                <select name="experience_years" required>
+                                    <option value="Fresher" {% if request.form.get('experience_years') == 'Fresher' %}selected{% endif %}>Fresher</option>
+                                    <option value="1 Year" {% if request.form.get('experience_years') == '1 Year' %}selected{% endif %}>1 Year</option>
+                                    <option value="2 Years" {% if request.form.get('experience_years') == '2 Years' %}selected{% endif %}>2 Years</option>
+                                    <option value="3 Years" {% if request.form.get('experience_years') == '3 Years' %}selected{% endif %}>3 Years</option>
+                                    <option value="4 Years" {% if request.form.get('experience_years') == '4 Years' %}selected{% endif %}>4 Years</option>
+                                    <option value="5+ Years" {% if request.form.get('experience_years') == '5+ Years' %}selected{% endif %}>5+ Years</option>
+                                </select>
+                            </div>
+                            <div class="field">
                                 <label>Education</label>
                                 <input type="text" name="education" value="{{ request.form.get('education', '') }}" placeholder="B.Tech / MBA" required>
                             </div>
+                        </div>
+                        <div class="field">
+                            <label>Target Job Title</label>
+                            <input type="text" name="job_title" value="{{ request.form.get('job_title', '') }}" placeholder="e.g. Senior Software Engineer" required>
                         </div>
                         <div class="field">
                             <label>Skills</label>

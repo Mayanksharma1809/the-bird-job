@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
@@ -266,13 +266,14 @@
 
     <nav class="top-nav">
         <a href="#" class="brand">
-            <div class="brand-mark">🐦</div>
+            <span class="brand-mark"><i class="fa-solid fa-dove"></i></span>
             <span>The Bird <strong>Job</strong></span>
         </a>
         <div class="nav-links">
-            <a href="#jobs" class="nav-pill active">Jobs</a>
-            <a href="/features" class="nav-pill">Features</a>
-            <a href="#applications" class="nav-pill">Applications</a>
+            <a href="{{ url_for('candidate_dashboard') }}#jobs" class="nav-pill active">Jobs</a>
+            <a href="{{ url_for('features') }}" class="nav-pill">Features</a>
+            <a href="{{ url_for('candidate_applications_page') }}" class="nav-pill">Applications</a>
+            <a href="{{ url_for('candidate_messages_page') }}" class="nav-pill">Messages</a>
             <a href="#tournaments" class="nav-pill">Tournaments</a>
             <a href="#courses" class="nav-pill">Courses</a>
         </div>
@@ -493,7 +494,28 @@
                     </div>
                 </section>
 
-                <section id="features" class="panel section-block">
+
+
+
+
+                <div class="split-grid">
+                    <section id="tournaments" class="panel coming-card">
+                        <h3>Skill Tournaments</h3>
+                        <p>Compete in real-world timed challenges and earn visible ranking badges recruiters notice.</p>
+                        <button class="btn btn-ghost" onclick="showToast('Tournaments launch soon! 🏆')">
+                            <i class="fa-solid fa-trophy"></i> Join waitlist
+                        </button>
+                    </section>
+                    <section id="courses" class="panel coming-card">
+                        <h3>Career Courses</h3>
+                        <p>Unlock curated role tracks with mini-projects, mock interviews, and mentor feedback loops.</p>
+                        <button class="btn btn-ghost" onclick="showToast('Courses launch soon! 📚')">
+                            <i class="fa-solid fa-graduation-cap"></i> Explore roadmap
+                        </button>
+                    </section>
+                </div>
+
+                <section id="features" class="panel section-block footer-features" style="margin-top: 40px">
                     <div class="section-head">
                         <div>
                             <h2>Premium tools that move you ahead.</h2>
@@ -521,53 +543,6 @@
                         </article>
                     </div>
                 </section>
-
-                <section id="applications" class="panel section-block">
-                    <div class="section-head">
-                        <div>
-                            <h2>Application pipeline</h2>
-                            <p>Track every application stage and keep your momentum high.</p>
-                        </div>
-                    </div>
-                    <div class="application-list">
-                        {% if recent_applications %}
-                        {% for app in recent_applications %}
-                        <article class="application-row">
-                            <div>
-                                <h3 class="app-role">{{ app.job_title }}</h3>
-                                <p class="app-meta">{{ app.company_name or 'Company not available' }} · Applied {{ app.created_at.strftime('%d %b %Y') }}</p>
-                            </div>
-                            <span class="status submitted">{{ app.status.replace('_', ' ')|title }}</span>
-                        </article>
-                        {% endfor %}
-                        {% else %}
-                        <article class="application-row">
-                            <div>
-                                <h3 class="app-role">No applications yet</h3>
-                                <p class="app-meta">Apply to jobs from the section above and your pipeline will appear here.</p>
-                            </div>
-                            <span class="status submitted">Empty</span>
-                        </article>
-                        {% endif %}
-                    </div>
-                </section>
-
-                <div class="split-grid">
-                    <section id="tournaments" class="panel coming-card">
-                        <h3>Skill Tournaments</h3>
-                        <p>Compete in real-world timed challenges and earn visible ranking badges recruiters notice.</p>
-                        <button class="btn btn-ghost" onclick="showToast('Tournaments launch soon! 🏆')">
-                            <i class="fa-solid fa-trophy"></i> Join waitlist
-                        </button>
-                    </section>
-                    <section id="courses" class="panel coming-card">
-                        <h3>Career Courses</h3>
-                        <p>Unlock curated role tracks with mini-projects, mock interviews, and mentor feedback loops.</p>
-                        <button class="btn btn-ghost" onclick="showToast('Courses launch soon! 📚')">
-                            <i class="fa-solid fa-graduation-cap"></i> Explore roadmap
-                        </button>
-                    </section>
-                </div>
             </div>
         </div>
     </main>
@@ -593,11 +568,15 @@
                     <span class="menu-icon" style="background:rgba(96,165,250,0.16);color:var(--blue)"><i class="fa-solid fa-user-gear"></i></span>
                     <span><strong>Manage Account</strong><span>Update profile and security</span></span>
                 </a>
-                <a href="#applications" class="menu-item" onclick="toggleProfileSidebar(true)">
+                <a href="{{ url_for('candidate_applications_page') }}" class="menu-item">
                     <span class="menu-icon" style="background:rgba(52,211,153,0.16);color:var(--green)"><i class="fa-solid fa-list-check"></i></span>
-                    <span><strong>Applications</strong><span>See your complete pipeline</span></span>
+                    <span><strong>Applications</strong><span>See where you applied</span></span>
                 </a>
-                <a href="/candidate_pricing" class="menu-item">
+                <a href="{{ url_for('candidate_messages_page') }}" class="menu-item">
+                    <span class="menu-icon" style="background:rgba(96,165,250,0.16);color:var(--blue)"><i class="fa-solid fa-comments"></i></span>
+                    <span><strong>Messages</strong><span>Chat with employers</span></span>
+                </a>
+                <a href="{{ url_for('candidate_pricing_page') }}" class="menu-item">
                     <span class="menu-icon" style="background:rgba(167,139,250,0.16);color:var(--purple)"><i class="fa-solid fa-tags"></i></span>
                     <span><strong>Pricing</strong><span>Compare free and premium plans</span></span>
                 </a>

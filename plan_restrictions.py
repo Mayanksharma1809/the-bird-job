@@ -1,14 +1,14 @@
 from datetime import datetime
 
 
-DEFAULT_PLAN_TIER = 'starter'
+DEFAULT_PLAN_TIER = 'free'
 
 
 PLAN_RULES = {
     'free': {
         'label': 'Free',
-        'max_active_jobs': 3,
-        'monthly_job_posts': 5,
+        'max_active_jobs': 1,
+        'monthly_job_posts': 1,
         'can_view_top_candidates': False,
         'can_use_messages': False,
     },

@@ -307,6 +307,9 @@ def register_routes(app):
             confirm_password = request.form.get('confirm_password', '')
             skills = request.form.get('skills', '').strip()
             education = request.form.get('education', '').strip()
+            location = request.form.get('location', '').strip()
+            experience_years = request.form.get('experience_years', '').strip()
+            job_title = request.form.get('job_title', '').strip()
             experience = first_non_empty(
                 [
                     request.form.get('experience', ''),
@@ -335,6 +338,10 @@ def register_routes(app):
                         profile.email = email
                         profile.skills = skills
                         profile.experience = experience
+                        profile.education_level = education
+                        profile.location = location
+                        profile.experience_years = experience_years
+                        profile.job_title = job_title
                         db.session.add(profile)
 
                         session['user_id'] = new_user.id
@@ -550,10 +557,6 @@ def register_routes(app):
     @app.route('/price')
     def price():
         return render_template('price.html')
-
-    @app.route('/skill')
-    def skill():
-        return render_template('skill.html')
 
     @app.route('/auth')
     def auth():

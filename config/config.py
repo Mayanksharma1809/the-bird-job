@@ -80,6 +80,14 @@ class Config:
             )
 
     SQLALCHEMY_DATABASE_URI = _database_url or 'sqlite:///job_portal.db'
+    
+    # Second Database for Skill Tests
+    _skill_db_url = normalize_database_url(os.environ.get('SKILL_TEST_DATABASE_URL'))
+    # Always define the bind key so SQLAlchemy doesn't crash if the env var is missing
+    SQLALCHEMY_BINDS = {
+        'skill_test': _skill_db_url or SQLALCHEMY_DATABASE_URI
+    }
+    
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SQLALCHEMY_ENGINE_OPTIONS = {
         'pool_pre_ping': True,

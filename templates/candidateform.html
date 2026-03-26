@@ -292,7 +292,7 @@
         <section class="shell">
             <header class="header">
                 <div class="brand">
-                    <span class="brand-mark"><i class="fa-solid fa-feather-pointed"></i></span>
+                    <span class="brand-mark"><i class="fa-solid fa-dove"></i></span>
                     <span>The Bird <strong>Job</strong></span>
                 </div>
                 <h1>Complete Candidate Profile</h1>
@@ -324,21 +324,62 @@
                             <input name="email" type="email" value="{{ oauth_data.email if oauth_data else '' }}" class="input" placeholder="john@example.com" required>
                         </div>
                     </div>
-                    <div class="field" style="margin-top:10px">
-                        <label>Phone Number</label>
-                        <input name="phone" type="tel" class="input" placeholder="+1 (555) 123-4567">
+                    <div class="grid-2" style="margin-top:10px">
+                        <div class="field">
+                            <label>Phone Number</label>
+                            <input name="phone" type="tel" value="{{ oauth_data.phone if oauth_data else '' }}" class="input" placeholder="+1 (555) 123-4567">
+                        </div>
+                        <div class="field">
+                            <label>Current Location</label>
+                            <input name="location" type="text" value="{{ oauth_data.location if oauth_data else '' }}" class="input" placeholder="Mumbai, India">
+                        </div>
                     </div>
                 </section>
 
                 <section class="section">
                     <h2 class="section-head"><span class="step-badge">2</span>Professional Info</h2>
-                    <div class="field">
+                    <div class="grid-2">
+                        <div class="field">
+                            <label>Target Job Title</label>
+                            <input name="job_title" type="text" value="{{ oauth_data.job_title if oauth_data else '' }}" class="input" placeholder="e.g. Senior Software Engineer">
+                        </div>
+                        <div class="field">
+                            <label>Total Experience</label>
+                            <select name="experience_years" class="input" style="height: 44px;">
+                                <option value="Fresher" {% if oauth_data.experience_years == 'Fresher' %}selected{% endif %}>Fresher</option>
+                                <option value="1 Year" {% if oauth_data.experience_years == '1 Year' %}selected{% endif %}>1 Year</option>
+                                <option value="2 Years" {% if oauth_data.experience_years == '2 Years' %}selected{% endif %}>2 Years</option>
+                                <option value="3 Years" {% if oauth_data.experience_years == '3 Years' %}selected{% endif %}>3 Years</option>
+                                <option value="4 Years" {% if oauth_data.experience_years == '4 Years' %}selected{% endif %}>4 Years</option>
+                                <option value="5+ Years" {% if oauth_data.experience_years == '5+ Years' %}selected{% endif %}>5+ Years</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="grid-2" style="margin-top:10px">
+                        <div class="field">
+                            <label>Education Level</label>
+                            <select name="education_level" class="input" style="height: 44px;">
+                                <option value="12th" {% if oauth_data.education_level == '12th' %}selected{% endif %}>12th Pass</option>
+                                <option value="Diploma" {% if oauth_data.education_level == 'Diploma' %}selected{% endif %}>Diploma</option>
+                                <option value="Bachelors" {% if oauth_data.education_level == 'Bachelors' %}selected{% endif %}>Bachelors Degree</option>
+                                <option value="Masters" {% if oauth_data.education_level == 'Masters' %}selected{% endif %}>Masters Degree</option>
+                                <option value="Doctorate" {% if oauth_data.education_level == 'Doctorate' %}selected{% endif %}>Doctorate / PhD</option>
+                            </select>
+                        </div>
+                        <div class="field">
+                            <label>Specialization / Degree Name</label>
+                            <input name="specialization" type="text" value="{{ oauth_data.specialization if oauth_data else '' }}" class="input" placeholder="e.g. Computer Science, Marketing">
+                        </div>
+                    </div>
+
+                    <div class="field" style="margin-top:10px">
                         <label>Skills</label>
-                        <input name="skills" type="text" class="input" placeholder="Python, SQL, Communication">
+                        <input name="skills" type="text" value="{{ oauth_data.skills if oauth_data else '' }}" class="input" placeholder="Python, SQL, Communication">
                     </div>
                     <div class="field" style="margin-top:10px">
                         <label>Experience Summary</label>
-                        <textarea name="experience" rows="4" class="input" placeholder="Write a short summary about your experience"></textarea>
+                        <textarea name="experience" rows="3" class="input" placeholder="Write a short summary about your professional background">{{ oauth_data.experience if oauth_data else '' }}</textarea>
                     </div>
                     <div class="field" style="margin-top:10px">
                         <label>Resume (Optional)</label>
@@ -356,7 +397,7 @@
                         <div class="field">
                             <label>Password</label>
                             <div class="pw-wrap">
-                                <input name="password" type="password" id="password" class="input" placeholder="Create password" required>
+                                <input name="password" type="password" id="password" class="input" placeholder="Enter password to save changes" required>
                                 <button type="button" id="toggle-password" class="pw-toggle" aria-label="Toggle password visibility">
                                     <i class="fa-solid fa-eye"></i>
                                 </button>

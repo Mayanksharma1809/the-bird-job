@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Features — The Bird Job</title>
 <link href="https://fonts.googleapis.com/css2?family=Clash+Display:wght@400;500;600;700&family=Bricolage+Grotesque:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
 :root {
   --bg: #08080F;
@@ -45,7 +46,7 @@ nav {
   padding: 0 48px; justify-content: space-between;
 }
 .nav-brand { display: flex; align-items: center; gap: 10px; font-family: 'Clash Display', sans-serif; font-size: 20px; font-weight: 700; color: white; text-decoration: none; }
-.bird { width: 32px; height: 32px; background: var(--accent); border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 16px; }
+.bird { width: 36px; height: 36px; border-radius: 11px; display: inline-flex; align-items: center; justify-content: center; color: white; background: linear-gradient(135deg, var(--accent), var(--accent-2)); box-shadow: 0 10px 30px rgba(255,107,43,0.35); font-size: 16px; }
 .nav-r { display: flex; align-items: center; gap: 8px; }
 .npill { padding: 7px 16px; border-radius: 8px; font-size: 13px; font-weight: 500; cursor: pointer; border: 1px solid var(--border2); background: transparent; color: var(--muted); transition: all 0.2s; font-family: 'Bricolage Grotesque', sans-serif; }
 .npill:hover { color: white; background: rgba(255,255,255,0.06); }
@@ -384,14 +385,14 @@ nav {
 
 <!-- NAV -->
 <nav>
-  <a href="#" class="nav-brand">
-    <div class="bird">🐦</div>
+  <a href="{{ url_for('candidate_dashboard') }}" class="nav-brand">
+    <div class="bird"><i class="fa-solid fa-dove"></i></div>
     The Bird Job
   </a>
   <div class="nav-r">
-    <button class="npill">Browse Jobs</button>
-    <button class="npill">Pricing</button>
-    <button class="ncta" onclick="showToast('Creating free account! 🎉')">Start Free</button>
+    <a href="{{ url_for('candidate_dashboard') }}#jobs" class="npill" style="text-decoration:none">Browse Jobs</a>
+    <a href="{{ url_for('candidate_pricing_page') }}" class="npill" style="text-decoration:none">Pricing</a>
+    <a href="{{ url_for('signup') }}" class="ncta" style="text-decoration:none; display: inline-block;">Start Free</a>
   </div>
 </nav>
 
@@ -449,18 +450,20 @@ nav {
       </a>
 
       <!-- Skill Tests -->
-      <div class="fcard fc-blue fu2" onclick="showToast('Opening Skill Tests! 🧠')">
-        <div class="fcard-icon fi-blue">🧠</div>
-        <div class="fcard-name">Skill Tests</div>
-        <div class="fcard-desc">Take industry-standard assessments and prove your expertise with verified scores directly on your profile — recruiters trust it.</div>
-        <ul class="fcard-bullets">
-          <li><span class="fbullet fb-blue"></span>10+ skill domains</li>
-          <li><span class="fbullet fb-blue"></span>Timed, real-world questions</li>
-          <li><span class="fbullet fb-blue"></span>Instant results & feedback</li>
-          <li><span class="fbullet fb-blue"></span>Retake to improve score</li>
-        </ul>
-        <button class="fcard-btn fb-col-blue">Take a Test →</button>
-      </div>
+      <a href="{{ url_for('skill_test.list_categories') }}" style="text-decoration: none;">
+        <div class="fcard fc-blue fu2">
+          <div class="fcard-icon fi-blue">🧠</div>
+          <div class="fcard-name">Skill Tests</div>
+          <div class="fcard-desc">Take industry-standard assessments and prove your expertise with verified scores directly on your profile — recruiters trust it.</div>
+          <ul class="fcard-bullets">
+            <li><span class="fbullet fb-blue"></span>10+ skill domains</li>
+            <li><span class="fbullet fb-blue"></span>Timed, real-world questions</li>
+            <li><span class="fbullet fb-blue"></span>Instant results & feedback</li>
+            <li><span class="fbullet fb-blue"></span>Retake to improve score</li>
+          </ul>
+          <button class="fcard-btn fb-col-blue">Take a Test →</button>
+        </div>
+      </a>
 
       <!-- Salary -->
       <div class="fcard fc-green fu3" onclick="showToast('Opening Salary Benchmark! 💰')">

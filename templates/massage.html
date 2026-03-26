@@ -556,6 +556,7 @@
 
   async function loadChat(candidateId, name, initials) {
     currentCandidateId = candidateId;
+    window.lastMessageCount = 0; // Reset
     document.getElementById('chatPlaceholder').style.display = 'none';
     document.getElementById('chatContent').style.display = 'flex';
     document.getElementById('chatName').textContent = name;
@@ -597,6 +598,13 @@
 
   function renderMessages(messages) {
     const body = document.getElementById('messagesBody');
+
+    // Anti-blink check
+    if (messages.length === window.lastMessageCount) {
+        return;
+    }
+    window.lastMessageCount = messages.length;
+
     const wasAtBottom = body.scrollHeight - body.scrollTop <= body.clientHeight + 100;
     
     let html = '';

@@ -8,9 +8,17 @@ from urllib.request import Request, urlopen
 from xml.etree import ElementTree as ET
 from zipfile import BadZipFile, ZipFile
 
-from flask import flash, redirect, render_template, request, url_for
+from flask import flash, jsonify, redirect, render_template, request, url_for
 
-from models import CandidateJobAction, CandidateProfile, EmployerJob, User, db
+from models import (
+    CandidateJobAction,
+    CandidateProfile,
+    EmployerJob,
+    EmployerProfile,
+    Message,
+    User,
+    db
+)
 
 
 def register_candidate_dashboard_routes(app, helpers):
@@ -20,6 +28,18 @@ def register_candidate_dashboard_routes(app, helpers):
     first_non_empty = helpers['first_non_empty']
     candidate_dashboard_user = helpers['candidate_dashboard_user']
     has_completed_profile = helpers['has_completed_profile']
+
+    def ensure_candidate_access(require_profile=True):
+        user = get_logged_in_user()
+        if user is None:
+            flash('Please login first.', 'error')
+            return None, redirect(url_for('login'))
+        if normalize_role(user.role) != 'candidate':
+            return None, redirect(url_for(dashboard_endpoint_for_role(user.role)))
+        if require_profile and not has_completed_profile(user):
+            flash('Please complete your candidate profile first.', 'error')
+            return None, redirect(url_for('candidate_form'))
+        return user, None
 
     def parse_int(value, default=0):
         try:
@@ -501,6 +521,11 @@ def register_candidate_dashboard_routes(app, helpers):
             return build_candidate_redirect()
 
         flash('Job action saved successfully.', 'success')
+        
+        # If external job, redirect to original link
+        if action == 'applied' and not employer_job_id and job_url:
+            return redirect(job_url)
+
         return build_candidate_redirect()
 
     @app.route('/candidate_form', methods=['GET', 'POST'])
@@ -521,6 +546,11 @@ def register_candidate_dashboard_routes(app, helpers):
             phone = request.form.get('phone', '').strip()
             skills = request.form.get('skills', '').strip()
             experience = request.form.get('experience', '').strip()
+            experience_years = request.form.get('experience_years', '').strip()
+            education_level = request.form.get('education_level', '').strip()
+            specialization = request.form.get('specialization', '').strip()
+            location = request.form.get('location', '').strip()
+            job_title = request.form.get('job_title', '').strip()
             password = request.form.get('password', '').strip()
 
             if not name or not email:
@@ -541,6 +571,12 @@ def register_candidate_dashboard_routes(app, helpers):
                 profile.phone = phone
                 profile.skills = skills
                 profile.experience = experience
+                profile.experience_years = experience_years
+                profile.education_level = education_level
+                profile.specialization = specialization
+                profile.location = location
+                profile.job_title = job_title
+                
                 user.email = email
                 user.full_name = name
                 if password:
@@ -553,6 +589,14 @@ def register_candidate_dashboard_routes(app, helpers):
         oauth_data = {
             'name': profile.name if profile else (user.full_name or user.username),
             'email': profile.email if profile else user.email,
+            'phone': profile.phone if profile else '',
+            'skills': profile.skills if profile else '',
+            'experience': profile.experience if profile else '',
+            'experience_years': profile.experience_years if profile else '',
+            'education_level': profile.education_level if profile else '',
+            'specialization': profile.specialization if profile else '',
+            'location': profile.location if profile else '',
+            'job_title': profile.job_title if profile else '',
         }
         return render_template('candidateform.html', oauth_data=oauth_data)
 
@@ -570,6 +614,17 @@ def register_candidate_dashboard_routes(app, helpers):
 
         dashboard_user = candidate_dashboard_user(user)
         return render_template('Ats_scanner.html', user=dashboard_user)
+
+    @app.route('/candidate_pricing')
+    def candidate_pricing_page():
+        """Display the pricing plans for candidates."""
+        user = get_logged_in_user()
+        if user is None or normalize_role(user.role) != 'candidate':
+            # Optionally show public pricing if not logged in
+            return render_template('candidate_pricing.html')
+        
+        dashboard_user = candidate_dashboard_user(user)
+        return render_template('candidate_pricing.html', user=dashboard_user)
 
     @app.route('/candidate/ats/scan-legacy', methods=['POST'])
     def ats_scan_resume():
@@ -645,3 +700,147 @@ def register_candidate_dashboard_routes(app, helpers):
         except Exception as e:
             app.logger.exception('ATS scan failed')
             return {'success': False, 'error': f'Unable to process resume: {str(e)}'}, 500
+
+    def candidate_conversations_data(user):
+        # Users I've talked to
+        sent_to = [r[0] for r in db.session.query(Message.receiver_id).filter_by(sender_id=user.id).all()]
+        received_from = [r[0] for r in db.session.query(Message.sender_id).filter_by(receiver_id=user.id).all()]
+        
+        # Employers I applied to
+        applied_employer_ids = [
+            r[0] for r in db.session.query(EmployerJob.employer_user_id)
+            .join(CandidateJobAction, CandidateJobAction.employer_job_id == EmployerJob.id)
+            .filter(CandidateJobAction.candidate_user_id == user.id, CandidateJobAction.action == 'applied')
+            .all()
+        ]
+        
+        participant_ids = list(set(sent_to + received_from + applied_employer_ids))
+        conversations = []
+        
+        for p_id in participant_ids:
+            if not p_id: continue
+            participant = User.query.get(p_id)
+            if not participant: continue
+            
+            last_msg = (
+                Message.query.filter(
+                    ((Message.sender_id == user.id) & (Message.receiver_id == p_id)) |
+                    ((Message.sender_id == p_id) & (Message.receiver_id == user.id))
+                )
+                .order_by(Message.timestamp.desc())
+                .first()
+            )
+            
+            unread_count = Message.query.filter_by(
+                sender_id=p_id, receiver_id=user.id, is_read=False
+            ).count()
+            
+            profile = participant.employer_profile
+            
+            # Find most recent job applied to with this employer
+            latest_app = (
+                CandidateJobAction.query
+                .join(EmployerJob, CandidateJobAction.employer_job_id == EmployerJob.id)
+                .filter(CandidateJobAction.candidate_user_id == user.id, EmployerJob.employer_user_id == p_id)
+                .order_by(CandidateJobAction.created_at.desc())
+                .first()
+            )
+            
+            role_desc = latest_app.job_title if latest_app else "Employer"
+            
+            conversations.append({
+                'id': participant.id,
+                'name': profile.company_name if profile else (participant.full_name or participant.username),
+                'role': role_desc,
+                'last_message': last_msg.content if last_msg else 'Start a conversation',
+                'last_time': last_msg.timestamp.isoformat() if last_msg else (latest_app.created_at.isoformat() if latest_app else ''),
+                'unread_count': unread_count,
+                'initials': (profile.company_name if profile else (participant.full_name or participant.username or '??'))[:2].upper()
+            })
+            
+        conversations.sort(key=lambda x: x['last_time'], reverse=True)
+        return conversations
+
+    @app.route('/candidate_messages')
+    def candidate_messages_page():
+        user, redirect_response = ensure_candidate_access(require_profile=True)
+        if user is None:
+            return redirect_response
+        
+        conversations = candidate_conversations_data(user)
+        return render_template(
+            'candidate_massage.html',
+            user=candidate_dashboard_user(user),
+            conversations=conversations
+        )
+
+    @app.route('/candidate_applications')
+    def candidate_applications_page():
+        user, redirect_response = ensure_candidate_access(require_profile=True)
+        if user is None:
+            return redirect_response
+        
+        all_apps = CandidateJobAction.query.filter_by(
+            candidate_user_id=user.id,
+            action='applied',
+        ).order_by(CandidateJobAction.created_at.desc()).all()
+        
+        return render_template(
+            'candidate_applications.html',
+            user=candidate_dashboard_user(user),
+            applications=all_apps
+        )
+
+    @app.route('/api/candidate/conversations')
+    def get_candidate_conversations_api():
+        user = get_logged_in_user()
+        if not user or normalize_role(user.role) != 'candidate':
+            return jsonify([]), 401
+        return jsonify(candidate_conversations_data(user))
+
+    @app.route('/api/candidate/messages/<int:employer_id>')
+    def get_candidate_chat_messages(employer_id):
+        user = get_logged_in_user()
+        if not user or normalize_role(user.role) != 'candidate':
+            return jsonify([]), 401
+            
+        messages = Message.query.filter(
+            ((Message.sender_id == user.id) & (Message.receiver_id == employer_id)) |
+            ((Message.sender_id == employer_id) & (Message.receiver_id == user.id))
+        ).order_by(Message.timestamp.asc()).all()
+        
+        Message.query.filter_by(sender_id=employer_id, receiver_id=user.id, is_read=False).update({'is_read': True})
+        db.session.commit()
+        
+        return jsonify([{
+            'id': m.id,
+            'sender_id': m.sender_id,
+            'content': m.content,
+            'timestamp': m.timestamp.isoformat(),
+            'mine': m.sender_id == user.id
+        } for m in messages])
+
+    @app.route('/api/candidate/messages/send', methods=['POST'])
+    def send_candidate_message():
+        user = get_logged_in_user()
+        if not user or normalize_role(user.role) != 'candidate':
+            return jsonify({'error': 'Unauthorized'}), 401
+            
+        data = request.json or {}
+        employer_id = data.get('employer_id')
+        content = data.get('content')
+        
+        if not employer_id or not content:
+            return jsonify({'error': 'Invalid data'}), 400
+            
+        msg = Message(sender_id=user.id, receiver_id=employer_id, content=content)
+        db.session.add(msg)
+        db.session.commit()
+        
+        return jsonify({
+            'id': msg.id,
+            'sender_id': msg.sender_id,
+            'content': msg.content,
+            'timestamp': msg.timestamp.isoformat(),
+            'mine': True
+        })

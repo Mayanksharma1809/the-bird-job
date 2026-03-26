@@ -7,6 +7,7 @@ from config.config import Config
 from models import db
 from routes import register_routes
 from ats_routes import ats_bp
+from skill_test_routes import skill_test_bp
 import logging
 import os
 from sqlalchemy import inspect, text
@@ -25,6 +26,7 @@ db.init_app(app)
 # Register routes
 register_routes(app)
 app.register_blueprint(ats_bp)
+app.register_blueprint(skill_test_bp)
 
 
 def build_google_analytics_tag(measurement_id):
@@ -204,6 +206,38 @@ def ensure_legacy_employer_profiles_schema():
 
     logger.info('Legacy employer_profiles schema check complete. Added %s columns.', len(statements))
 
+def ensure_legacy_candidate_profiles_schema():
+    """
+    Adds newly introduced columns for legacy candidate_profiles tables.
+    """
+    inspector = inspect(db.engine)
+    table_names = inspector.get_table_names()
+    if 'candidate_profiles' not in table_names:
+        return
+
+    existing_columns = {col['name'] for col in inspector.get_columns('candidate_profiles')}
+    statements = []
+
+    if 'experience_years' not in existing_columns:
+        statements.append("ALTER TABLE candidate_profiles ADD COLUMN experience_years VARCHAR(50) NULL")
+    if 'education_level' not in existing_columns:
+        statements.append("ALTER TABLE candidate_profiles ADD COLUMN education_level VARCHAR(100) NULL")
+    if 'specialization' not in existing_columns:
+        statements.append("ALTER TABLE candidate_profiles ADD COLUMN specialization VARCHAR(255) NULL")
+    if 'location' not in existing_columns:
+        statements.append("ALTER TABLE candidate_profiles ADD COLUMN location VARCHAR(255) NULL")
+    if 'job_title' not in existing_columns:
+        statements.append("ALTER TABLE candidate_profiles ADD COLUMN job_title VARCHAR(150) NULL")
+
+    if not statements:
+        return
+
+    with db.engine.begin() as conn:
+        for stmt in statements:
+            conn.execute(text(stmt))
+
+    logger.info('Legacy candidate_profiles schema check complete. Added %s columns.', len(statements))
+
 # Error handlers
 @app.errorhandler(404)
 def page_not_found(e):
@@ -219,6 +253,7 @@ with app.app_context():
     db.create_all()
     ensure_legacy_users_schema()
     ensure_legacy_employer_profiles_schema()
+    ensure_legacy_candidate_profiles_schema()
 
 
 @app.route('/favicon.ico')

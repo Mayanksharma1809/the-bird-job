@@ -65,7 +65,10 @@ def register_employer_dashboard_routes(app, helpers):
         return mapping.get(raw, 'new')
 
     def employer_applications_data(user):
-        jobs = EmployerJob.query.filter_by(employer_user_id=user.id).all()
+        jobs = EmployerJob.query.filter(
+            EmployerJob.employer_user_id == user.id,
+            EmployerJob.status != 'removed'
+        ).all()
         job_by_id = {job.id: job for job in jobs}
         job_ids = list(job_by_id.keys())
         if not job_ids:
@@ -256,7 +259,10 @@ def register_employer_dashboard_routes(app, helpers):
         return conversations
 
     def employer_dashboard_data(user):
-        jobs = EmployerJob.query.filter_by(employer_user_id=user.id).order_by(EmployerJob.created_at.desc()).all()
+        jobs = EmployerJob.query.filter(
+            EmployerJob.employer_user_id == user.id,
+            EmployerJob.status != 'removed'
+        ).order_by(EmployerJob.created_at.desc()).all()
         job_ids = [job.id for job in jobs]
 
         if job_ids:
@@ -333,7 +339,19 @@ def register_employer_dashboard_routes(app, helpers):
             return redirect_response
         plan_tier = employer_plan_tier(user)
         plan_rules = get_plan_rules(plan_tier)
+        
         active_jobs_count = EmployerJob.query.filter_by(employer_user_id=user.id, status='active').count()
+        month_start = datetime.utcnow().replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+        posted_this_month_count = EmployerJob.query.filter(
+            EmployerJob.employer_user_id == user.id,
+            EmployerJob.created_at >= month_start
+        ).count()
+        
+        allowed, reason = can_create_job(plan_tier, active_jobs_count, posted_this_month_count)
+        if not allowed:
+            flash(reason, 'info')
+            return redirect(url_for('employer_pricing_page'))
+
         return render_template(
             'jobposting.html',
             user=employer_dashboard_user(user),
@@ -349,7 +367,10 @@ def register_employer_dashboard_routes(app, helpers):
         if user is None:
             return redirect_response
         applications, status_counts = employer_applications_data(user)
-        jobs = EmployerJob.query.filter_by(employer_user_id=user.id).all()
+        jobs = EmployerJob.query.filter(
+            EmployerJob.employer_user_id == user.id,
+            EmployerJob.status != 'removed'
+        ).all()
         return render_template(
             'applications.html',
             user=employer_dashboard_user(user),
@@ -500,7 +521,7 @@ def register_employer_dashboard_routes(app, helpers):
         allowed, reason = can_create_job(plan_tier, active_jobs_count, posted_this_month_count)
         if not allowed:
             flash(reason, 'error')
-            return redirect(url_for('employer_jobposting_page'))
+            return redirect(url_for('employer_pricing_page'))
 
         new_job = EmployerJob(
             employer_user_id=user.id,
@@ -644,3 +665,15 @@ def register_employer_dashboard_routes(app, helpers):
             ),
         }
         return render_template('employerform.html', oauth_data=oauth_data)
+
+    @app.route('/employer/pricing')
+    def employer_pricing_page():
+        user, redirect_response = ensure_employer_access(require_profile=True)
+        if user is None:
+            return redirect_response
+        return render_template(
+            'employer_pricing.html',
+            user=employer_dashboard_user(user),
+            plan_tier=employer_plan_tier(user),
+            plan_label=plan_label(employer_plan_tier(user)),
+        )
