@@ -494,18 +494,20 @@ nav {
       </div>
 
       <!-- Portfolio -->
-      <div class="fcard fc-purple fu2" onclick="showToast('Opening Portfolio! 🗂️')">
-        <div class="fcard-icon fi-purple">🗂️</div>
-        <div class="fcard-name">Portfolio Listing</div>
-        <div class="fcard-desc">Showcase your work directly on your candidate profile. Let your projects speak louder than your resume — and let recruiters find you.</div>
-        <ul class="fcard-bullets">
-          <li><span class="fbullet fb-purple"></span>Link projects & GitHub repos</li>
-          <li><span class="fbullet fb-purple"></span>Tech stack tagging</li>
-          <li><span class="fbullet fb-purple"></span>Visible to all recruiters</li>
-          <li><span class="fbullet fb-purple"></span>Profile priority boost</li>
-        </ul>
-        <button class="fcard-btn fb-col-purple">Add Portfolio →</button>
-      </div>
+      <a href="{{ url_for('candidate_portfolio_page') }}" style="text-decoration: none;">
+        <div class="fcard fc-purple fu2">
+          <div class="fcard-icon fi-purple">🗂️</div>
+          <div class="fcard-name">Portfolio Listing</div>
+          <div class="fcard-desc">Showcase your work directly on your candidate profile. Let your projects speak louder than your resume — and let recruiters find you.</div>
+          <ul class="fcard-bullets">
+            <li><span class="fbullet fb-purple"></span>Link projects & GitHub repos</li>
+            <li><span class="fbullet fb-purple"></span>Tech stack tagging</li>
+            <li><span class="fbullet fb-purple"></span>Visible to all recruiters</li>
+            <li><span class="fbullet fb-purple"></span>Profile priority boost</li>
+          </ul>
+          <button class="fcard-btn fb-col-purple">Add Portfolio →</button>
+        </div>
+      </a>
 
       <!-- Interview Prep -->
       <div class="fcard fc-pink fu3" onclick="showToast('Opening Interview Prep! 🎯')">
@@ -668,7 +670,7 @@ nav {
               <div class="bf-text"><strong>Pin your best work</strong> — featured projects shown at top</div>
             </div>
           </div>
-          <button class="big-btn bb-gold-btn" onclick="showToast('Opening Projects Showcase! 🚀')">Add My Projects →</button>
+          <a href="{{ url_for('candidate_portfolio_page') }}" class="big-btn bb-gold-btn" style="text-decoration: none; display: inline-flex;">Add My Projects →</a>
         </div>
         <div>
           <div class="proj-grid">

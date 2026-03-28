@@ -214,6 +214,7 @@
         ::-webkit-scrollbar-track { background: #0b0d18; }
         ::-webkit-scrollbar-thumb { background: #24273a; border-radius: 10px; }
 
+
         @media (max-width: 1200px) {
             .content-grid { grid-template-columns: 1fr; }
             .left-rail { position: static; display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
@@ -494,26 +495,21 @@
                     </div>
                 </section>
 
+                <section id="tournaments" class="panel coming-card">
+                    <h3>Skill Tournaments</h3>
+                    <p>Compete in real-world timed challenges and earn visible ranking badges recruiters notice.</p>
+                    <button class="btn btn-ghost" onclick="showToast('Tournaments launch soon! 🏆')">
+                        <i class="fa-solid fa-trophy"></i> Join waitlist
+                    </button>
+                </section>
 
-
-
-
-                <div class="split-grid">
-                    <section id="tournaments" class="panel coming-card">
-                        <h3>Skill Tournaments</h3>
-                        <p>Compete in real-world timed challenges and earn visible ranking badges recruiters notice.</p>
-                        <button class="btn btn-ghost" onclick="showToast('Tournaments launch soon! 🏆')">
-                            <i class="fa-solid fa-trophy"></i> Join waitlist
-                        </button>
-                    </section>
-                    <section id="courses" class="panel coming-card">
-                        <h3>Career Courses</h3>
-                        <p>Unlock curated role tracks with mini-projects, mock interviews, and mentor feedback loops.</p>
-                        <button class="btn btn-ghost" onclick="showToast('Courses launch soon! 📚')">
-                            <i class="fa-solid fa-graduation-cap"></i> Explore roadmap
-                        </button>
-                    </section>
-                </div>
+                <section id="courses" class="panel coming-card">
+                    <h3>Career Courses</h3>
+                    <p>Unlock curated role tracks with mini-projects, mock interviews, and mentor feedback loops.</p>
+                    <button class="btn btn-ghost" onclick="showToast('Courses launch soon! 📚')">
+                        <i class="fa-solid fa-graduation-cap"></i> Explore roadmap
+                    </button>
+                </section>
 
                 <section id="features" class="panel section-block footer-features" style="margin-top: 40px">
                     <div class="section-head">
@@ -580,10 +576,10 @@
                     <span class="menu-icon" style="background:rgba(167,139,250,0.16);color:var(--purple)"><i class="fa-solid fa-tags"></i></span>
                     <span><strong>Pricing</strong><span>Compare free and premium plans</span></span>
                 </a>
-                <button class="menu-item menu-btn" onclick="showToast('Opening Portfolio... 🗂️');toggleProfileSidebar(true)">
+                <a href="{{ url_for('candidate_portfolio_page') }}" class="menu-item">
                     <span class="menu-icon" style="background:rgba(255,179,71,0.16);color:var(--accent-2)"><i class="fa-solid fa-briefcase"></i></span>
                     <span><strong>Portfolio</strong><span>Manage projects and highlights</span></span>
-                </button>
+                </a>
                 <button class="menu-item menu-btn" onclick="showToast('Opening Certificates... 🏆');toggleProfileSidebar(true)">
                     <span class="menu-icon" style="background:rgba(255,107,43,0.16);color:var(--accent)"><i class="fa-solid fa-certificate"></i></span>
                     <span><strong>Certificates</strong><span>Track badges and achievements</span></span>
@@ -648,5 +644,6 @@
             showToast(kw ? `Searching for "${kw}"...` : "Searching all jobs...");
         });
     </script>
+
 </body>
 </html>

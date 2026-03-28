@@ -5,8 +5,22 @@
 #  thebirdjob.in
 # ============================================================
 
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, session, redirect, url_for
+from models import db, PortfolioItem, User
 import os, re, json, base64
+
+def get_logged_in_user():
+    user_id = session.get('user_id')
+    if not user_id: return None
+    return db.session.get(User, user_id)
+
+def ensure_candidate_access():
+    user = get_logged_in_user()
+    if not user: return None, redirect(url_for('login'))
+    role = (user.role or '').strip().lower()
+    if role not in ('candidate', 'jobseeker', 'job_seeker', 'seeker'):
+        return None, redirect(url_for('candidate_dashboard'))
+    return user, None
 import pdfplumber
 from docx import Document
 from groq import Groq
@@ -223,23 +237,15 @@ def ats_scan():
             return jsonify({"error": "Job description required hai"}), 400
 
         # Step 1 — Gemini se text nikalo
-        print("Extracting text with Gemini...")
         resume_text = extract_text_gemini(resume_file)
 
         if not resume_text or len(resume_text.strip()) < 50:
             return jsonify({"error": "Resume text extract nahi hua."}), 400
 
-        print(f"Extracted: {len(resume_text)} chars")
-        print(f"Preview: {resume_text[:300]}")
-
         # Step 2 — Groq se score
-        print("Scoring with Groq...")
         result      = score_with_groq(resume_text, jd_text)
         rule_scores = result.get("rule_scores", {})
         overall     = result.get("overall_score", 0)
-
-        print(f"Final score: {overall}")
-        print(f"Breakdown: {rule_scores}")
 
         return jsonify({
             "score":                overall,
@@ -350,4 +356,54 @@ Return ONLY the resume. No explanation."""
 
     except Exception as e:
         print(f"Rewrite error: {e}")
+        return jsonify({"error": str(e)}), 500
+
+
+# ============================================================
+# PORTFOLIO INTEGRATION — /candidate/ats/upload_portfolio
+# ============================================================
+@ats_bp.route('/candidate/ats/upload_portfolio', methods=['POST'])
+def ats_upload_portfolio():
+    try:
+        user, _ = ensure_candidate_access()
+        if not user: return jsonify({"error": "Unauthorized"}), 401
+        
+        resume_file = request.files.get('resume')
+        ats_score = request.form.get('ats_score')
+        
+        if not resume_file:
+            return jsonify({"error": "Resume file required"}), 400
+            
+        # 1. Clear existing resume if any (only 1 resume allowed)
+        existing_resume = PortfolioItem.query.filter_by(
+            candidate_user_id=user.id, 
+            item_type='resume'
+        ).first()
+        
+        # 2. Check total limit (5 items)
+        if not existing_resume and len(user.portfolio_items) >= 5:
+            return jsonify({"error": "Portfolio limit reached (5 seats). Delete an item first."}), 400
+
+        if existing_resume:
+            db.session.delete(existing_resume)
+            db.session.flush()
+            
+        # 3. Save new resume
+        new_item = PortfolioItem(
+            candidate_user_id=user.id,
+            label=f"Resume (Score: {ats_score}%)",
+            item_type='resume',
+            file_name=resume_file.filename,
+            file_content=resume_file.read(),
+            content_type=resume_file.content_type,
+            ats_score=int(float(ats_score)) if ats_score else None
+        )
+        
+        db.session.add(new_item)
+        db.session.commit()
+        
+        return jsonify({"success": True, "message": "Resume uploaded to Portfolio Seat 1!"})
+
+    except Exception as e:
+        print(f"Portfolio upload error: {e}")
         return jsonify({"error": str(e)}), 500

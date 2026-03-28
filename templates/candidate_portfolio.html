@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Portfolio | The Bird Job</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Clash+Display:wght@400;500;600;700&family=Bricolage+Grotesque:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg: #07070e;
+            --surface: #0e0f1a;
+            --panel: #131422;
+            --panel-2: #181a2b;
+            --border: rgba(255, 255, 255, 0.1);
+            --border-soft: rgba(255, 255, 255, 0.06);
+            --text: rgba(255, 255, 255, 0.92);
+            --muted: rgba(255, 255, 255, 0.62);
+            --muted-soft: rgba(255, 255, 255, 0.44);
+            --accent: #ff6b2b;
+            --accent-2: #ffb347;
+            --blue: #60a5fa;
+            --green: #34d399;
+            --purple: #a78bfa;
+            --danger: #f87171;
+            --shadow: 0 22px 70px rgba(0, 0, 0, 0.38);
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: "Bricolage Grotesque", sans-serif; background: var(--bg); color: var(--text); overflow-x: hidden; }
+        a { color: inherit; text-decoration: none; }
+
+        .glow { position: fixed; border-radius: 999px; filter: blur(130px); pointer-events: none; z-index: 0; }
+        .g1 { width: 520px; height: 520px; background: rgba(255, 107, 43, 0.1); top: -220px; right: -160px; }
+        .g2 { width: 460px; height: 460px; background: rgba(96, 165, 250, 0.09); top: 40vh; left: -210px; }
+
+        .top-nav {
+            position: fixed; top: 0; left: 0; right: 0; height: 74px;
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0 40px;
+            background: rgba(7, 7, 14, 0.85);
+            border-bottom: 1px solid var(--border-soft);
+            backdrop-filter: blur(20px); z-index: 120;
+        }
+        .brand { display: flex; align-items: center; gap: 11px; font-family: "Clash Display", sans-serif; font-size: 22px; font-weight: 600; }
+        .brand strong { color: var(--accent); }
+        .brand-mark { width: 36px; height: 36px; border-radius: 11px; display: flex; align-items: center; justify-content: center; color: white; background: linear-gradient(135deg, var(--accent), var(--accent-2)); }
+
+        .container { position: relative; z-index: 1; max-width: 1000px; margin: 120px auto 60px; padding: 0 20px; }
+        
+        .header { margin-bottom: 40px; }
+        .header h1 { font-family: "Clash Display", sans-serif; font-size: 48px; letter-spacing: -1.5px; margin-bottom: 8px; }
+        .header p { color: var(--muted); font-size: 16px; }
+
+        .seats-container { 
+            background: var(--panel); 
+            border: 1px solid var(--border-soft); 
+            border-radius: 32px; 
+            padding: 40px;
+            box-shadow: var(--shadow);
+        }
+
+        .seats-header { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: flex-end; 
+            margin-bottom: 30px; 
+            border-bottom: 1px solid var(--border-soft);
+            padding-bottom: 20px;
+        }
+        .seats-header h2 { font-family: "Clash Display", sans-serif; font-size: 28px; }
+        .counter { background: rgba(255, 107, 43, 0.15); color: var(--accent); padding: 6px 14px; border-radius: 999px; font-size: 13px; font-weight: 700; }
+
+        .portfolio-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+        
+        .slot { 
+            border: 2px dashed var(--border); 
+            border-radius: 24px; 
+            padding: 30px; 
+            text-align: center; 
+            transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+            background: rgba(255, 255, 255, 0.02);
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 220px;
+            position: relative;
+        }
+        .slot:hover { 
+            border-color: var(--accent); 
+            background: rgba(255, 107, 43, 0.06); 
+            transform: translateY(-5px);
+        }
+        .slot.occupied { 
+            border-style: solid; 
+            border-color: var(--border-soft); 
+            background: linear-gradient(165deg, var(--panel-2), #111525); 
+            cursor: default;
+        }
+        .slot-icon { font-size: 32px; margin-bottom: 15px; color: var(--muted-soft); }
+        .occupied .slot-icon { color: var(--accent); }
+        .slot-title { font-size: 18px; font-weight: 600; margin-bottom: 6px; font-family: "Clash Display"; }
+        .slot-meta { font-size: 13px; color: var(--muted-soft); }
+
+        .slot-actions { 
+            display: flex; 
+            gap: 12px; 
+            margin-top: 20px; 
+            opacity: 0; 
+            transition: opacity 0.2s ease;
+        }
+        .slot:hover .slot-actions { opacity: 1; }
+
+        .btn-circle {
+            width: 44px; height: 44px; border-radius: 50%; border: 1px solid var(--border);
+            background: rgba(255, 255, 255, 0.05); color: var(--text);
+            display: flex; align-items: center; justify-content: center;
+            transition: all 0.2s ease;
+        }
+        .btn-circle:hover { background: rgba(255,255,255,0.12); transform: scale(1.05); }
+        .btn-delete:hover { border-color: var(--danger); color: var(--danger); }
+
+        /* Modal Styles */
+        .modal { 
+            display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); 
+            z-index: 1000; align-items: center; justify-content: center; backdrop-filter: blur(12px);
+        }
+        .modal.open { display: flex; }
+        .modal-content { 
+            background: var(--panel); border: 1px solid var(--border); border-radius: 32px; 
+            padding: 40px; width: min(500px, 90vw); position: relative;
+            box-shadow: 0 40px 100px rgba(0,0,0,0.5);
+        }
+        .close-modal { position: absolute; top: 25px; right: 25px; color: var(--muted); cursor: pointer; font-size: 20px; }
+
+        .input-wrap { 
+            border: 1px solid var(--border); background: rgba(255, 255, 255, 0.03); 
+            border-radius: 16px; height: 56px; display: flex; align-items: center; gap: 12px; padding: 0 20px;
+            margin-bottom: 20px; transition: all 0.2s ease;
+        }
+        .input-wrap:focus-within { border-color: var(--accent); box-shadow: 0 0 0 4px rgba(255, 107, 43, 0.1); }
+        .input-wrap i { color: var(--muted-soft); }
+        .input-wrap input { border: none; outline: none; background: transparent; color: var(--text); width: 100%; font-size: 15px; font-family: inherit; }
+
+        .btn-primary { 
+            width: 100%; border: none; border-radius: 16px; height: 56px; font-size: 16px; font-weight: 700; 
+            color: white; background: linear-gradient(135deg, var(--accent), var(--accent-2)); 
+            cursor: pointer; transition: all 0.2s ease; display: flex; align-items: center; justify-content: center; gap: 10px;
+        }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 15px 35px rgba(255, 107, 43, 0.35); }
+
+        .back-link { display: inline-flex; align-items: center; gap: 8px; color: var(--muted); font-size: 14px; font-weight: 500; margin-bottom: 24px; transition: color 0.2s ease; }
+        .back-link:hover { color: white; }
+
+        @media (max-width: 768px) {
+            .header h1 { font-size: 36px; }
+            .seats-container { padding: 25px; border-radius: 24px; }
+            .portfolio-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="glow g1"></div>
+    <div class="glow g2"></div>
+
+    <nav class="top-nav">
+        <a href="{{ url_for('candidate_dashboard') }}" class="brand">
+            <span class="brand-mark"><i class="fa-solid fa-dove"></i></span>
+            <span>The Bird <strong>Job</strong></span>
+        </a>
+        <div style="display: flex; gap: 15px;">
+            <a href="{{ url_for('logout') }}" style="font-size: 14px; font-weight: 600; color: var(--muted);">Logout</a>
+        </div>
+    </nav>
+
+    <main class="container">
+        <a href="{{ url_for('candidate_dashboard') }}" class="back-link">
+            <i class="fa-solid fa-arrow-left"></i> Back to Dashboard
+        </a>
+
+        <div class="header">
+            <h1>Expert Portfolio</h1>
+            <p>Upload your professional resume and certificates to stand out to verified employers.</p>
+        </div>
+
+        <section class="seats-container">
+            <div class="seats-header">
+                <h2>My Portfolio Seats</h2>
+                <div class="counter">{{ portfolio_items|length }} / 5 Slots Used</div>
+            </div>
+
+            <div class="portfolio-grid">
+                <!-- Slot 1: Main Resume -->
+                {% set resume_item = portfolio_items|selectattr('item_type', 'equalto', 'resume')|first %}
+                {% if resume_item %}
+                    <article class="slot occupied">
+                        <div class="slot-icon"><i class="fa-solid fa-file-pdf"></i></div>
+                        <div class="counter" style="position: absolute; top: 20px; right: 20px;">Score: {{ resume_item.ats_score }}%</div>
+                        <h3 class="slot-title">{{ resume_item.label }}</h3>
+                        <p class="slot-meta">{{ resume_item.file_name }}</p>
+                        <div class="slot-actions">
+                            <a href="{{ url_for('view_portfolio_item', item_id=resume_item.id) }}" target="_blank" class="btn-circle" title="View"><i class="fa-solid fa-eye"></i></a>
+                            <form method="post" action="{{ url_for('delete_portfolio_item', item_id=resume_item.id) }}" onsubmit="return confirm('Delete this resume?')">
+                                <button type="submit" class="btn-circle btn-delete" title="Delete"><i class="fa-solid fa-trash"></i></button>
+                            </form>
+                        </div>
+                    </article>
+                {% else %}
+                    <article class="slot" onclick="window.location.href='{{ url_for('ats_scanner_page') }}'">
+                        <div class="slot-icon"><i class="fa-solid fa-robot" style="color: var(--accent);"></i></div>
+                        <h3 class="slot-title">Upload via AI Scanner</h3>
+                        <p class="slot-meta">Seat 1 - Resume + ATS Score</p>
+                    </article>
+                {% endif %}
+
+                <!-- Certificate Slots 2-5 -->
+                {% set certificates = portfolio_items|selectattr('item_type', 'equalto', 'certificate')|list %}
+                {% for i in range(4) %}
+                    {% if i < certificates|length %}
+                        {% set cert = certificates[i] %}
+                        <article class="slot occupied">
+                            <div class="slot-icon"><i class="fa-solid fa-certificate"></i></div>
+                            <h3 class="slot-title">{{ cert.label }}</h3>
+                            <p class="slot-meta">{{ cert.file_name }}</p>
+                            <div class="slot-actions">
+                                <a href="{{ url_for('view_portfolio_item', item_id=cert.id) }}" target="_blank" class="btn-circle" title="View"><i class="fa-solid fa-eye"></i></a>
+                                <form method="post" action="{{ url_for('delete_portfolio_item', item_id=cert.id) }}" onsubmit="return confirm('Delete this certificate?')">
+                                    <button type="submit" class="btn-circle btn-delete" title="Delete"><i class="fa-solid fa-trash"></i></button>
+                                </form>
+                            </div>
+                        </article>
+                    {% else %}
+                        <article class="slot" onclick="openUploadModal('certificate', 'Certification {{ i + 1 }}')">
+                            <div class="slot-icon"><i class="fa-solid fa-plus"></i></div>
+                            <h3 class="slot-title">Seat {{ i + 2 }}</h3>
+                            <p class="slot-meta">Certificate or Project File</p>
+                        </article>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </section>
+    </main>
+
+    <!-- Upload Modal -->
+    <div id="uploadModal" class="modal">
+        <div class="modal-content">
+            <i class="fa-solid fa-xmark close-modal" onclick="closeUploadModal()"></i>
+            <h2 id="modalTitle" style="font-family: 'Clash Display'; margin-bottom: 25px;">Upload Document</h2>
+            <form action="{{ url_for('upload_portfolio_item') }}" method="POST" enctype="multipart/form-data">
+                <input type="hidden" name="item_type" id="modalItemType">
+                
+                <div class="input-wrap">
+                    <i class="fa-solid fa-tag"></i>
+                    <input type="text" name="label" id="modalLabel" placeholder="e.g. AWS Cloud Cert" required>
+                </div>
+
+                <div class="input-wrap" style="cursor: pointer;" onclick="document.getElementById('fileInput').click()">
+                    <i class="fa-solid fa-file-arrow-up"></i>
+                    <input type="file" name="file" id="fileInput" style="display: none;" onchange="updateFileName(this)" required>
+                    <span id="fileNameDisplay" style="font-size: 14px; color: var(--muted-soft);">Choose file to upload</span>
+                </div>
+
+                <button type="submit" class="btn-primary">
+                    <i class="fa-solid fa-cloud-arrow-up"></i> Upload Securely
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function openUploadModal(type, defaultLabel) {
+            if (type === 'resume') {
+                window.location.href = "{{ url_for('ats_scanner_page') }}";
+                return;
+            }
+            document.getElementById('modalItemType').value = type;
+            document.getElementById('modalLabel').value = '';
+            document.getElementById('modalLabel').placeholder = 'Label for ' + defaultLabel;
+            document.getElementById('modalTitle').textContent = 'Upload ' + (type === 'resume' ? 'Resume' : 'Certificate');
+            document.getElementById('fileNameDisplay').textContent = 'Choose file to upload';
+            document.getElementById('uploadModal').classList.add('open');
+        }
+
+        function closeUploadModal() {
+            document.getElementById('uploadModal').classList.remove('open');
+        }
+
+        function updateFileName(input) {
+            const display = document.getElementById('fileNameDisplay');
+            if (input.files.length > 0) {
+                display.textContent = input.files[0].name;
+                display.style.color = 'var(--text)';
+            }
+        }
+
+        // Close on overlay click
+        document.getElementById('uploadModal').addEventListener('click', (e) => {
+            if(e.target === document.getElementById('uploadModal')) closeUploadModal();
+        });
+
+        // ESC key close
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeUploadModal();
+        });
+    </script>
+</body>
+</html>

@@ -16,6 +16,7 @@ from models import (
     EmployerJob,
     EmployerProfile,
     Message,
+    PortfolioItem,
     User,
     db
 )
@@ -446,6 +447,7 @@ def register_candidate_dashboard_routes(app, helpers):
                 'location': search_location,
                 'level': search_level,
             },
+            portfolio_items=user.portfolio_items,
         )
 
     @app.route('/candidate/jobs/action', methods=['POST'])
@@ -774,6 +776,18 @@ def register_candidate_dashboard_routes(app, helpers):
             conversations=conversations
         )
 
+    @app.route('/candidate/portfolio')
+    def candidate_portfolio_page():
+        user, redirect_response = ensure_candidate_access(require_profile=True)
+        if user is None:
+            return redirect_response
+            
+        return render_template(
+            'candidate_portfolio.html',
+            user=candidate_dashboard_user(user),
+            portfolio_items=user.portfolio_items
+        )
+
     @app.route('/candidate_applications')
     def candidate_applications_page():
         user, redirect_response = ensure_candidate_access(require_profile=True)
@@ -844,3 +858,94 @@ def register_candidate_dashboard_routes(app, helpers):
             'timestamp': msg.timestamp.isoformat(),
             'mine': True
         })
+
+    # ===== PORTFOLIO ROUTES =====
+
+    @app.route('/candidate/portfolio/upload', methods=['POST'])
+    def upload_portfolio_item():
+        user, redirect_response = ensure_candidate_access(require_profile=True)
+        if user is None:
+            return redirect_response
+
+        # Check total seats (5 seats limit)
+        existing_items_count = PortfolioItem.query.filter_by(candidate_user_id=user.id).count()
+        if existing_items_count >= 5:
+            flash('You have reached the limit of 5 portfolio seats. Please delete an item to upload a new one.', 'error')
+            return redirect(url_for('candidate_dashboard'))
+
+        item_type = request.form.get('item_type', 'certificate') # 'resume' or 'certificate'
+        label = request.form.get('label', '').strip()
+        uploaded_file = request.files.get('file')
+
+        if item_type == 'resume':
+            flash('Resumes must be uploaded via the ATS Scanner to verify your score! 🤖', 'error')
+            return redirect(url_for('candidate_portfolio_page'))
+
+        if not uploaded_file or not label:
+            flash('File and label are required.', 'error')
+            return redirect(url_for('candidate_portfolio_page'))
+
+        # Check if already has a main resume seat filled if this is a resume
+        if item_type == 'resume':
+            existing_resume = PortfolioItem.query.filter_by(candidate_user_id=user.id, item_type='resume').first()
+            if existing_resume:
+                flash('You already have a resume in your portfolio. Only 1 resume seat is allowed.', 'error')
+                return redirect(url_for('candidate_dashboard'))
+
+        filename = uploaded_file.filename
+        content = uploaded_file.read()
+        content_type = uploaded_file.content_type
+
+        new_item = PortfolioItem(
+            candidate_user_id=user.id,
+            label=label,
+            item_type=item_type,
+            file_name=filename,
+            file_content=content,
+            content_type=content_type
+        )
+        
+        try:
+            db.session.add(new_item)
+            db.session.commit()
+            flash(f'Portfolio {item_type} "{label}" uploaded successfully!', 'success')
+        except Exception:
+            db.session.rollback()
+            app.logger.exception('Portfolio upload failed')
+            flash('Unable to upload portfolio item right now.', 'error')
+
+        return redirect(url_for('candidate_dashboard'))
+
+    @app.route('/candidate/portfolio/view/<int:item_id>')
+    def view_portfolio_item(item_id):
+        user = get_logged_in_user()
+        if not user or normalize_role(user.role) != 'candidate':
+            return redirect(url_for('login'))
+
+        item = PortfolioItem.query.filter_by(id=item_id, candidate_user_id=user.id).first()
+        if not item:
+            flash('Portfolio item not found.', 'error')
+            return redirect(url_for('candidate_dashboard'))
+
+        from flask import Response
+        return Response(
+            item.file_content,
+            mimetype=item.content_type,
+            headers={"Content-disposition": f"inline; filename={item.file_name}"}
+        )
+
+    @app.route('/candidate/portfolio/delete/<int:item_id>', methods=['POST'])
+    def delete_portfolio_item(item_id):
+        user = get_logged_in_user()
+        if not user or normalize_role(user.role) != 'candidate':
+            return redirect(url_for('login'))
+
+        item = PortfolioItem.query.filter_by(id=item_id, candidate_user_id=user.id).first()
+        if item:
+            db.session.delete(item)
+            db.session.commit()
+            flash('Portfolio item deleted.', 'success')
+        else:
+            flash('Item not found.', 'error')
+
+        return redirect(url_for('candidate_dashboard'))

@@ -59,6 +59,11 @@ class User(db.Model):
         back_populates='receiver',
         cascade='all, delete-orphan',
     )
+    portfolio_items = db.relationship(
+        'PortfolioItem',
+        back_populates='candidate',
+        cascade='all, delete-orphan',
+    )
 
 
 class EmployerJob(db.Model):
@@ -173,3 +178,19 @@ class LoginEvent(db.Model):
     created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
     user = db.relationship('User', back_populates='login_events')
+
+
+class PortfolioItem(db.Model):
+    __tablename__ = 'portfolio_items'
+
+    id = db.Column(db.Integer, primary_key=True)
+    candidate_user_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete='CASCADE'), nullable=False, index=True)
+    label = db.Column(db.String(100), nullable=False)  # e.g., 'Main Resume', 'Azure Certificate'
+    item_type = db.Column(db.String(50), nullable=False)  # 'resume' or 'certificate'
+    file_name = db.Column(db.String(255), nullable=False)
+    file_content = db.Column(db.LargeBinary, nullable=True)  # Store file content directly for now
+    content_type = db.Column(db.String(100), nullable=True)
+    ats_score = db.Column(db.Integer, nullable=True)  # Added to store ATS scan score
+    created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+
+    candidate = db.relationship('User', back_populates='portfolio_items')
