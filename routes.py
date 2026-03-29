@@ -221,6 +221,9 @@ def register_routes(app):
 
     @app.route('/')
     def home():
+        user = get_logged_in_user()
+        if user:
+            return redirect(url_for(next_step_endpoint_for_user(user)))
         active_jobs_count = EmployerJob.query.filter_by(status='active').count()
         latest_jobs = (
             EmployerJob.query
@@ -261,6 +264,10 @@ def register_routes(app):
 
     @app.route('/login', methods=['GET', 'POST'])
     def login():
+        user = get_logged_in_user()
+        if user:
+            return redirect(url_for(next_step_endpoint_for_user(user)))
+
         if request.method == 'POST':
             email = request.form.get('email', '').strip().lower()
             password = request.form.get('password', '')
@@ -271,6 +278,7 @@ def register_routes(app):
                 return render_template('login.html')
 
             user.role = normalize_role(user.role)
+            session.permanent = True
             session['user_id'] = user.id
             session['role'] = user.role
 
@@ -287,10 +295,17 @@ def register_routes(app):
 
     @app.route('/signup')
     def signup():
+        user = get_logged_in_user()
+        if user:
+            return redirect(url_for(next_step_endpoint_for_user(user)))
         return render_template('signup.html', active_role='candidate')
 
     @app.route('/signup/candidate', methods=['GET', 'POST'])
     def signup_candidate():
+        user = get_logged_in_user()
+        if user:
+            return redirect(url_for(next_step_endpoint_for_user(user)))
+
         if request.method == 'GET':
             return render_template('signup.html', active_role='candidate')
 
@@ -344,6 +359,7 @@ def register_routes(app):
                         profile.job_title = job_title
                         db.session.add(profile)
 
+                        session.permanent = True
                         session['user_id'] = new_user.id
                         session['role'] = 'candidate'
                         record_login_event(new_user, provider='local', is_new_user=True)
@@ -359,6 +375,10 @@ def register_routes(app):
 
     @app.route('/signup/employer', methods=['GET', 'POST'])
     def signup_employer():
+        user = get_logged_in_user()
+        if user:
+            return redirect(url_for(next_step_endpoint_for_user(user)))
+
         if request.method == 'GET':
             return render_template('signup.html', active_role='employer')
 
@@ -400,6 +420,7 @@ def register_routes(app):
                         profile.company_size = company_size
                         db.session.add(profile)
 
+                        session.permanent = True
                         session['user_id'] = new_user.id
                         session['role'] = 'employer'
                         record_login_event(new_user, provider='local', is_new_user=True)
@@ -537,6 +558,7 @@ def register_routes(app):
             record_login_event(user, provider='google', is_new_user=is_new_user)
             db.session.commit()
 
+            session.permanent = True
             session['user_id'] = user.id
             session['role'] = user.role
 
@@ -560,6 +582,9 @@ def register_routes(app):
 
     @app.route('/auth')
     def auth():
+        user = get_logged_in_user()
+        if user:
+            return redirect(url_for(next_step_endpoint_for_user(user)))
         return render_template('auth.html')
 
     @app.route('/auth/linkedin')

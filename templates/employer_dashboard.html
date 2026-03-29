@@ -219,6 +219,7 @@
             .nav-links { display: none; }
             .stats-row { grid-template-columns: 1fr 1fr; }
             .search-row { grid-template-columns: 1fr; }
+            .mobile-only-links { display: flex !important; }
         }
         @media(max-width:700px) {
             .top-nav { padding: 0 14px; }
@@ -464,6 +465,24 @@
                     <span class="menu-icon" style="background:rgba(52,211,153,0.15);color:var(--green)"><i class="fa-solid fa-list-check"></i></span>
                     <span><strong>My Jobs</strong><span>Manage your active job posts</span></span>
                 </a>
+                <div class="mobile-only-links" style="display:none; flex-direction:column; gap:7px;">
+                    <a href="{{ url_for('employer_jobposting_page') }}" class="menu-item">
+                        <span class="menu-icon" style="background:rgba(255,107,43,0.15);color:var(--accent)"><i class="fa-solid fa-plus"></i></span>
+                        <span><strong>Post a Job</strong><span>Create a new job listing</span></span>
+                    </a>
+                    <a href="{{ url_for('employer_top_candidates_page') }}" class="menu-item">
+                        <span class="menu-icon" style="background:rgba(96,165,250,0.15);color:var(--blue)"><i class="fa-solid fa-star"></i></span>
+                        <span><strong>Top Candidates</strong><span>Browse matched talent</span></span>
+                    </a>
+                    <a href="{{ url_for('employer_applications_page') }}" class="menu-item">
+                        <span class="menu-icon" style="background:rgba(167,139,250,0.15);color:var(--purple)"><i class="fa-solid fa-file-signature"></i></span>
+                        <span><strong>Applications</strong><span>Review applicant profiles</span></span>
+                    </a>
+                    <a href="{{ url_for('employer_messages_page') }}" class="menu-item">
+                        <span class="menu-icon" style="background:rgba(251,191,36,0.12);color:var(--gold)"><i class="fa-solid fa-message"></i></span>
+                        <span><strong>Messages</strong><span>Chat with candidates</span></span>
+                    </a>
+                </div>
                 <a href="{{ url_for('employer_pricing_page') }}" class="menu-item">
                     <span class="menu-icon" style="background:rgba(167,139,250,0.15);color:var(--purple)"><i class="fa-solid fa-tags"></i></span>
                     <span><strong>Pricing Plans</strong><span>Manage your subscription</span></span>

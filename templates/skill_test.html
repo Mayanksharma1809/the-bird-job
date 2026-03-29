@@ -114,6 +114,14 @@
         .modal-inner i { font-size: 64px; color: var(--danger); margin-bottom: 24px; }
         .modal-inner h2 { font-family: var(--mono); font-size: 32px; margin-bottom: 16px; color: #fff; }
         .modal-inner p { color: var(--muted); margin-bottom: 32px; line-height: 1.6; }
+
+        @media (max-width: 900px) {
+            .layout { grid-template-columns: 1fr; grid-template-rows: auto 1fr; padding-top: 74px; overflow-y: auto; height: auto; display: block; }
+            .sidebar { border-left: none; border-top: 1px solid var(--border); }
+            body { overflow: auto; }
+            .q-scroll { padding: 20px; }
+            .test-card { padding: 20px; }
+        }
     </style>
 </head>
 <body>

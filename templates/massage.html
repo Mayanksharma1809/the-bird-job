@@ -418,6 +418,15 @@
   ::-webkit-scrollbar { width: 4px; }
   ::-webkit-scrollbar-track { background: transparent; }
   ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+  @media (max-width: 760px) {
+      nav { height: auto; padding: 10px; flex-direction: column; gap: 10px; }
+      .nav-links { flex-wrap: wrap; justify-content: center; margin-bottom: 5px; }
+      .convo-list { width: 100%; border-right: none; background: var(--surface); }
+      .chat-layout.chat-active .convo-list { display: none; }
+      .chat-layout:not(.chat-active) .chat-area { display: none; }
+      .chat-area { height: 100%; }
+  }
 </style>
 </head>
 <body>
@@ -557,6 +566,7 @@
   async function loadChat(candidateId, name, initials) {
     currentCandidateId = candidateId;
     window.lastMessageCount = 0; // Reset
+    document.querySelector('.chat-layout').classList.add('chat-active');
     document.getElementById('chatPlaceholder').style.display = 'none';
     document.getElementById('chatContent').style.display = 'flex';
     document.getElementById('chatName').textContent = name;
@@ -580,6 +590,7 @@
 
   function closeChat() {
     currentCandidateId = null;
+    document.querySelector('.chat-layout').classList.remove('chat-active');
     document.getElementById('chatPlaceholder').style.display = 'flex';
     document.getElementById('chatContent').style.display = 'none';
     if (pollingInterval) clearInterval(pollingInterval);

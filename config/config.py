@@ -1,4 +1,5 @@
 import os
+from datetime import timedelta
 from urllib.parse import quote_plus
 from dotenv import load_dotenv
 
@@ -96,6 +97,7 @@ class Config:
         'echo': os.environ.get('DEBUG', 'False').lower() in ('true', '1', 'yes'),
     }
     DEBUG = os.environ.get('DEBUG', 'False').lower() in ('true', '1', 'yes')
+    PERMANENT_SESSION_LIFETIME = timedelta(days=30)
 
     # Public branding/SEO configuration
     SITE_NAME = os.environ.get('SITE_NAME', 'The Bird Job')
