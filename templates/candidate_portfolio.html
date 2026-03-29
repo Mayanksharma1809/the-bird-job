@@ -45,7 +45,12 @@
         }
         .brand { display: flex; align-items: center; gap: 11px; font-family: "Clash Display", sans-serif; font-size: 22px; font-weight: 600; }
         .brand strong { color: var(--accent); }
-        .brand-mark { width: 36px; height: 36px; border-radius: 11px; display: flex; align-items: center; justify-content: center; color: white; background: linear-gradient(135deg, var(--accent), var(--accent-2)); }
+        .brand-mark {
+            width: 36px; height: 36px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            color: white; background: var(--accent);
+            box-shadow: 0 0 15px rgba(255, 107, 43, 0.35); font-size: 16px;
+        }
 
         .container { position: relative; z-index: 1; max-width: 1000px; margin: 120px auto 60px; padding: 0 20px; }
         
@@ -161,6 +166,7 @@
             .portfolio-grid { grid-template-columns: 1fr; }
         }
     </style>
+    <link rel="icon" href="{{ url_for('static', filename='brand/logo.png') }}" type="image/png">
 </head>
 <body>
     <div class="glow g1"></div>

@@ -47,7 +47,7 @@
         }
         .brand { display: inline-flex; align-items: center; gap: 11px; font-family: "Clash Display", sans-serif; font-size: 22px; font-weight: 600; letter-spacing: -0.5px; }
         .brand strong { color: var(--accent); font-weight: 700; }
-        .brand-mark { width: 36px; height: 36px; border-radius: 11px; display: inline-flex; align-items: center; justify-content: center; color: white; background: linear-gradient(135deg, var(--accent), var(--accent-2)); box-shadow: 0 10px 30px rgba(255, 107, 43, 0.35); }
+        .brand-mark { width: 36px; height: 36px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; color: white; background: var(--accent); box-shadow: 0 0 15px rgba(255, 107, 43, 0.35); font-size: 16px; }
         .nav-links { display: flex; gap: 8px; }
         .nav-pill { border: 1px solid var(--border); background: rgba(255, 255, 255, 0.02); color: var(--muted); font-size: 13px; font-weight: 500; padding: 8px 14px; border-radius: 10px; transition: all 0.2s ease; }
         .nav-pill:hover { color: white; border-color: rgba(255, 255, 255, 0.2); transform: translateY(-1px); }
@@ -258,6 +258,7 @@
             .page { margin-top: 152px; width: min(1320px, calc(100% - 18px)); }
         }
     </style>
+    <link rel="icon" href="{{ url_for('static', filename='brand/logo.png') }}" type="image/png">
 </head>
 <body>
     <div class="glow g1"></div>
@@ -266,7 +267,7 @@
     <div class="toast" id="toast"></div>
 
     <nav class="top-nav">
-        <a href="#" class="brand">
+        <a href="{{ url_for('candidate_dashboard') }}" class="brand">
             <span class="brand-mark"><i class="fa-solid fa-dove"></i></span>
             <span>The Bird <strong>Job</strong></span>
         </a>

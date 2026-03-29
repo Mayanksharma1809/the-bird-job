@@ -51,10 +51,10 @@
             display: inline-flex; align-items: center; gap: 11px;
         }
         .brand .brand-mark {
-            width: 36px; height: 36px; border-radius: 11px;
+            width: 36px; height: 36px; border-radius: 50%;
             display: inline-flex; align-items: center; justify-content: center;
-            color: #fff; background: linear-gradient(135deg, var(--accent), #ffb347);
-            box-shadow: 0 10px 30px rgba(255,107,43,0.35); font-size: 16px;
+            color: #fff; background: var(--accent);
+            box-shadow: 0 0 15px var(--accent-glow); font-size: 16px;
         }
         .brand strong { color: var(--accent); font-weight: 700; }
 
@@ -169,6 +169,7 @@
             .chat-area { height: 100%; }
         }
     </style>
+    <link rel="icon" href="{{ url_for('static', filename='brand/logo.png') }}" type="image/png">
 </head>
 <body>
 

@@ -84,20 +84,9 @@
       border-bottom: 1px solid var(--border);
     }
 
-    .logo {
-      font-family: var(--mono);
-      font-size: 1.1rem;
-      font-weight: 700;
-      color: var(--orange);
-      letter-spacing: -0.03em;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .logo span {
-      color: var(--text);
-    }
+    .brand { display: inline-flex; align-items: center; gap: 11px; font-family: var(--mono); font-size: 22px; font-weight: 600; letter-spacing: -0.5px; text-decoration: none; color: var(--text); }
+    .brand strong { color: var(--orange); font-weight: 700; }
+    .brand-mark { width: 36px; height: 36px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; color: white; background: var(--orange); box-shadow: 0 0 15px var(--orange-glow); font-size: 16px; }
 
     .nav-links {
       display: flex;
@@ -914,8 +903,8 @@
       align-items: center;
       justify-content: center;
       color: #fff;
-      background: linear-gradient(135deg, var(--orange), #ffb347);
-      box-shadow: 0 10px 30px rgba(255, 107, 43, 0.35);
+      background: transparent;
+      box-shadow: none;
       font-size: 16px;
     }
 
@@ -983,13 +972,24 @@
     }
 
     @media (max-width: 980px) {
-      nav {
-        padding: 0 14px;
-      }
-
-      .nav-links {
-        display: none;
-      }
+      nav { height: auto; padding: 10px 14px; display: grid; grid-template-columns: 1fr auto; grid-template-areas: "brand avatar" "links links"; align-items: center; row-gap: 10px; }
+      .logo { grid-area: brand; min-width: 0; }
+      .nav-avatar { grid-area: avatar; }
+      .nav-links { grid-area: links; display: flex; gap: 8px; overflow-x: auto; white-space: nowrap; padding-bottom: 2px; scrollbar-width: none; }
+      .nav-links::-webkit-scrollbar { display: none; }
+      
+      .form-grid { grid-template-columns: 1fr; }
+      .form-grid.triple { grid-template-columns: 1fr; }
+      .field.span2 { grid-column: span 1; }
+      .submit-row { flex-direction: column; align-items: stretch; text-align: center; }
+      .submit-row > div { display: flex; flex-direction: column; width: 100%; }
+      .btn { width: 100%; justify-content: center; }
+      .steps-bar { flex-wrap: wrap; }
+      .step { flex: 1 1 50%; min-width: 120px; }
+    }
+    @media (max-width: 600px) {
+      .page-header h1 { font-size: 1.6rem; }
+      .form-card { padding: 1.5rem 1rem; }
     }
 
     /* Flash messages from Flask */
@@ -1017,14 +1017,15 @@
       color: #f87171;
     }
   </style>
+    <link rel="icon" href="{{ url_for('static', filename='brand/logo.png') }}" type="image/png">
 </head>
 
 <body>
 
   <!-- NAV -->
   <nav>
-    <a href="{{ url_for('employer_dashboard') }}" class="logo">
-      <span class="brand-mark"><i class="fa-solid fa-dove"></i></span>
+    <a href="{{ url_for('employer_dashboard') }}" class="brand">
+      <div class="brand-mark"><i class="fa-solid fa-dove"></i></div>
       <span>The Bird <strong>Job</strong></span>
     </a>
     <ul class="nav-links">

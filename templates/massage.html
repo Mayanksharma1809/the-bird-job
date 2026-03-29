@@ -1,726 +1,454 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Messages — The Bird Job</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Clash+Display:wght@400;500;600;700&family=Bricolage+Grotesque:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<style>
-  :root {
-    --bg: #07070e;
-    --surface: #0e0f1a;
-    --surface2: #181a2b;
-    --border: rgba(255,255,255,0.1);
-    --orange: #ff6b2b;
-    --orange-dim: rgba(255,107,43,0.12);
-    --orange-glow: rgba(255,107,43,0.35);
-    --text: rgba(255,255,255,0.92);
-    --muted: rgba(255,255,255,0.55);
-    --green: #22c55e;
-    --mono: 'Clash Display', sans-serif;
-    --sans: 'Bricolage Grotesque', sans-serif;
-  }
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  body { background: var(--bg); color: var(--text); font-family: var(--sans); height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employer Messages — The Bird Job</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Clash+Display:wght@400;500;600;700&family=Bricolage+Grotesque:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg: #07070e;
+            --surface: #0e0f1a;
+            --surface2: #181a2b;
+            --border: rgba(255,255,255,0.1);
+            --accent: #ff6b2b;
+            --accent-dim: rgba(255,107,43,0.12);
+            --accent-glow: rgba(255,107,43,0.35);
+            --text: rgba(255,255,255,0.92);
+            --muted: rgba(255,255,255,0.55);
+            --green: #22c55e;
+            --mono: 'Clash Display', sans-serif;
+            --sans: 'Bricolage Grotesque', sans-serif;
+        }
 
-  body::before {
-    content: '';
-    position: fixed; inset: 0;
-    background-image:
-      linear-gradient(rgba(249,115,22,0.025) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(249,115,22,0.025) 1px, transparent 1px);
-    background-size: 40px 40px;
-    pointer-events: none; z-index: 0;
-  }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        body { background: var(--bg); color: var(--text); font-family: var(--sans); height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
 
-  nav {
-    position: sticky;
-    top: 0;
-    z-index: 120;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 28px;
-    height: 74px;
-    background: rgba(7,7,14,0.9);
-    border-bottom: 1px solid rgba(255,255,255,0.06);
-    backdrop-filter: blur(20px);
-  }
-  .logo {
-    font-family: "Clash Display", sans-serif;
-    font-size: 22px;
-    font-weight: 600;
-    letter-spacing: -0.5px;
-    color: var(--text);
-    text-decoration: none;
-    display: inline-flex;
-    align-items: center;
-    gap: 11px;
-  }
-  .logo .brand-mark {
-    width: 36px;
-    height: 36px;
-    border-radius: 11px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    color: #fff;
-    background: linear-gradient(135deg, var(--orange), #ffb347);
-    box-shadow: 0 10px 30px rgba(255,107,43,0.35);
-    font-size: 16px;
-  }
-  .logo > span:last-child { color: var(--text); }
-  .logo strong { color: var(--orange); font-weight: 700; }
-  .nav-links { display: flex; align-items: center; gap: 6px; list-style: none; }
-  .nav-links a {
-    border: 1px solid rgba(255,255,255,0.1);
-    background: rgba(255,255,255,0.02);
-    color: var(--muted);
-    text-decoration: none;
-    font-size: 13px;
-    font-weight: 500;
-    font-family: "Bricolage Grotesque", sans-serif;
-    letter-spacing: 0;
-    text-transform: none;
-    padding: 8px 14px;
-    border-radius: 10px;
-    transition: all 0.2s ease;
-  }
-  .nav-links a:hover { color: #fff; border-color: rgba(255,255,255,0.22); transform: translateY(-1px); }
-  .nav-links a.active {
-    color: #fff;
-    background: linear-gradient(135deg, rgba(255,107,43,0.25), rgba(255,179,71,0.12));
-    border-color: rgba(255,107,43,0.35);
-  }
-  .nav-avatar {
-    width: 40px;
-    height: 40px;
-    border-radius: 11px;
-    border: 1px solid rgba(255,255,255,0.1);
-    background: rgba(255,255,255,0.03);
-    color: var(--text);
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 14px;
-    text-decoration: none;
-    transition: all 0.2s ease;
-  }
-  .nav-avatar:hover { border-color: rgba(255,255,255,0.22); transform: translateY(-1px); }
+        body::before {
+            content: '';
+            position: fixed; inset: 0;
+            background-image:
+                linear-gradient(rgba(249,115,22,0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(249,115,22,0.02) 1px, transparent 1px);
+            background-size: 40px 40px;
+            pointer-events: none; z-index: 0;
+        }
 
-  .chat-layout {
-    display: flex;
-    flex: 1;
-    overflow: hidden;
-    position: relative;
-    z-index: 1;
-  }
+        nav {
+            position: sticky; top: 0; z-index: 120;
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0 28px; height: 74px;
+            background: rgba(7,7,14,0.9); border-bottom: 1px solid rgba(255,255,255,0.06);
+            backdrop-filter: blur(20px);
+        }
+        .brand {
+            font-family: "Clash Display", sans-serif;
+            font-size: 22px; font-weight: 600; letter-spacing: -0.5px;
+            color: var(--text); text-decoration: none;
+            display: inline-flex; align-items: center; gap: 11px;
+        }
+        .brand .brand-mark {
+            width: 36px; height: 36px; border-radius: 50%;
+            display: inline-flex; align-items: center; justify-content: center;
+            color: #fff; background: var(--accent);
+            box-shadow: 0 0 15px var(--accent-glow); font-size: 16px;
+        }
+        .brand strong { color: var(--accent); font-weight: 700; }
 
-  /* CONVERSATIONS LIST */
-  .convo-list {
-    width: 320px;
-    flex-shrink: 0;
-    border-right: 1px solid var(--border);
-    display: flex;
-    flex-direction: column;
-    background: var(--surface);
-  }
+        .nav-links { display: flex; align-items: center; gap: 12px; list-style: none; }
+        .nav-pill {
+            border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.02);
+            color: var(--muted); text-decoration: none; font-size: 13px; font-weight: 500;
+            padding: 8px 16px; border-radius: 10px; transition: all 0.2s ease;
+        }
+        .nav-pill:hover { color: #fff; border-color: rgba(255,255,255,0.22); transform: translateY(-1px); }
+        .nav-pill.active {
+            color: #fff; background: linear-gradient(135deg, rgba(255,107,43,0.25), rgba(255,179,71,0.12));
+            border-color: rgba(255,107,43,0.35);
+        }
+        .nav-avatar {
+          width: 40px; height: 40px; border-radius: 11px;
+          border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.03);
+          color: var(--text); display: inline-flex; align-items: center; justify-content: center;
+          font-size: 14px; text-decoration: none; transition: all 0.2s ease;
+        }
+        .nav-avatar:hover { border-color: rgba(255,255,255,0.22); transform: translateY(-1px); }
 
-  .convo-header {
-    padding: 1.25rem 1.5rem;
-    border-bottom: 1px solid var(--border);
-    flex-shrink: 0;
-  }
+        .chat-layout {
+            display: flex; flex: 1; overflow: hidden; position: relative; z-index: 1;
+        }
 
-  .convo-title-row {
-    display: flex; align-items: center; justify-content: space-between;
-    margin-bottom: 1rem;
-  }
+        /* CONVERSATIONS LIST */
+        .convo-list {
+            width: 320px; flex-shrink: 0; border-right: 1px solid var(--border);
+            display: flex; flex-direction: column; background: var(--surface);
+        }
 
-  .convo-title {
-    font-size: 0.7rem; font-family: var(--mono);
-    letter-spacing: 0.12em; text-transform: uppercase; color: var(--orange);
-  }
+        .convo-header { padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border); flex-shrink: 0; }
+        .convo-title-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; }
+        .convo-title { font-size: 0.7rem; font-family: var(--mono); letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); }
 
-  .new-chat-btn {
-    width: 28px; height: 28px; border-radius: 50%;
-    background: var(--orange); color: #000; border: none;
-    font-size: 1.1rem; cursor: pointer; display: flex; align-items: center; justify-content: center;
-    transition: box-shadow 0.2s, transform 0.2s;
-    font-weight: 700;
-  }
+        .search-convo {
+            display: flex; align-items: center; background: var(--surface2); border: 1px solid var(--border);
+            border-radius: 3px; padding: 8px 12px; gap: 8px; transition: border-color 0.2s;
+        }
+        .search-convo:focus-within { border-color: var(--accent); }
+        .search-convo input { background: none; border: none; outline: none; color: var(--text); font-family: var(--sans); font-size: 0.83rem; width: 100%; }
 
-  .new-chat-btn:hover { box-shadow: 0 0 16px var(--orange-glow); transform: scale(1.1); }
+        .convo-items { flex: 1; overflow-y: auto; }
+        .convo-item {
+            display: flex; align-items: center; gap: 12px; padding: 14px 1.5rem;
+            cursor: pointer; border-bottom: 1px solid var(--border); transition: background 0.2s;
+            position: relative;
+        }
+        .convo-item:hover { background: var(--surface2); }
+        .convo-item.active { background: var(--accent-dim); border-right: 2px solid var(--accent); }
 
-  .search-convo {
-    display: flex; align-items: center;
-    background: var(--surface2); border: 1px solid var(--border);
-    border-radius: 3px; padding: 8px 12px; gap: 8px;
-    transition: border-color 0.2s;
-  }
+        .convo-avatar {
+            width: 42px; height: 42px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-family: var(--mono); font-size: 0.8rem; font-weight: 700;
+            flex-shrink: 0; position: relative; background: var(--surface2);
+            color: var(--accent); border: 1px solid var(--border);
+        }
 
-  .search-convo:focus-within { border-color: var(--orange); }
+        .convo-info { flex: 1; min-width: 0; }
+        .convo-role { font-family: var(--mono); font-size: 0.62rem; color: var(--accent); margin-bottom: 2px; text-transform: uppercase; }
+        .convo-name { font-size: 0.88rem; font-weight: 700; display: flex; align-items: center; justify-content: space-between; margin-bottom: 3px; }
+        .convo-time { font-family: var(--mono); font-size: 0.6rem; color: var(--muted); }
+        .convo-last { font-size: 0.76rem; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .convo-last.unread { color: var(--text); font-weight: 600; }
 
-  .search-convo input {
-    background: none; border: none; outline: none;
-    color: var(--text); font-family: var(--sans); font-size: 0.83rem;
-    width: 100%;
-  }
+        .unread-badge {
+            background: var(--accent); color: #000; font-family: var(--mono); font-size: 0.6rem; font-weight: 700;
+            width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+        }
 
-  .search-convo span { color: var(--muted); font-size: 0.8rem; }
+        /* CHAT AREA */
+        .chat-area { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+        .chat-placeholder { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--muted); gap: 12px; }
+        .chat-content { display: none; flex: 1; flex-direction: column; overflow: hidden; }
 
-  .convo-items { flex: 1; overflow-y: auto; }
+        .chat-header {
+            display: flex; align-items: center; justify-content: space-between; padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--border); background: var(--surface); flex-shrink: 0;
+        }
+        .chat-user { display: flex; align-items: center; gap: 12px; }
+        .chat-avatar {
+            width: 40px; height: 40px; border-radius: 50%; background: var(--accent-dim);
+            border: 1.5px solid var(--accent); color: var(--accent); font-family: var(--mono);
+            font-size: 0.78rem; font-weight: 700; display: flex; align-items: center; justify-content: center;
+        }
+        .chat-user-info .name { font-size: 0.95rem; font-weight: 700; }
+        .chat-user-info .sub { font-family: var(--mono); font-size: 0.68rem; color: var(--muted); }
 
-  .convo-item {
-    display: flex; align-items: center; gap: 12px;
-    padding: 14px 1.5rem;
-    cursor: pointer;
-    border-bottom: 1px solid var(--border);
-    transition: background 0.2s;
-    position: relative;
-  }
+        .messages-body { flex: 1; overflow-y: auto; padding: 1.5rem; display: flex; flex-direction: column; gap: 16px; }
+        .date-divider { display: flex; align-items: center; gap: 12px; font-family: var(--mono); font-size: 0.62rem; color: var(--muted); letter-spacing: 0.1em; text-transform: uppercase; margin: 10px 0; }
+        .date-divider::before, .date-divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
 
-  .convo-item:hover { background: var(--surface2); }
-  .convo-item.active { background: var(--orange-dim); border-right: 2px solid var(--orange); }
+        .msg-row { display: flex; gap: 10px; align-items: flex-end; animation: msgIn 0.25s ease; }
+        .msg-row.mine { flex-direction: row-reverse; }
+        .msg-bubble { max-width: 65%; padding: 10px 14px; border-radius: 12px; font-size: 0.875rem; line-height: 1.6; position: relative; }
+        .msg-row:not(.mine) .msg-bubble { background: var(--surface2); border: 1px solid var(--border); border-radius: 0 12px 12px 12px; }
+        .msg-row.mine .msg-bubble { background: var(--accent); color: #000; font-weight: 500; border-radius: 12px 12px 0 12px; }
+        .msg-time { font-family: var(--mono); font-size: 0.58rem; color: var(--muted); margin-top: 4px; }
+        .msg-row.mine .msg-time { text-align: right; color: rgba(255,255,255,0.4); }
 
-  .convo-avatar {
-    width: 42px; height: 42px; border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    font-family: var(--mono); font-size: 0.8rem; font-weight: 700;
-    flex-shrink: 0; position: relative;
-    background: var(--surface2);
-    color: var(--orange);
-    border: 1px solid var(--border);
-  }
+        /* AI SUGGESTIONS */
+        .ai-suggestions {
+          background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--accent);
+          border-radius: 3px; padding: 12px 14px; margin: 0 1.5rem 1rem; flex-shrink: 0;
+        }
+        .ai-sug-label { font-family: var(--mono); font-size: 0.62rem; color: var(--accent); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+        .ai-sug-chips { display: flex; gap: 8px; flex-wrap: wrap; }
+        .ai-chip { background: var(--surface2); border: 1px solid var(--border); color: var(--text); font-family: var(--sans); font-size: 0.78rem; padding: 6px 12px; border-radius: 3px; cursor: pointer; transition: all 0.2s; }
+        .ai-chip:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-dim); }
 
-  .online-dot {
-    position: absolute; bottom: 1px; right: 1px;
-    width: 10px; height: 10px; border-radius: 50%;
-    background: var(--green); border: 2px solid var(--surface);
-  }
+        .input-area { padding: 1rem 1.5rem; border-top: 1px solid var(--border); background: var(--surface); flex-shrink: 0; }
+        .input-box { display: flex; align-items: flex-end; gap: 10px; background: var(--surface2); border: 1px solid var(--border); border-radius: 4px; padding: 10px 14px; }
+        .input-box textarea { flex: 1; background: none; border: none; outline: none; color: var(--text); font-family: var(--sans); font-size: 0.9rem; resize: none; line-height: 1.5; max-height: 120px; overflow-y: auto; }
+        .send-btn { width: 36px; height: 36px; border-radius: 50%; background: var(--accent); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #000; transition: all 0.2s; }
+        .send-btn:disabled { opacity: 0.3; cursor: not-allowed; }
 
-  .convo-info { flex: 1; min-width: 0; }
+        @keyframes msgIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
 
-  .convo-name {
-    font-size: 0.88rem; font-weight: 700;
-    display: flex; align-items: center; justify-content: space-between;
-    margin-bottom: 3px;
-  }
+        @media (max-width: 760px) {
+            nav { padding: 0 16px; height: 64px; }
+            .brand span { display: none; }
+            .nav-links { gap: 8px; }
+            .nav-pill { padding: 6px 12px; font-size: 12px; }
 
-  .convo-time { font-family: var(--mono); font-size: 0.6rem; color: var(--muted); }
-  .convo-last { font-size: 0.76rem; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .convo-last.unread { color: var(--text); font-weight: 600; }
-
-  .unread-badge {
-    background: var(--orange); color: #000;
-    font-family: var(--mono); font-size: 0.6rem; font-weight: 700;
-    width: 18px; height: 18px; border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    flex-shrink: 0;
-  }
-
-  .convo-role {
-    font-family: var(--mono); font-size: 0.62rem; color: var(--orange);
-    margin-bottom: 2px;
-  }
-
-  /* CHAT AREA */
-  .chat-area {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-  }
-
-  .chat-header {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 1rem 1.5rem;
-    border-bottom: 1px solid var(--border);
-    background: var(--surface);
-    flex-shrink: 0;
-  }
-
-  .chat-user {
-    display: flex; align-items: center; gap: 12px;
-  }
-
-  .chat-avatar {
-    width: 40px; height: 40px; border-radius: 50%;
-    background: var(--orange-dim); border: 1.5px solid var(--orange);
-    color: var(--orange); font-family: var(--mono); font-size: 0.78rem; font-weight: 700;
-    display: flex; align-items: center; justify-content: center;
-    position: relative;
-  }
-
-  .chat-user-info .name { font-size: 0.95rem; font-weight: 700; }
-  .chat-user-info .sub { font-family: var(--mono); font-size: 0.68rem; color: var(--muted); }
-
-  .chat-actions { display: flex; gap: 8px; }
-
-  .icon-btn {
-    width: 36px; height: 36px; border-radius: 50%;
-    background: var(--surface2); border: 1px solid var(--border);
-    color: var(--muted); cursor: pointer;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 0.85rem; transition: all 0.2s;
-  }
-
-  .icon-btn:hover { border-color: var(--orange); color: var(--orange); background: var(--orange-dim); }
-
-  /* MESSAGES */
-  .messages-body {
-    flex: 1;
-    overflow-y: auto;
-    padding: 1.5rem;
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-  }
-
-  .date-divider {
-    display: flex; align-items: center; gap: 12px;
-    font-family: var(--mono); font-size: 0.62rem; color: var(--muted);
-    letter-spacing: 0.1em; text-transform: uppercase;
-    margin: 10px 0;
-  }
-
-  .date-divider::before, .date-divider::after {
-    content: ''; flex: 1; height: 1px; background: var(--border);
-  }
-
-  .msg-row {
-    display: flex; gap: 10px; align-items: flex-end;
-    animation: msgIn 0.25s ease;
-  }
-
-  .msg-row.mine { flex-direction: row-reverse; }
-
-  .msg-avatar {
-    width: 30px; height: 30px; border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    font-family: var(--mono); font-size: 0.62rem; font-weight: 700;
-    flex-shrink: 0;
-  }
-
-  .msg-bubble {
-    max-width: 65%;
-    padding: 10px 14px;
-    border-radius: 3px;
-    font-size: 0.875rem;
-    line-height: 1.6;
-    position: relative;
-  }
-
-  .msg-row:not(.mine) .msg-bubble {
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 0 12px 12px 12px;
-  }
-
-  .msg-row.mine .msg-bubble {
-    background: var(--orange);
-    color: #000;
-    font-weight: 500;
-    border-radius: 12px 12px 0 12px;
-  }
-
-  .msg-time {
-    font-family: var(--mono); font-size: 0.58rem; color: var(--muted);
-    margin-top: 4px;
-  }
-
-  .msg-row.mine .msg-time { text-align: right; color: rgba(255,255,255,0.4); }
-
-  /* AI SUGGESTIONS */
-  .ai-suggestions {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-left: 3px solid var(--orange);
-    border-radius: 3px;
-    padding: 12px 14px;
-    margin: 0 1.5rem 1rem;
-    flex-shrink: 0;
-  }
-
-  .ai-sug-label {
-    font-family: var(--mono); font-size: 0.62rem;
-    color: var(--orange); letter-spacing: 0.1em; text-transform: uppercase;
-    margin-bottom: 8px; display: flex; align-items: center; gap: 6px;
-  }
-
-  .ai-sug-chips {
-    display: flex; gap: 8px; flex-wrap: wrap;
-  }
-
-  .ai-chip {
-    background: var(--surface2); border: 1px solid var(--border);
-    color: var(--text); font-family: var(--sans); font-size: 0.78rem;
-    padding: 6px 12px; border-radius: 3px; cursor: pointer;
-    transition: all 0.2s;
-  }
-
-  .ai-chip:hover { border-color: var(--orange); color: var(--orange); background: var(--orange-dim); }
-
-  /* INPUT AREA */
-  .input-area {
-    padding: 1rem 1.5rem;
-    border-top: 1px solid var(--border);
-    background: var(--surface);
-    flex-shrink: 0;
-  }
-
-  .input-box {
-    display: flex; align-items: flex-end; gap: 10px;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    padding: 10px 14px;
-    transition: border-color 0.2s;
-  }
-
-  .input-box:focus-within { border-color: var(--orange); }
-
-  .input-box textarea {
-    flex: 1; background: none; border: none; outline: none;
-    color: var(--text); font-family: var(--sans); font-size: 0.9rem;
-    resize: none; line-height: 1.5; max-height: 120px; overflow-y: auto;
-    padding: 2px 0;
-  }
-
-  .send-btn {
-    width: 36px; height: 36px; border-radius: 50%;
-    background: var(--orange); border: none; cursor: pointer;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 0.9rem; color: #000; font-weight: 700;
-    transition: all 0.2s;
-    flex-shrink: 0;
-  }
-
-  .send-btn:disabled { opacity: 0.3; cursor: not-allowed; }
-
-  /* EMPTY STATE */
-  .empty-chat {
-    flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
-    color: var(--muted); gap: 12px;
-  }
-
-  .empty-icon { font-size: 3rem; opacity: 0.3; }
-  .empty-text { font-family: var(--mono); font-size: 0.8rem; letter-spacing: 0.1em; text-transform: uppercase; }
-
-  @keyframes msgIn {
-    from { opacity: 0; transform: translateY(8px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  ::-webkit-scrollbar { width: 4px; }
-  ::-webkit-scrollbar-track { background: transparent; }
-  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
-
-  @media (max-width: 760px) {
-      nav { height: auto; padding: 10px; flex-direction: column; gap: 10px; }
-      .nav-links { flex-wrap: wrap; justify-content: center; margin-bottom: 5px; }
-      .convo-list { width: 100%; border-right: none; background: var(--surface); }
-      .chat-layout.chat-active .convo-list { display: none; }
-      .chat-layout:not(.chat-active) .chat-area { display: none; }
-      .chat-area { height: 100%; }
-  }
-</style>
+            .convo-list { width: 100%; border-right: none; background: var(--surface); }
+            .chat-layout.chat-active .convo-list { display: none; }
+            .chat-layout:not(.chat-active) .chat-area { display: none !important; }
+            .chat-area { height: 100%; }
+        }
+    </style>
+    <link rel="icon" href="{{ url_for('static', filename='brand/logo.png') }}" type="image/png">
 </head>
 <body>
 
 <nav>
-  <a href="{{ url_for('employer_dashboard') }}" class="logo">
-    <span class="brand-mark"><i class="fa-solid fa-dove"></i></span>
-    <span>The Bird <strong>Job</strong></span>
-  </a>
-  <ul class="nav-links">
-    <li><a href="{{ url_for('employer_dashboard') }}">My Jobs</a></li>
-    <li><a href="{{ url_for('employer_jobposting_page') }}">Post a Job</a></li>
-    <li><a href="{{ url_for('employer_top_candidates_page') }}">Top Candidates</a></li>
-    <li><a href="{{ url_for('employer_applications_page') }}">Applications</a></li>
-    <li><a href="{{ url_for('employer_messages_page') }}" class="active">Messages</a></li>
-  </ul>
-  <a class="nav-avatar" href="{{ url_for('employer_dashboard') }}" title="Employer Dashboard">
-    <i class="fa-solid fa-user-gear"></i>
-  </a>
+    <a href="{{ url_for('employer_dashboard') }}" class="brand">
+        <div class="brand-mark"><i class="fa-solid fa-dove"></i></div>
+        <span>The Bird <strong>Job</strong></span>
+    </a>
+    <div class="nav-links">
+        <a href="{{ url_for('employer_dashboard') }}" class="nav-pill">Dashboard</a>
+        <a href="{{ url_for('employer_messages_page') }}" class="nav-pill active">Messages</a>
+    </div>
+    <a class="nav-avatar" href="{{ url_for('employer_dashboard') }}" title="Employer Dashboard">
+        <i class="fa-solid fa-user-gear"></i>
+    </a>
 </nav>
 
 <div class="chat-layout">
+    <!-- Conversations List -->
+    <div class="convo-list">
+        <div class="convo-header">
+            <div class="convo-title">_ Messages</div>
+            <div class="search-convo">
+                <i class="fa-solid fa-magnifying-glass" style="font-size: 0.8rem; color: var(--muted)"></i>
+                <input type="text" placeholder="Search candidates..." oninput="filterConversations(this.value)">
+            </div>
+        </div>
+        <div class="convo-items" id="convoItems">
+            {% for convo in conversations %}
+            <div class="convo-item" data-candidate-id="{{ convo.id }}" onclick="loadChat({{ convo.id }}, '{{ convo.name }}', '{{ convo.initials }}')">
+                <div class="convo-avatar">{{ convo.initials }}</div>
+                <div class="convo-info">
+                    <div class="convo-role">{{ convo.role }}</div>
+                    <div class="convo-name">
+                        {{ convo.name }}
+                        <span class="convo-time" data-time="{{ convo.last_time }}"></span>
+                    </div>
+                    <div class="convo-last {% if convo.unread_count > 0 %}unread{% endif %}">
+                        {{ convo.last_message or "Start a conversation" }}
+                    </div>
+                </div>
+                {% if convo.unread_count > 0 %}
+                <div class="unread-badge">{{ convo.unread_count }}</div>
+                {% endif %}
+            </div>
+            {% endfor %}
 
-  <!-- CONVERSATIONS LIST -->
-  <div class="convo-list">
-    <div class="convo-header">
-      <div class="convo-title-row">
-        <div class="convo-title">// Messages</div>
-        <button class="new-chat-btn" onclick="window.location.href='/applications.html'">+</button>
-      </div>
-      <div class="search-convo">
-        <span>🔍</span>
-        <input type="text" placeholder="Search conversations..." oninput="filterConversations(this.value)">
-      </div>
+            {% if not conversations %}
+            <div class="chat-placeholder" style="padding: 2rem; text-align: center;">
+                <p style="font-size: 0.8rem;">No messages yet.</p>
+                <p style="font-size: 0.7rem; margin-top: 0.3rem; opacity: 0.6">Go to Applications to start chatting with candidates.</p>
+            </div>
+            {% endif %}
+        </div>
     </div>
 
-    <div class="convo-items" id="convoItems">
-      {% for convo in conversations %}
-      <div class="convo-item" data-candidate-id="{{ convo.id }}" onclick="loadChat({{ convo.id }}, '{{ convo.name }}', '{{ convo.initials }}')">
-        <div class="convo-avatar">
-          {{ convo.initials }}
-          {% if convo.unread_count > 0 %}
-          <div class="online-dot"></div>
-          {% endif %}
+    <!-- Chat Area -->
+    <div class="chat-area">
+        <div id="chatPlaceholder" class="chat-placeholder">
+            <i class="fa-solid fa-comments" style="font-size: 2.5rem; opacity: 0.1"></i>
+            <p style="font-family: var(--mono); font-size: 0.75rem; letter-spacing: 1px; text-transform: uppercase;">Select a conversation to start chatting</p>
         </div>
-        <div class="convo-info">
-          <div class="convo-role">{{ convo.role }}</div>
-          <div class="convo-name">
-            {{ convo.name }}
-            <span class="convo-time" data-time="{{ convo.last_time }}"></span>
-          </div>
-          <div class="convo-last {% if convo.unread_count > 0 %}unread{% endif %}">
-            {{ convo.last_message or "Start a conversation" }}
-          </div>
-        </div>
-        {% if convo.unread_count > 0 %}
-        <div class="unread-badge">{{ convo.unread_count }}</div>
-        {% endif %}
-      </div>
-      {% endfor %}
 
-      {% if not conversations %}
-      <div class="empty-chat" style="padding: 2rem; text-align: center;">
-        <div class="empty-text">No messages yet.</div>
-        <div style="font-size: 0.75rem; margin-top: 0.5rem;">Go to Applications to start a chat with candidates.</div>
-      </div>
-      {% endif %}
+        <div id="chatContent" class="chat-content">
+            <div class="chat-header">
+                <div class="chat-user">
+                    <div class="chat-avatar" id="chatAvatar">??</div>
+                    <div class="chat-user-info">
+                        <div class="name" id="chatName">Candidate Name</div>
+                        <div class="sub">Active Conversation</div>
+                    </div>
+                </div>
+                <div class="chat-actions">
+                  <button class="send-btn" style="background: var(--surface2); color: var(--muted); border: 1px solid var(--border)" onclick="closeChat()">✕</button>
+                </div>
+            </div>
+
+            <div class="messages-body" id="messagesBody"></div>
+
+            <!-- AI Suggestions Section (matching candidate design patterns) -->
+            <div class="ai-suggestions" id="aiSuggestions" style="display:none">
+              <div class="ai-sug-label"><i class="fa-solid fa-wand-magic-sparkles"></i> AI Suggested Replies</div>
+              <div class="ai-sug-chips">
+                <button class="ai-chip" onclick="useChip('Thanks for your application! Are you available for a quick call?')">Schedule Call</button>
+                <button class="ai-chip" onclick="useChip('We really liked your profile. When can you start?')">Check Availability</button>
+                <button class="ai-chip" onclick="useChip('Could you please share your updated portfolio?')">Request Portfolio</button>
+              </div>
+            </div>
+
+            <div class="input-area">
+                <div class="input-box">
+                    <textarea id="msgInput" rows="1" placeholder="Type a message..." oninput="autoResize(this)" onkeydown="sendOnEnter(event)"></textarea>
+                    <button class="send-btn" id="sendBtn" onclick="sendMessage()">➤</button>
+                </div>
+            </div>
+        </div>
     </div>
-  </div>
-
-  <!-- CHAT AREA -->
-  <div class="chat-area">
-    <div id="chatPlaceholder" class="empty-chat">
-      <div class="empty-icon">💬</div>
-      <div class="empty-text">Select a conversation to start chatting</div>
-    </div>
-
-    <div id="chatContent" style="display:none; flex:1; flex-direction:column; overflow:hidden;">
-      <!-- Chat Header -->
-      <div class="chat-header">
-        <div class="chat-user">
-          <div class="chat-avatar" id="chatAvatar">??</div>
-          <div class="chat-user-info">
-            <div class="name" id="chatName">Candidate Name</div>
-            <div class="sub">Active Conversation</div>
-          </div>
-        </div>
-        <div class="chat-actions">
-          <div class="icon-btn" title="View Profile" id="viewProfileBtn">👤</div>
-          <div class="icon-btn" title="Close" onclick="closeChat()">✕</div>
-        </div>
-      </div>
-
-      <!-- Messages Body -->
-      <div class="messages-body" id="messagesBody">
-        <!-- Messages will be loaded here -->
-      </div>
-
-      <!-- AI Suggestions -->
-      <div class="ai-suggestions" id="aiSuggestions" style="display:none">
-        <div class="ai-sug-label">✦ AI Suggested Replies</div>
-        <div class="ai-sug-chips">
-          <div class="ai-chip" onclick="useChip('Thanks for your application! Are you available for a quick call?')">Schedule Call</div>
-          <div class="ai-chip" onclick="useChip('We really liked your profile. When can you start?')">Check Availability</div>
-          <div class="ai-chip" onclick="useChip('Could you please share your updated portfolio?')">Request Portfolio</div>
-        </div>
-      </div>
-
-      <!-- Input Area -->
-      <div class="input-area">
-        <div class="input-box">
-          <textarea id="msgInput" rows="1" placeholder="Type a message..." oninput="autoResize(this)" onkeydown="sendOnEnter(event)"></textarea>
-          <button class="send-btn" id="sendBtn" onclick="sendMessage()">➤</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
 </div>
 
 <script>
-  let currentCandidateId = null;
-  let pollingInterval = null;
+    let currentCandidateId = null;
+    let pollingInterval = null;
 
-  function autoResize(el) {
-    el.style.height = 'auto';
-    el.style.height = Math.min(el.scrollHeight, 120) + 'px';
-  }
-
-  function sendOnEnter(e) {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      sendMessage();
+    function autoResize(el) {
+        el.style.height = 'auto';
+        el.style.height = Math.min(el.scrollHeight, 120) + 'px';
     }
-  }
 
-  async function loadChat(candidateId, name, initials) {
-    currentCandidateId = candidateId;
-    window.lastMessageCount = 0; // Reset
-    document.querySelector('.chat-layout').classList.add('chat-active');
-    document.getElementById('chatPlaceholder').style.display = 'none';
-    document.getElementById('chatContent').style.display = 'flex';
-    document.getElementById('chatName').textContent = name;
-    document.getElementById('chatAvatar').textContent = initials;
-    
-    // UI selection
-    document.querySelectorAll('.convo-item').forEach(el => {
-      el.classList.toggle('active', el.dataset.candidateId == candidateId);
-      if (el.dataset.candidateId == candidateId) {
-        el.querySelector('.unread-badge')?.remove();
-        el.querySelector('.convo-last')?.classList.remove('unread');
-      }
-    });
-
-    await fetchMessages();
-    
-    // Start polling
-    if (pollingInterval) clearInterval(pollingInterval);
-    pollingInterval = setInterval(fetchMessages, 5000);
-  }
-
-  function closeChat() {
-    currentCandidateId = null;
-    document.querySelector('.chat-layout').classList.remove('chat-active');
-    document.getElementById('chatPlaceholder').style.display = 'flex';
-    document.getElementById('chatContent').style.display = 'none';
-    if (pollingInterval) clearInterval(pollingInterval);
-  }
-
-  async function fetchMessages() {
-    if (!currentCandidateId) return;
-    try {
-      const response = await fetch(`/api/employer/messages/${currentCandidateId}`);
-      const messages = await response.json();
-      renderMessages(messages);
-    } catch (err) {
-      console.error('Failed to fetch messages:', err);
+    function sendOnEnter(e) {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            sendMessage();
+        }
     }
-  }
 
-  function renderMessages(messages) {
-    const body = document.getElementById('messagesBody');
+    async function loadChat(candidateId, name, initials) {
+        currentCandidateId = candidateId;
+        window.lastMessageCount = 0; // Reset count
+        document.querySelector('.chat-layout').classList.add('chat-active');
+        document.getElementById('chatPlaceholder').style.display = 'none';
+        document.getElementById('chatContent').style.display = 'flex';
+        document.getElementById('chatName').textContent = name;
+        document.getElementById('chatAvatar').textContent = initials;
+        document.getElementById('aiSuggestions').style.display = 'block';
 
-    // Anti-blink check
-    if (messages.length === window.lastMessageCount) {
-        return;
-    }
-    window.lastMessageCount = messages.length;
+        document.querySelectorAll('.convo-item').forEach(el => {
+            el.classList.toggle('active', el.dataset.candidateId == candidateId);
+            if (el.dataset.candidateId == candidateId) {
+                el.querySelector('.unread-badge')?.remove();
+                el.querySelector('.convo-last')?.classList.remove('unread');
+            }
+        });
 
-    const wasAtBottom = body.scrollHeight - body.scrollTop <= body.clientHeight + 100;
-    
-    let html = '';
-    let lastDate = null;
-
-    messages.forEach(msg => {
-      const date = new Date(msg.timestamp).toLocaleDateString();
-      if (date !== lastDate) {
-        html += `<div class="date-divider">${date}</div>`;
-        lastDate = date;
-      }
-
-      const time = new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-      
-      html += `
-        <div class="msg-row ${msg.mine ? 'mine' : ''}">
-          <div class="msg-bubble">
-            ${msg.content}
-            <div class="msg-time">${time}</div>
-          </div>
-        </div>
-      `;
-    });
-
-    body.innerHTML = html;
-    if (wasAtBottom) body.scrollTop = body.scrollHeight;
-  }
-
-  async function sendMessage() {
-    const input = document.getElementById('msgInput');
-    const content = input.value.trim();
-    if (!content || !currentCandidateId) return;
-
-    const btn = document.getElementById('sendBtn');
-    btn.disabled = true;
-
-    try {
-      const response = await fetch('/api/employer/messages/send', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ candidate_id: currentCandidateId, content: content })
-      });
-
-      if (response.ok) {
-        input.value = '';
-        input.style.height = 'auto';
         await fetchMessages();
-        updateConvoPreview(currentCandidateId, content);
-      }
-    } catch (err) {
-      console.error('Failed to send message:', err);
-    } finally {
-      btn.disabled = false;
+        if (pollingInterval) clearInterval(pollingInterval);
+        pollingInterval = setInterval(fetchMessages, 5000);
     }
-  }
 
-  function updateConvoPreview(candidateId, content) {
-    const item = document.querySelector(`.convo-item[data-candidate-id="${candidateId}"]`);
-    if (item) {
-      item.querySelector('.convo-last').textContent = content;
-      item.querySelector('.convo-time').textContent = 'Just now';
-      // Move to top
-      const parent = item.parentNode;
-      parent.prepend(item);
+    function closeChat() {
+        currentCandidateId = null;
+        document.querySelector('.chat-layout').classList.remove('chat-active');
+        document.getElementById('chatPlaceholder').style.display = 'flex';
+        document.getElementById('chatContent').style.display = 'none';
+        if (pollingInterval) clearInterval(pollingInterval);
     }
-  }
 
-  function filterConversations(val) {
-    const query = val.toLowerCase();
-    document.querySelectorAll('.convo-item').forEach(el => {
-      const name = el.querySelector('.convo-name').textContent.toLowerCase();
-      el.style.display = name.includes(query) ? 'flex' : 'none';
+    async function fetchMessages() {
+        if (!currentCandidateId) return;
+        try {
+            const response = await fetch(`/api/employer/messages/${currentCandidateId}`);
+            const messages = await response.json();
+            renderMessages(messages);
+        } catch (err) {
+            console.error('Failed to fetch messages:', err);
+        }
+    }
+
+    function renderMessages(messages) {
+        const body = document.getElementById('messagesBody');
+        
+        if (messages.length === window.lastMessageCount) {
+            return;
+        }
+        window.lastMessageCount = messages.length;
+
+        const wasAtBottom = body.scrollHeight - body.scrollTop <= body.clientHeight + 100;
+        let html = '';
+        let lastDate = null;
+
+        messages.forEach(msg => {
+            const date = new Date(msg.timestamp).toLocaleDateString();
+            if (date !== lastDate) {
+                html += `<div class="date-divider">${date}</div>`;
+                lastDate = date;
+            }
+            const time = new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            html += `
+                <div class="msg-row ${msg.mine ? 'mine' : ''}">
+                    <div class="msg-bubble">
+                        ${msg.content}
+                        <div class="msg-time">${time}</div>
+                    </div>
+                </div>
+            `;
+        });
+
+        body.innerHTML = html;
+        if (wasAtBottom) body.scrollTop = body.scrollHeight;
+    }
+
+    async function sendMessage() {
+        const input = document.getElementById('msgInput');
+        const content = input.value.trim();
+        if (!content || !currentCandidateId) return;
+        const btn = document.getElementById('sendBtn');
+        btn.disabled = true;
+
+        try {
+            const response = await fetch('/api/employer/messages/send', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ candidate_id: currentCandidateId, content: content })
+            });
+
+            if (response.ok) {
+                input.value = '';
+                input.style.height = 'auto';
+                await fetchMessages();
+                updateConvoPreview(currentCandidateId, content);
+            }
+        } catch (err) {
+            console.error('Failed to send message:', err);
+        } finally {
+            btn.disabled = false;
+        }
+    }
+
+    function updateConvoPreview(candidateId, content) {
+        const item = document.querySelector(`.convo-item[data-candidate-id="${candidateId}"]`);
+        if (item) {
+            item.querySelector('.convo-last').textContent = content;
+            item.querySelector('.convo-time').textContent = 'Just now';
+            item.parentNode.prepend(item);
+        }
+    }
+
+    function filterConversations(val) {
+        const query = val.toLowerCase();
+        document.querySelectorAll('.convo-item').forEach(el => {
+            const name = el.querySelector('.convo-name').textContent.toLowerCase();
+            el.style.display = name.includes(query) ? 'flex' : 'none';
+        });
+    }
+
+    function useChip(text) {
+        const input = document.getElementById('msgInput');
+        input.value = text;
+        input.focus();
+        autoResize(input);
+    }
+
+    document.querySelectorAll('.convo-time').forEach(el => {
+        const timeStr = el.dataset.time;
+        if (timeStr) {
+            const d = new Date(timeStr);
+            el.textContent = d.toLocaleDateString([], { month: 'short', day: 'numeric' });
+        }
     });
-  }
 
-  function useChip(text) {
-    document.getElementById('msgInput').value = text;
-    document.getElementById('msgInput').focus();
-    autoResize(document.getElementById('msgInput'));
-  }
-
-  // Initial time formatting
-  document.querySelectorAll('.convo-time').forEach(el => {
-    const timeStr = el.dataset.time;
-    if (timeStr) {
-      const d = new Date(timeStr);
-      el.textContent = d.toLocaleDateString([], { month: 'short', day: 'numeric' });
-    }
-  });
-
-  // Auto-open if candidate_id is in URL
-  window.addEventListener('DOMContentLoaded', () => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const candId = urlParams.get('candidate_id');
-    if (candId) {
-      const item = document.querySelector(`.convo-item[data-candidate-id="${candId}"]`);
-      if (item) {
-        item.click();
-      } else {
-        // If not in list, maybe it's a new chat. We can load it anyway if the API supports it.
-        // For now just console log.
-        console.log("Candidate not found in recent conversations list.");
-      }
-    }
-  });
+    window.addEventListener('DOMContentLoaded', () => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const candId = urlParams.get('candidate_id');
+        if (candId) {
+            const item = document.querySelector(`.convo-item[data-candidate-id="${candId}"]`);
+            if (item) {
+                item.click();
+            }
+        }
+    });
 </script>
 
 </body>

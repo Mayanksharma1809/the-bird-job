@@ -48,7 +48,7 @@
         }
         .brand { display: inline-flex; align-items: center; gap: 10px; font-family: "Clash Display", sans-serif; font-size: 20px; font-weight: 700; }
         .brand strong { color: var(--accent); }
-        .brand-mark { width: 34px; height: 34px; border-radius: 10px; background: linear-gradient(135deg, var(--accent), var(--accent-2)); display: flex; align-items: center; justify-content: center; font-size: 16px; box-shadow: 0 8px 24px rgba(255,107,43,0.3); }
+        .brand-mark { width: 34px; height: 34px; border-radius: 50%; background: var(--accent); display: flex; align-items: center; justify-content: center; font-size: 16px; color: white; box-shadow: 0 0 10px rgba(255, 107, 43, 0.3); }
         .nav-right { display: flex; align-items: center; gap: 10px; }
         .nav-back { display: flex; align-items: center; gap: 7px; padding: 8px 16px; border-radius: 10px; border: 1px solid var(--border); background: rgba(255,255,255,0.03); color: var(--muted); font-size: 13px; font-weight: 500; transition: all 0.2s; cursor: pointer; font-family: "Bricolage Grotesque", sans-serif; }
         .nav-back:hover { color: white; border-color: rgba(255,255,255,0.2); }
@@ -305,16 +305,16 @@
             .rewrite-header { flex-direction: column; }
         }
     </style>
+    <link rel="icon" href="{{ url_for('static', filename='brand/logo.png') }}" type="image/png">
 </head>
 <body>
     <div class="glow g1"></div>
     <div class="glow g2"></div>
     <div class="toast" id="toast"></div>
 
-    <!-- NAV -->
     <nav class="top-nav">
         <a href="/" class="brand">
-            <div class="brand-mark">🐦</div>
+            <div class="brand-mark"><i class="fa-solid fa-dove"></i></div>
             The Bird <strong>Job</strong>
         </a>
         <div class="nav-right">

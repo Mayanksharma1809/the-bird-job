@@ -49,7 +49,7 @@
         }
         .brand { display: inline-flex; align-items: center; gap: 11px; font-family: "Clash Display", sans-serif; font-size: 22px; font-weight: 600; letter-spacing: -0.5px; }
         .brand strong { color: var(--accent); font-weight: 700; }
-        .brand-mark { width: 36px; height: 36px; border-radius: 11px; display: inline-flex; align-items: center; justify-content: center; color: white; background: linear-gradient(135deg, var(--accent), var(--accent-2)); box-shadow: 0 10px 30px rgba(255,107,43,0.35); font-size: 16px; }
+        .brand-mark { width: 36px; height: 36px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; color: white; background: var(--accent); box-shadow: 0 0 15px rgba(255, 107, 43, 0.3); font-size: 16px; }
         .nav-links { display: flex; gap: 6px; }
         .nav-pill { border: 1px solid var(--border); background: rgba(255,255,255,0.02); color: var(--muted); font-size: 13px; font-weight: 500; padding: 8px 14px; border-radius: 10px; transition: all 0.2s ease; font-family: "Bricolage Grotesque", sans-serif; }
         .nav-pill:hover { color: white; border-color: rgba(255,255,255,0.2); transform: translateY(-1px); }
@@ -216,20 +216,45 @@
             .left-rail { position: static; display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
         }
         @media(max-width:980px) {
-            .nav-links { display: none; }
+            .top-nav {
+                height: auto; padding: 10px 14px;
+                display: grid;
+                grid-template-columns: 1fr auto;
+                grid-template-areas: "brand actions" "links links";
+                align-items: center; row-gap: 10px;
+            }
+            .brand { grid-area: brand; min-width: 0; }
+            .nav-actions { grid-area: actions; }
+            .nav-links {
+                grid-area: links; display: flex; gap: 8px;
+                overflow-x: auto; white-space: nowrap;
+                padding-bottom: 2px; scrollbar-width: none;
+            }
+            .nav-links::-webkit-scrollbar { display: none; }
+            
             .stats-row { grid-template-columns: 1fr 1fr; }
             .search-row { grid-template-columns: 1fr; }
-            .mobile-only-links { display: flex !important; }
+            .page { margin-top: 136px; }
         }
         @media(max-width:700px) {
-            .top-nav { padding: 0 14px; }
+            .top-nav { padding: 10px 12px; }
             .profile-meta { display: none; }
-            .profile-hero { grid-template-columns: 1fr; }
-            .stats-row { grid-template-columns: 1fr 1fr; }
+            .profile-hero { grid-template-columns: 1fr; padding: 24px; text-align: center; }
+            .profile-left { flex-direction: column; align-items: center; text-align: center; }
+            .company-badges { justify-content: center; }
             .left-rail { grid-template-columns: 1fr; }
             .job-top { flex-direction: column; }
+            .job-actions { width: 100%; justify-content: stretch; }
+            .job-actions .btn { flex: 1; justify-content: center; }
+            .page { margin-top: 142px; width: min(1320px, calc(100% - 18px)); }
+        }
+        @media(max-width:500px) {
+            .stats-row { grid-template-columns: 1fr; }
+            .company-name { font-size: 24px; }
+            .stat-value { font-size: 28px; }
         }
     </style>
+    <link rel="icon" href="{{ url_for('static', filename='brand/logo.png') }}" type="image/png">
 </head>
 <body>
     <div class="glow g1"></div>

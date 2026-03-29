@@ -102,12 +102,13 @@
         .brand-icon {
             width: 42px;
             height: 42px;
-            border-radius: 12px;
+            border-radius: 50%;
             display: grid;
             place-items: center;
             color: white;
             background: linear-gradient(135deg, var(--accent), var(--accent-2));
             box-shadow: 0 12px 28px rgba(255, 107, 43, 0.34);
+            font-size: 20px;
         }
 
         .left-title {
@@ -425,6 +426,7 @@
             .role-switch { grid-template-columns: 1fr; }
         }
     </style>
+    <link rel="icon" href="{{ url_for('static', filename='brand/logo.png') }}" type="image/png">
 </head>
 <body>
     <div class="glow g1"></div>
@@ -435,7 +437,7 @@
             <aside class="auth-left">
                 <div>
                     <a href="/" class="brand">
-                        <span class="brand-icon"><i class="fa-solid fa-feather-pointed"></i></span>
+                        <span class="brand-icon"><i class="fa-solid fa-dove"></i></span>
                         <span>The Bird <strong>Job</strong></span>
                     </a>
                     <h2 class="left-title">Sign in and continue your hiring journey.</h2>
@@ -464,7 +466,7 @@
             <section class="auth-right">
                 <div class="mobile-brand">
                     <a href="/" class="brand">
-                        <span class="brand-icon"><i class="fa-solid fa-feather-pointed"></i></span>
+                        <span class="brand-icon"><i class="fa-solid fa-dove"></i></span>
                         <span>The Bird <strong>Job</strong></span>
                     </a>
                 </div>

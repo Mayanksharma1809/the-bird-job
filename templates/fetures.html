@@ -46,7 +46,7 @@ nav {
   padding: 0 48px; justify-content: space-between;
 }
 .nav-brand { display: flex; align-items: center; gap: 10px; font-family: 'Clash Display', sans-serif; font-size: 20px; font-weight: 700; color: white; text-decoration: none; }
-.bird { width: 36px; height: 36px; border-radius: 11px; display: inline-flex; align-items: center; justify-content: center; color: white; background: linear-gradient(135deg, var(--accent), var(--accent-2)); box-shadow: 0 10px 30px rgba(255,107,43,0.35); font-size: 16px; }
+.bird { width: 36px; height: 36px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; color: white; background: var(--accent); box-shadow: 0 0 15px rgba(255, 107, 43, 0.35); font-size: 16px; }
 .nav-r { display: flex; align-items: center; gap: 8px; }
 .npill { padding: 7px 16px; border-radius: 8px; font-size: 13px; font-weight: 500; cursor: pointer; border: 1px solid var(--border2); background: transparent; color: var(--muted); transition: all 0.2s; font-family: 'Bricolage Grotesque', sans-serif; }
 .npill:hover { color: white; background: rgba(255,255,255,0.06); }
@@ -375,6 +375,7 @@ nav {
   .fpill { padding: 8px 14px; font-size: 12px; }
 }
 </style>
+    <link rel="icon" href="{{ url_for('static', filename='brand/logo.png') }}" type="image/png">
 </head>
 <body>
 

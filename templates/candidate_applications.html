@@ -38,8 +38,10 @@
             color: var(--text); display: inline-flex; align-items: center; gap: 11px;
         }
         .brand .brand-mark {
-            width: 36px; height: 36px; border-radius: 11px; background: linear-gradient(135deg, var(--accent), #ffb347);
-            display: flex; align-items: center; justify-content: center; color: #fff; font-size: 16px;
+            width: 36px; height: 36px; border-radius: 50%;
+            display: inline-flex; align-items: center; justify-content: center;
+            color: #fff; background: var(--accent);
+            box-shadow: 0 0 15px rgba(255,107,43,0.35); font-size: 16px;
         }
         .brand strong { color: var(--accent); }
 
@@ -99,6 +101,7 @@
             .panel { padding: 20px; }
         }
     </style>
+    <link rel="icon" href="{{ url_for('static', filename='brand/logo.png') }}" type="image/png">
 </head>
 <body>
     <nav class="top-nav">
