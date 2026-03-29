@@ -13,10 +13,15 @@
     <title>The Bird Job | Find Your Dream Job & Hire Top Talent</title>
     
     <!-- Branding & SEO for Google -->
-    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='brand/favicon.svg') }}">
-    <link rel="icon" type="image/png" sizes="48x48" href="{{ url_for('static', filename='brand/favicon-48.png') }}">
-    <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='brand/apple-touch-icon-180.png') }}">
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='brand/favicon.ico') }}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='brand/logo.png') }}">
+    <link rel="apple-touch-icon" href="{{ url_for('static', filename='brand/logo.png') }}">
     <meta name="theme-color" content="#ff6b2b">
+    <meta property="og:title" content="The Bird Job | Find Your Dream Job & Hire Top Talent">
+    <meta property="og:description" content="AI-powered job portal with resume scoring and skill validation.">
+    <meta property="og:image" content="{{ request.url_root }}static/brand/logo.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content="{{ request.url_root }}static/brand/logo.png">
     
     <script type="application/ld+json">
     [
@@ -25,7 +30,7 @@
         "@type": "Organization",
         "name": "The Bird Job",
         "url": "{{ request.url_root }}",
-        "logo": "{{ request.url_root }}static/brand/logo-512.png",
+        "logo": "{{ request.url_root }}static/brand/logo.png",
         "sameAs": [
           "https://twitter.com/thebirdjob",
           "https://linkedin.com/company/thebirdjob"
