@@ -1,10 +1,13 @@
 import os
+import logging
 from datetime import timedelta
 from urllib.parse import quote_plus
 from dotenv import load_dotenv
 
 # Load environment variables from .env file
 load_dotenv()
+
+logger = logging.getLogger(__name__)
 
 PLACEHOLDER_VALUES = {
     'your_mysql_password',
@@ -60,11 +63,18 @@ class Config:
         or 'fallback-secret-key'
     )
 
+    _local_database_url = normalize_database_url(os.environ.get('LOCAL_DATABASE_URL'))
     _database_url = normalize_database_url(
         os.environ.get('DATABASE_URL') or os.environ.get('SUPABASE_DB_URL')
     )
+    if _local_database_url:
+        _database_url = _local_database_url
     if has_placeholder_in_url(_database_url):
         _database_url = None
+
+    _college_database_url = normalize_database_url(os.environ.get('COLLEGE_DATABASE_URL'))
+    if has_placeholder_in_url(_college_database_url):
+        _college_database_url = None
 
     if not _database_url:
         mysql_user = os.environ.get('MYSQL_USER')
@@ -80,13 +90,20 @@ class Config:
                 f"@{mysql_host}:{mysql_port}/{mysql_db}"
             )
 
+    if not _database_url:
+        logger.warning(
+            'No external database URL configured; falling back to local SQLite. '
+            'Set DATABASE_URL or SUPABASE_DB_URL for production deployments.'
+        )
+
     SQLALCHEMY_DATABASE_URI = _database_url or 'sqlite:///job_portal.db'
     
     # Second Database for Skill Tests
     _skill_db_url = normalize_database_url(os.environ.get('SKILL_TEST_DATABASE_URL'))
     # Always define the bind key so SQLAlchemy doesn't crash if the env var is missing
     SQLALCHEMY_BINDS = {
-        'skill_test': _skill_db_url or SQLALCHEMY_DATABASE_URI
+        'skill_test': _local_database_url or _skill_db_url or SQLALCHEMY_DATABASE_URI,
+        'college': _college_database_url or 'sqlite:///college_portal.db',
     }
     
     SQLALCHEMY_TRACK_MODIFICATIONS = False

@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>College Admin Login | The Bird Job</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Clash+Display:wght@400;500;600;700&family=Bricolage+Grotesque:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root{--bg:#07111f;--panel:#0e1a2c;--line:rgba(164,205,255,.16);--line-soft:rgba(164,205,255,.08);--text:rgba(255,255,255,.94);--muted:rgba(255,255,255,.66);--muted-soft:rgba(255,255,255,.42);--accent:#4f8cff;--accent-2:#35d1c6;--accent-3:#8ad4ff;--shadow:0 28px 72px rgba(1,8,18,.55)}
+        *{box-sizing:border-box;margin:0;padding:0}
+        body{font-family:"Bricolage Grotesque",sans-serif;background:radial-gradient(circle at top right, rgba(79,140,255,.18), transparent 30%),radial-gradient(circle at bottom left, rgba(53,209,198,.16), transparent 26%),var(--bg);color:var(--text);min-height:100vh}
+        a{color:inherit;text-decoration:none}
+        .wrap{min-height:100vh;padding:20px;display:grid;place-items:center}
+        .shell{width:min(1120px,100%);display:grid;grid-template-columns:1fr 1fr;border-radius:26px;overflow:hidden;border:1px solid var(--line-soft);background:linear-gradient(165deg,var(--panel),#0a1322 72%);box-shadow:var(--shadow)}
+        .side{padding:36px;border-right:1px solid var(--line-soft);background:radial-gradient(circle at 80% 8%, rgba(53,209,198,.2), transparent 34%),radial-gradient(circle at 22% 14%, rgba(79,140,255,.2), transparent 42%),linear-gradient(160deg, rgba(79,140,255,.12), rgba(53,209,198,.06))}
+        .brand{display:inline-flex;align-items:center;gap:11px;font-family:"Clash Display",sans-serif;font-size:28px;letter-spacing:-.6px}
+        .brand strong{color:var(--accent-3)}
+        .brand-icon{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;color:#fff;background:linear-gradient(135deg,var(--accent),var(--accent-2))}
+        .title{font-family:"Clash Display",sans-serif;font-size:clamp(34px,4vw,52px);line-height:1;letter-spacing:-1.2px;margin:20px 0 12px}
+        .title em{font-style:normal;background:linear-gradient(135deg,var(--accent),var(--accent-2));-webkit-background-clip:text;background-clip:text;color:transparent}
+        .copy{color:var(--muted);line-height:1.8;font-size:15px;max-width:420px}
+        .pills{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
+        .pill{border:1px solid var(--line);background:rgba(255,255,255,.05);border-radius:999px;padding:8px 12px;font-size:12px;color:var(--muted)}
+        .right{padding:36px;display:flex;flex-direction:column;justify-content:center}
+        .back{display:inline-flex;align-items:center;gap:8px;color:var(--muted);font-size:13px;margin-bottom:14px}
+        .back:hover{color:#fff}
+        h1{font-family:"Clash Display",sans-serif;font-size:40px;line-height:1;letter-spacing:-1px;margin-bottom:8px}
+        .sub{color:var(--muted);font-size:14px;line-height:1.7;margin-bottom:16px}
+        .flash-stack{display:grid;gap:8px;margin-bottom:14px}
+        .flash-item{border-radius:12px;padding:10px 12px;font-size:13px;border:1px solid transparent}
+        .flash-error{background:rgba(248,113,113,.14);border-color:rgba(248,113,113,.26);color:#ffd1d1}
+        .flash-success{background:rgba(53,209,198,.14);border-color:rgba(53,209,198,.22);color:#d9fffb}
+        .field-group{display:grid;gap:11px;margin-bottom:12px}
+        .field-label{font-size:12px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--muted-soft);margin-bottom:4px;display:block}
+        .field{height:46px;border-radius:12px;border:1px solid var(--line);background:rgba(255,255,255,.04);display:flex;align-items:center;gap:8px;padding:0 12px}
+        .field i{color:var(--muted-soft);font-size:13px}
+        .field input{width:100%;border:none;outline:none;background:transparent;color:var(--text);font-family:inherit;font-size:14px}
+        .field input::placeholder{color:var(--muted-soft)}
+        .submit{width:100%;border:none;border-radius:12px;padding:12px 14px;font-family:inherit;font-size:14px;font-weight:700;color:#fff;cursor:pointer;background:linear-gradient(135deg,var(--accent),var(--accent-2))}
+        .bottom{margin-top:14px;color:var(--muted);font-size:13px;text-align:center}
+        .bottom a{color:var(--accent-3);font-weight:700}
+        @media (max-width:900px){.shell{grid-template-columns:1fr}.side{border-right:none;border-bottom:1px solid var(--line-soft)}}
+        @media (max-width:640px){.wrap{padding:10px}.side,.right{padding:18px}h1{font-size:32px}}
+    </style>
+</head>
+<body>
+    <main class="wrap">
+        <section class="shell">
+            <aside class="side">
+                <a href="{{ url_for('college_login') }}" class="brand"><span class="brand-icon"><i class="fa-solid fa-user-tie"></i></span><span>The Bird <strong>Job</strong></span></a>
+                <h2 class="title">College <em>admin</em> login.</h2>
+                <p class="copy">Use this route for placement team and admin access. Admin data stays inside the college database.</p>
+                <div class="pills">
+                    <span class="pill">Dedicated admin route</span>
+                    <span class="pill">Separate college DB</span>
+                    <span class="pill">Placement management</span>
+                </div>
+            </aside>
+
+            <section class="right">
+                <a href="{{ url_for('college_login') }}" class="back"><i class="fa-solid fa-arrow-left"></i> Back to college hub</a>
+                <h1>Admin Login</h1>
+                <p class="sub">Log in with your college admin credentials.</p>
+
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        <div class="flash-stack">
+                            {% for category, message in messages %}
+                                <div class="flash-item {% if category == 'error' %}flash-error{% else %}flash-success{% endif %}">{{ message }}</div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                {% endwith %}
+
+                <form action="{{ url_for('college_admin_login') }}" method="POST">
+                    <div class="field-group">
+                        <div>
+                            <label class="field-label">Email Address</label>
+                            <div class="field"><i class="fa-solid fa-envelope"></i><input type="email" name="email" placeholder="admin@college.edu" required></div>
+                        </div>
+                        <div>
+                            <label class="field-label">Password</label>
+                            <div class="field"><i class="fa-solid fa-lock"></i><input type="password" name="password" placeholder="Enter your password" required></div>
+                        </div>
+                    </div>
+                    <button type="submit" class="submit">Login as Admin</button>
+                </form>
+
+                <p class="bottom">Need to create an admin account? <a href="{{ url_for('college_admin_signup') }}">Signup here</a></p>
+            </section>
+        </section>
+    </main>
+</body>
+</html>

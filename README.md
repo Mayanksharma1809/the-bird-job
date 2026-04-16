@@ -14,6 +14,10 @@ A Flask-based job portal application.
    SECRET_KEY=your-secret-key
    DEBUG=True
 
+   # Local development uses SQLite by default
+   LOCAL_DATABASE_URL=sqlite:///job_portal.db
+   COLLEGE_DATABASE_URL=sqlite:///college_portal.db
+
    # Recommended for deployed app (Supabase Postgres)
    # Copy from Supabase > Project Settings > Database > Connection string
    DATABASE_URL=postgresql://postgres:[YOUR-PASSWORD]@db.[PROJECT-REF].supabase.co:5432/postgres?sslmode=require
@@ -56,6 +60,17 @@ A Flask-based job portal application.
    - `login_events`
    - `employer_jobs`
    - `candidate_job_actions`
+
+   College portal tables live in the college database and are split by user type:
+   - `college_admins`
+   - `college_students`
+
+   College routes:
+   - `/college/login`
+   - `/college/admin/login`
+   - `/college/student/login`
+   - `/college/admin/signup`
+   - `/college/student/signup`
 
 ## Render Deployment (Free Tier)
 

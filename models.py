@@ -66,6 +66,48 @@ class User(db.Model):
     )
 
 
+class CollegeAdmin(db.Model):
+    __bind_key__ = 'college'
+    __tablename__ = 'college_admins'
+
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(150), unique=True, nullable=False)
+    email = db.Column(db.String(255), unique=True, nullable=False, index=True)
+    password = db.Column(db.String(255), nullable=False)
+    college_name = db.Column(db.String(255), nullable=False)
+    admin_name = db.Column(db.String(150), nullable=False)
+    role = db.Column(db.String(50), nullable=False, default='admin', index=True)
+    auth_provider = db.Column(db.String(30), nullable=True, default='local')
+    created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow, onupdate=datetime.utcnow)
+    last_login_at = db.Column(db.DateTime, nullable=True)
+
+    students = db.relationship('CollegeStudent', back_populates='college_admin')
+
+
+class CollegeStudent(db.Model):
+    __bind_key__ = 'college'
+    __tablename__ = 'college_students'
+
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(150), unique=True, nullable=False)
+    email = db.Column(db.String(255), unique=True, nullable=False, index=True)
+    password = db.Column(db.String(255), nullable=False)
+    full_name = db.Column(db.String(150), nullable=False)
+    college_name = db.Column(db.String(255), nullable=True)
+    roll_number = db.Column(db.String(80), nullable=True)
+    google_sub = db.Column(db.String(255), unique=True, nullable=True)
+    role = db.Column(db.String(50), nullable=False, default='student', index=True)
+    auth_provider = db.Column(db.String(30), nullable=True, default='local')
+    created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow, onupdate=datetime.utcnow)
+    last_login_at = db.Column(db.DateTime, nullable=True)
+
+    college_admin_id = db.Column(db.Integer, db.ForeignKey('college_admins.id', ondelete='SET NULL'), nullable=True, index=True)
+
+    college_admin = db.relationship('CollegeAdmin', back_populates='students')
+
+
 class EmployerJob(db.Model):
     __tablename__ = 'employer_jobs'
 

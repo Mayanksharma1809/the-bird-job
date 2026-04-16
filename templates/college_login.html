@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>College Portal | The Bird Job</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Clash+Display:wght@400;500;600;700&family=Bricolage+Grotesque:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg: #07111f;
+            --panel: #0e1a2c;
+            --line: rgba(164, 205, 255, 0.16);
+            --line-soft: rgba(164, 205, 255, 0.08);
+            --text: rgba(255, 255, 255, 0.94);
+            --muted: rgba(255, 255, 255, 0.66);
+            --accent: #4f8cff;
+            --accent-2: #35d1c6;
+            --shadow: 0 28px 72px rgba(1, 8, 18, 0.55);
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: "Bricolage Grotesque", sans-serif;
+            color: var(--text);
+            background:
+                radial-gradient(circle at top right, rgba(79, 140, 255, 0.18), transparent 30%),
+                radial-gradient(circle at bottom left, rgba(53, 209, 198, 0.16), transparent 26%),
+                var(--bg);
+            min-height: 100vh;
+        }
+        a { color: inherit; text-decoration: none; }
+        .wrap {
+            min-height: 100vh;
+            padding: 20px;
+            display: grid;
+            place-items: center;
+        }
+        .card {
+            width: min(1100px, 100%);
+            border-radius: 26px;
+            border: 1px solid var(--line-soft);
+            background: linear-gradient(165deg, var(--panel), #0a1322 72%);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+        }
+        .side {
+            padding: 36px;
+            border-right: 1px solid var(--line-soft);
+            background:
+                radial-gradient(circle at 80% 8%, rgba(53, 209, 198, 0.2), transparent 34%),
+                radial-gradient(circle at 22% 14%, rgba(79, 140, 255, 0.2), transparent 42%),
+                linear-gradient(160deg, rgba(79, 140, 255, 0.12), rgba(53, 209, 198, 0.06));
+        }
+        .brand {
+            display: inline-flex;
+            align-items: center;
+            gap: 11px;
+            font-family: "Clash Display", sans-serif;
+            font-size: 28px;
+            letter-spacing: -0.6px;
+        }
+        .brand strong { color: #8ad4ff; }
+        .brand-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+            color: white;
+            background: linear-gradient(135deg, var(--accent), var(--accent-2));
+        }
+        .title {
+            font-family: "Clash Display", sans-serif;
+            font-size: clamp(34px, 4vw, 52px);
+            line-height: 1;
+            letter-spacing: -1.2px;
+            margin: 20px 0 12px;
+        }
+        .title em {
+            font-style: normal;
+            background: linear-gradient(135deg, var(--accent), var(--accent-2));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        .copy {
+            color: var(--muted);
+            line-height: 1.8;
+            font-size: 15px;
+            max-width: 420px;
+        }
+        .pills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 18px;
+        }
+        .pill {
+            border: 1px solid var(--line);
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 999px;
+            padding: 8px 12px;
+            font-size: 12px;
+            color: var(--muted);
+        }
+        .right {
+            padding: 36px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 14px;
+        }
+        .section-title {
+            font-family: "Clash Display", sans-serif;
+            font-size: 36px;
+            line-height: 1;
+            letter-spacing: -1px;
+        }
+        .section-note {
+            color: var(--muted);
+            font-size: 14px;
+            line-height: 1.7;
+            margin-bottom: 6px;
+        }
+        .choice-grid {
+            display: grid;
+            gap: 12px;
+        }
+        .choice {
+            border: 1px solid var(--line);
+            border-radius: 18px;
+            background: rgba(255, 255, 255, 0.04);
+            padding: 16px;
+        }
+        .choice-head {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+        }
+        .choice-head i {
+            width: 38px;
+            height: 38px;
+            display: grid;
+            place-items: center;
+            border-radius: 12px;
+            background: rgba(79, 140, 255, 0.16);
+            color: #8ad4ff;
+        }
+        .choice h3 {
+            font-size: 18px;
+            font-family: "Clash Display", sans-serif;
+            letter-spacing: -0.4px;
+        }
+        .choice p {
+            color: var(--muted);
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        .button-row {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 12px;
+        }
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            border-radius: 12px;
+            padding: 11px 14px;
+            font-size: 13px;
+            font-weight: 700;
+            border: 1px solid var(--line);
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text);
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent), var(--accent-2));
+            border-color: transparent;
+        }
+        .footer-link {
+            color: var(--muted);
+            font-size: 13px;
+            margin-top: 4px;
+        }
+        .footer-link a {
+            color: #8ad4ff;
+            font-weight: 700;
+        }
+        @media (max-width: 960px) {
+            .card { grid-template-columns: 1fr; }
+            .side { border-right: none; border-bottom: 1px solid var(--line-soft); }
+        }
+        @media (max-width: 640px) {
+            .wrap { padding: 10px; }
+            .side, .right { padding: 18px; }
+            .section-title { font-size: 30px; }
+        }
+    </style>
+</head>
+<body>
+    <main class="wrap">
+        <section class="card">
+            <aside class="side">
+                <a href="/" class="brand">
+                    <span class="brand-icon"><i class="fa-solid fa-building-columns"></i></span>
+                    <span>The Bird <strong>Job</strong></span>
+                </a>
+                <h2 class="title">Choose your <em>college</em> portal.</h2>
+                <p class="copy">
+                    Students and admins now have separate login routes and separate database tables.
+                    Student accounts support both Google sign-in and manual signup.
+                </p>
+                <div class="pills">
+                    <span class="pill">Separate routes</span>
+                    <span class="pill">Separate college DB</span>
+                    <span class="pill">Student Google login</span>
+                    <span class="pill">Manual account creation</span>
+                </div>
+            </aside>
+
+            <section class="right">
+                <h1 class="section-title">College Access</h1>
+                <p class="section-note">Pick the path that matches your account type.</p>
+
+                <div class="choice-grid">
+                    <article class="choice">
+                        <div class="choice-head">
+                            <i class="fa-solid fa-user-graduate"></i>
+                            <h3>Student Portal</h3>
+                        </div>
+                        <p>Students can continue with Google or create an account manually.</p>
+                        <div class="button-row">
+                            <a class="btn btn-primary" href="{{ url_for('college_student_login') }}">Student Login</a>
+                            <a class="btn" href="{{ url_for('college_student_signup') }}">Student Signup</a>
+                        </div>
+                    </article>
+
+                    <article class="choice">
+                        <div class="choice-head">
+                            <i class="fa-solid fa-user-tie"></i>
+                            <h3>Admin Portal</h3>
+                        </div>
+                        <p>Admins use a separate login and signup route for placement management.</p>
+                        <div class="button-row">
+                            <a class="btn btn-primary" href="{{ url_for('college_admin_login') }}">Admin Login</a>
+                            <a class="btn" href="{{ url_for('college_admin_signup') }}">Admin Signup</a>
+                        </div>
+                    </article>
+                </div>
+
+                <p class="footer-link">
+                    Back to the main site?
+                    <a href="{{ url_for('home') }}">Home</a>
+                </p>
+            </section>
+        </section>
+    </main>
+</body>
+</html>

@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>College Signup | The Bird Job</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Clash+Display:wght@400;500;600;700&family=Bricolage+Grotesque:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root{--bg:#07111f;--panel:#0e1a2c;--line:rgba(164,205,255,.16);--line-soft:rgba(164,205,255,.08);--text:rgba(255,255,255,.94);--muted:rgba(255,255,255,.66);--muted-soft:rgba(255,255,255,.42);--accent:#4f8cff;--accent-2:#35d1c6;--accent-3:#8ad4ff;--shadow:0 28px 72px rgba(1,8,18,.55)}
+        *{box-sizing:border-box;margin:0;padding:0}
+        body{font-family:"Bricolage Grotesque",sans-serif;background:linear-gradient(180deg,#07111f,#0a1322 70%,#09101b);color:var(--text);min-height:100vh}
+        a{color:inherit;text-decoration:none}
+        .wrap{min-height:100vh;padding:20px;display:grid;place-items:center}
+        .card{width:min(920px,100%);border-radius:26px;border:1px solid var(--line-soft);background:linear-gradient(165deg,var(--panel),#0a1322 72%);box-shadow:var(--shadow);overflow:hidden;display:grid;grid-template-columns:.95fr 1.05fr}
+        .side{padding:34px;border-right:1px solid var(--line-soft);background:radial-gradient(circle at 80% 8%, rgba(53,209,198,.2), transparent 34%),radial-gradient(circle at 22% 14%, rgba(79,140,255,.2), transparent 42%),linear-gradient(160deg, rgba(79,140,255,.12), rgba(53,209,198,.06))}
+        .brand{display:inline-flex;align-items:center;gap:10px;font-family:"Clash Display",sans-serif;font-size:28px;letter-spacing:-.6px}
+        .brand strong{color:var(--accent-3)}
+        .brand-icon{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;color:#fff;background:linear-gradient(135deg,var(--accent),var(--accent-2))}
+        .title{font-family:"Clash Display",sans-serif;font-size:clamp(34px,4vw,50px);line-height:1;letter-spacing:-1px;margin:20px 0 12px}
+        .title em{font-style:normal;background:linear-gradient(135deg,var(--accent),var(--accent-2));-webkit-background-clip:text;background-clip:text;color:transparent}
+        .copy{color:var(--muted);line-height:1.8;font-size:15px;max-width:400px}
+        .pill-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
+        .pill{border:1px solid var(--line);border-radius:999px;padding:8px 12px;font-size:12px;color:var(--muted);background:rgba(255,255,255,.04)}
+        .form-side{padding:34px}
+        .top-link{display:inline-flex;align-items:center;gap:8px;color:var(--muted);font-size:13px;margin-bottom:16px}
+        .top-link:hover{color:#fff}
+        h1{font-family:"Clash Display",sans-serif;font-size:40px;line-height:1;margin-bottom:10px}
+        .sub{color:var(--muted);font-size:14px;line-height:1.7;margin-bottom:16px}
+        .flash-stack{display:grid;gap:8px;margin-bottom:14px}
+        .flash-item{border-radius:12px;padding:10px 12px;font-size:13px;border:1px solid transparent}
+        .flash-error{background:rgba(248,113,113,.14);border-color:rgba(248,113,113,.26);color:#ffd1d1}
+        .flash-success{background:rgba(53,209,198,.14);border-color:rgba(53,209,198,.22);color:#d9fffb}
+        .grid{display:grid;gap:11px;margin-bottom:12px}
+        .label{font-size:12px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--muted-soft);margin-bottom:4px;display:block}
+        .field{height:46px;border-radius:12px;border:1px solid var(--line);background:rgba(255,255,255,.04);display:flex;align-items:center;gap:8px;padding:0 12px}
+        .field i{color:var(--muted-soft);font-size:13px}
+        .field input{width:100%;border:none;outline:none;background:transparent;color:var(--text);font-family:inherit;font-size:14px}
+        .field input::placeholder{color:var(--muted-soft)}
+        .submit{width:100%;border:none;border-radius:12px;padding:12px 14px;font-family:inherit;font-size:14px;font-weight:700;color:#fff;cursor:pointer;background:linear-gradient(135deg,var(--accent),var(--accent-2))}
+        .meta{margin-top:14px;color:var(--muted);font-size:13px;text-align:center}
+        .meta a{color:var(--accent-3);font-weight:700}
+        @media (max-width:900px){.card{grid-template-columns:1fr}.side{border-right:none;border-bottom:1px solid var(--line-soft)}}
+        @media (max-width:640px){.wrap{padding:10px}.side,.form-side{padding:18px}h1{font-size:32px}}
+    </style>
+</head>
+<body>
+    {% set user_type = user_type | default('student') %}
+    {% set is_student = user_type == 'student' %}
+    <main class="wrap">
+        <section class="card">
+            <aside class="side">
+                <a href="{{ url_for('college_login') }}" class="brand">
+                    <span class="brand-icon"><i class="fa-solid fa-building-columns"></i></span>
+                    <span>The Bird <strong>Job</strong></span>
+                </a>
+                <h2 class="title">
+                    {% if is_student %}
+                    Create a <em>student</em> account.
+                    {% else %}
+                    Create an <em>admin</em> account.
+                    {% endif %}
+                </h2>
+                <p class="copy">
+                    {% if is_student %}
+                    Student accounts stay in the college database and support Google login plus manual signup.
+                    {% else %}
+                    Admin accounts stay in the college database and manage the placement portal separately.
+                    {% endif %}
+                </p>
+                <div class="pill-row">
+                    {% if is_student %}
+                    <span class="pill">Google sign-in supported</span>
+                    <span class="pill">Manual signup</span>
+                    <span class="pill">Student table</span>
+                    {% else %}
+                    <span class="pill">Admin login route</span>
+                    <span class="pill">Placement management</span>
+                    <span class="pill">Admin table</span>
+                    {% endif %}
+                </div>
+            </aside>
+
+            <section class="form-side">
+                <a href="{{ url_for('college_login') }}" class="top-link"><i class="fa-solid fa-arrow-left"></i> Back to college hub</a>
+                <h1>{% if is_student %}Student Signup{% else %}Admin Signup{% endif %}</h1>
+                <p class="sub">
+                    {% if is_student %}
+                    Create your student account manually.
+                    {% else %}
+                    Create your college admin account manually.
+                    {% endif %}
+                </p>
+
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        <div class="flash-stack">
+                            {% for category, message in messages %}
+                                <div class="flash-item {% if category == 'error' %}flash-error{% else %}flash-success{% endif %}">{{ message }}</div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                {% endwith %}
+
+                <form action="{% if is_student %}{{ url_for('college_student_signup') }}{% else %}{{ url_for('college_admin_signup') }}{% endif %}" method="POST">
+                    <div class="grid">
+                        {% if is_student %}
+                        <div>
+                            <label class="label">Full Name</label>
+                            <div class="field"><i class="fa-solid fa-user"></i><input type="text" name="full_name" placeholder="Student name" required></div>
+                        </div>
+                        <div>
+                            <label class="label">College Name</label>
+                            <div class="field"><i class="fa-solid fa-school"></i><input type="text" name="college_name" placeholder="Your college"></div>
+                        </div>
+                        <div>
+                            <label class="label">Roll Number</label>
+                            <div class="field"><i class="fa-solid fa-id-card"></i><input type="text" name="roll_number" placeholder="Optional roll number"></div>
+                        </div>
+                        {% else %}
+                        <div>
+                            <label class="label">College Name</label>
+                            <div class="field"><i class="fa-solid fa-school"></i><input type="text" name="college_name" placeholder="College name" required></div>
+                        </div>
+                        <div>
+                            <label class="label">Admin Name</label>
+                            <div class="field"><i class="fa-solid fa-user-tie"></i><input type="text" name="admin_name" placeholder="Placement head" required></div>
+                        </div>
+                        {% endif %}
+
+                        <div>
+                            <label class="label">Username</label>
+                            <div class="field"><i class="fa-solid fa-at"></i><input type="text" name="username" placeholder="Optional username"></div>
+                        </div>
+                        <div>
+                            <label class="label">Email Address</label>
+                            <div class="field"><i class="fa-solid fa-envelope"></i><input type="email" name="email" placeholder="admin@college.edu" required></div>
+                        </div>
+                        <div>
+                            <label class="label">Password</label>
+                            <div class="field"><i class="fa-solid fa-lock"></i><input type="password" name="password" placeholder="Create a password" required></div>
+                        </div>
+                        <div>
+                            <label class="label">Confirm Password</label>
+                            <div class="field"><i class="fa-solid fa-lock"></i><input type="password" name="confirm_password" placeholder="Confirm password"></div>
+                        </div>
+                    </div>
+                    <button type="submit" class="submit">{% if is_student %}Create Student Account{% else %}Create Admin Account{% endif %}</button>
+                </form>
+
+                <p class="meta">
+                    {% if is_student %}
+                    Already have an account? <a href="{{ url_for('college_student_login') }}">Login here</a>
+                    {% else %}
+                    Already have an account? <a href="{{ url_for('college_admin_login') }}">Login here</a>
+                    {% endif %}
+                </p>
+            </section>
+        </section>
+    </main>
+</body>
+</html>

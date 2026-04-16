@@ -8,6 +8,7 @@ from models import db
 from routes import register_routes
 from ats_routes import ats_bp
 from skill_test_routes import skill_test_bp
+from schema_sync import ensure_database_schema
 import logging
 import os
 from sqlalchemy import inspect, text
@@ -250,7 +251,7 @@ def internal_error(e):
 
 # Yeh __main__ ke BAHAR rakho
 with app.app_context():
-    db.create_all()
+    ensure_database_schema()
     ensure_legacy_users_schema()
     ensure_legacy_employer_profiles_schema()
     ensure_legacy_candidate_profiles_schema()

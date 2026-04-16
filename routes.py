@@ -10,7 +10,16 @@ from flask import Response, flash, redirect, render_template, request, session, 
 
 from candidate_dashboard_routes import register_candidate_dashboard_routes
 from employer_dashboard_routes import register_employer_dashboard_routes
-from models import CandidateProfile, EmployerJob, EmployerProfile, LoginEvent, User, db
+from models import (
+    CandidateProfile,
+    CollegeAdmin,
+    CollegeStudent,
+    EmployerJob,
+    EmployerProfile,
+    LoginEvent,
+    User,
+    db,
+)
 
 
 def register_routes(app):
@@ -42,6 +51,20 @@ def register_routes(app):
             suffix += 1
         return candidate
 
+    def build_unique_college_username(source, model_cls):
+        base = re.sub(r'[^a-zA-Z0-9_]+', '_', (source or '').strip().lower()).strip('_')
+        if not base:
+            base = 'college_user'
+        base = base[:150]
+
+        candidate = base
+        suffix = 1
+        while model_cls.query.filter_by(username=candidate).first():
+            suffix_text = f'_{suffix}'
+            candidate = f'{base[:150 - len(suffix_text)]}{suffix_text}'
+            suffix += 1
+        return candidate
+
     def fetch_json(url, headers=None):
         request_obj = Request(url, headers=headers or {})
         with urlopen(request_obj, timeout=10) as response:
@@ -68,6 +91,18 @@ def register_routes(app):
         if not user_id:
             return None
         return db.session.get(User, user_id)
+
+    def get_logged_in_college_admin():
+        user_id = session.get('college_admin_id')
+        if not user_id:
+            return None
+        return db.session.get(CollegeAdmin, user_id)
+
+    def get_logged_in_college_student():
+        user_id = session.get('college_student_id')
+        if not user_id:
+            return None
+        return db.session.get(CollegeStudent, user_id)
 
     def has_completed_profile(user):
         role = normalize_role(user.role)
@@ -207,6 +242,94 @@ def register_routes(app):
         user.last_login_at = datetime.utcnow()
         db.session.add(event)
 
+    def college_admin_dashboard_user(user):
+        return {
+            'college_name': user.college_name,
+            'admin_name': user.admin_name,
+            'email': user.email,
+            'username': user.username,
+            'initials': build_initials(user.college_name or user.admin_name or user.username),
+        }
+
+    def college_student_dashboard_user(user):
+        return {
+            'full_name': user.full_name,
+            'email': user.email,
+            'college_name': user.college_name or 'Not set yet',
+            'roll_number': user.roll_number or 'Not provided',
+            'username': user.username,
+            'initials': build_initials(user.full_name or user.username),
+            'auth_provider': user.auth_provider or 'local',
+        }
+
+    def create_college_admin(email, password, college_name, admin_name, username=''):
+        clean_email = (email or '').strip().lower()
+        clean_password = password or ''
+        clean_college_name = (college_name or '').strip()
+        clean_admin_name = (admin_name or '').strip()
+        clean_username = (username or '').strip()
+
+        if not clean_email or not clean_password:
+            return None, 'Email and password are required.'
+        if not clean_college_name or not clean_admin_name:
+            return None, 'College name and admin name are required.'
+
+        if CollegeAdmin.query.filter_by(email=clean_email).first():
+            return None, 'College email already exists'
+
+        if not clean_username:
+            username_source = clean_college_name or clean_email.split('@')[0] or 'college_admin'
+            clean_username = build_unique_college_username(username_source, CollegeAdmin)
+        elif CollegeAdmin.query.filter_by(username=clean_username).first():
+            clean_username = build_unique_college_username(clean_username, CollegeAdmin)
+
+        new_user = CollegeAdmin(
+            username=clean_username,
+            email=clean_email,
+            password=clean_password,
+            college_name=clean_college_name,
+            admin_name=clean_admin_name,
+            auth_provider='local',
+        )
+        db.session.add(new_user)
+        db.session.flush()
+        return new_user, None
+
+    def create_college_student(email, password, full_name, college_name='', roll_number='', username=''):
+        clean_email = (email or '').strip().lower()
+        clean_password = password or ''
+        clean_full_name = (full_name or '').strip()
+        clean_college_name = (college_name or '').strip()
+        clean_roll_number = (roll_number or '').strip()
+        clean_username = (username or '').strip()
+
+        if not clean_email or not clean_password:
+            return None, 'Email and password are required.'
+        if not clean_full_name:
+            return None, 'Student name is required.'
+
+        if CollegeStudent.query.filter_by(email=clean_email).first():
+            return None, 'Student email already exists'
+
+        if not clean_username:
+            username_source = clean_full_name or clean_email.split('@')[0] or 'student'
+            clean_username = build_unique_college_username(username_source, CollegeStudent)
+        elif CollegeStudent.query.filter_by(username=clean_username).first():
+            clean_username = build_unique_college_username(clean_username, CollegeStudent)
+
+        new_user = CollegeStudent(
+            username=clean_username,
+            email=clean_email,
+            password=clean_password,
+            full_name=clean_full_name,
+            college_name=clean_college_name or None,
+            roll_number=clean_roll_number or None,
+            auth_provider='local',
+        )
+        db.session.add(new_user)
+        db.session.flush()
+        return new_user, None
+
     dashboard_helpers = {
         'candidate_dashboard_user': candidate_dashboard_user,
         'dashboard_endpoint_for_role': dashboard_endpoint_for_role,
@@ -292,6 +415,233 @@ def register_routes(app):
                 flash('Login successful!', 'success')
             return redirect(url_for(destination))
         return render_template('login.html')
+
+    @app.route('/college/login')
+    def college_login():
+        admin_user = get_logged_in_college_admin()
+        if admin_user:
+            return redirect(url_for('college_admin_dashboard'))
+        student_user = get_logged_in_college_student()
+        if student_user:
+            return redirect(url_for('college_student_dashboard'))
+        return render_template('college_login.html')
+
+    @app.route('/college/signup')
+    def college_signup():
+        return redirect(url_for('college_login'))
+
+    @app.route('/college/dashboard')
+    def college_dashboard():
+        admin_user = get_logged_in_college_admin()
+        if admin_user:
+            return redirect(url_for('college_admin_dashboard'))
+        student_user = get_logged_in_college_student()
+        if student_user:
+            return redirect(url_for('college_student_dashboard'))
+        return redirect(url_for('college_login'))
+
+    @app.route('/college/logout')
+    def college_logout():
+        session.pop('college_admin_id', None)
+        session.pop('college_student_id', None)
+        session.pop('college_oauth_state', None)
+        session.pop('college_oauth_context', None)
+        return redirect(url_for('college_login'))
+
+    @app.route('/college/admin/login', methods=['GET', 'POST'])
+    def college_admin_login():
+        admin_user = get_logged_in_college_admin()
+        if admin_user:
+            return redirect(url_for('college_admin_dashboard'))
+
+        if request.method == 'POST':
+            email = request.form.get('email', '').strip().lower()
+            password = request.form.get('password', '')
+
+            admin_user = CollegeAdmin.query.filter_by(email=email, password=password).first()
+            if not admin_user:
+                flash('Invalid college admin credentials', 'error')
+                return render_template('college_admin_login.html')
+
+            session.permanent = True
+            session['college_admin_id'] = admin_user.id
+            db.session.commit()
+
+            flash('College admin login successful!', 'success')
+            return redirect(url_for('college_admin_dashboard'))
+
+        return render_template('college_admin_login.html')
+
+    @app.route('/college/admin/signup', methods=['GET', 'POST'])
+    def college_admin_signup():
+        admin_user = get_logged_in_college_admin()
+        if admin_user:
+            return redirect(url_for('college_admin_dashboard'))
+
+        if request.method == 'GET':
+            return render_template('college_signup.html', user_type='admin')
+
+        college_name = first_non_empty(
+            [
+                request.form.get('college_name', ''),
+                request.form.get('institution_name', ''),
+            ]
+        )
+        admin_name = first_non_empty(
+            [
+                request.form.get('admin_name', ''),
+                request.form.get('contact_name', ''),
+            ]
+        )
+        username = request.form.get('username', '').strip()
+        email = request.form.get('email', '').strip().lower()
+        password = request.form.get('password', '')
+        confirm_password = request.form.get('confirm_password', '')
+
+        if not college_name or not admin_name or not email or not password:
+            flash('College name, admin name, email and password are required.', 'error')
+        elif confirm_password and password != confirm_password:
+            flash('Password and confirm password do not match.', 'error')
+        else:
+            try:
+                new_user, error_message = create_college_admin(
+                    email=email,
+                    password=password,
+                    college_name=college_name,
+                    admin_name=admin_name,
+                    username=username,
+                )
+                if error_message:
+                    flash(error_message, 'error')
+                else:
+                    session.permanent = True
+                    session['college_admin_id'] = new_user.id
+                    db.session.commit()
+
+                    flash('College admin account created successfully!', 'success')
+                    return redirect(url_for('college_admin_dashboard'))
+            except Exception:
+                db.session.rollback()
+                app.logger.exception('College admin signup failed')
+                flash('Unable to create a college admin account right now. Please try again.', 'error')
+        return render_template('college_signup.html', user_type='admin')
+
+    @app.route('/college/admin/dashboard')
+    def college_admin_dashboard():
+        admin_user = get_logged_in_college_admin()
+        if not admin_user:
+            return redirect(url_for('college_admin_login'))
+
+        student_count = CollegeStudent.query.count()
+        admin_count = CollegeAdmin.query.count()
+        return render_template(
+            'admin_dashboard.html',
+            college=college_admin_dashboard_user(admin_user),
+            student_count=student_count,
+            admin_count=admin_count,
+            college_since=admin_user.created_at,
+        )
+
+    @app.route('/college/student/login', methods=['GET', 'POST'])
+    def college_student_login():
+        student_user = get_logged_in_college_student()
+        if student_user:
+            return redirect(url_for('college_student_dashboard'))
+
+        if request.method == 'POST':
+            email = request.form.get('email', '').strip().lower()
+            password = request.form.get('password', '')
+
+            student_user = CollegeStudent.query.filter_by(email=email, password=password).first()
+            if not student_user:
+                flash('Invalid student credentials', 'error')
+                return render_template('college_student_login.html')
+
+            session.permanent = True
+            session['college_student_id'] = student_user.id
+            db.session.commit()
+
+            flash('College student login successful!', 'success')
+            return redirect(url_for('college_student_dashboard'))
+
+        return render_template('college_student_login.html')
+
+    @app.route('/college/student/signup', methods=['GET', 'POST'])
+    def college_student_signup():
+        student_user = get_logged_in_college_student()
+        if student_user:
+            return redirect(url_for('college_student_dashboard'))
+
+        if request.method == 'GET':
+            return render_template('college_signup.html', user_type='student')
+
+        full_name = first_non_empty(
+            [
+                request.form.get('full_name', ''),
+                request.form.get('name', ''),
+            ]
+        )
+        college_name = request.form.get('college_name', '').strip()
+        roll_number = request.form.get('roll_number', '').strip()
+        username = request.form.get('username', '').strip()
+        email = request.form.get('email', '').strip().lower()
+        password = request.form.get('password', '')
+        confirm_password = request.form.get('confirm_password', '')
+
+        if not full_name or not email or not password:
+            flash('Student name, email and password are required.', 'error')
+        elif confirm_password and password != confirm_password:
+            flash('Password and confirm password do not match.', 'error')
+        else:
+            try:
+                new_user, error_message = create_college_student(
+                    email=email,
+                    password=password,
+                    full_name=full_name,
+                    college_name=college_name,
+                    roll_number=roll_number,
+                    username=username,
+                )
+                if error_message:
+                    flash(error_message, 'error')
+                else:
+                    session.permanent = True
+                    session['college_student_id'] = new_user.id
+                    db.session.commit()
+
+                    flash('College student account created successfully!', 'success')
+                    return redirect(url_for('college_student_dashboard'))
+            except Exception:
+                db.session.rollback()
+                app.logger.exception('College student signup failed')
+                flash('Unable to create a college student account right now. Please try again.', 'error')
+        return render_template('college_signup.html', user_type='student')
+
+    @app.route('/college/student/dashboard')
+    def college_student_dashboard():
+        student_user = get_logged_in_college_student()
+        if not student_user:
+            return redirect(url_for('college_student_login'))
+
+        return render_template(
+            'student_dashboard.html',
+            student=college_student_dashboard_user(student_user),
+            student_total=CollegeStudent.query.count(),
+            college_total=CollegeAdmin.query.count(),
+            college_since=student_user.created_at,
+        )
+
+    @app.route('/college/student/logout')
+    def college_student_logout():
+        session.pop('college_student_id', None)
+        session.pop('college_oauth_state', None)
+        session.pop('college_oauth_context', None)
+        return redirect(url_for('college_student_login'))
+
+    @app.route('/college/admin/logout')
+    def college_admin_logout():
+        session.pop('college_admin_id', None)
+        return redirect(url_for('college_admin_login'))
 
     @app.route('/signup')
     def signup():
@@ -441,6 +791,7 @@ def register_routes(app):
             flash('Google login is not configured yet. Add GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET.', 'error')
             return redirect(url_for('login'))
 
+        session['oauth_context'] = 'main'
         session['oauth_role'] = normalize_role(request.args.get('role', 'jobseeker'))
         state = secrets.token_urlsafe(24)
         session['google_oauth_state'] = state
@@ -467,31 +818,75 @@ def register_routes(app):
             flash('Unable to start Google login right now. Please try again.', 'error')
             return redirect(url_for('login'))
 
+    @app.route('/college/student/auth/google')
+    def college_student_google_login():
+        client_id = app.config.get('GOOGLE_CLIENT_ID')
+        if not client_id:
+            flash('Google login is not configured yet. Add GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET.', 'error')
+            return redirect(url_for('college_student_login'))
+
+        session['oauth_context'] = 'college_student'
+        state = secrets.token_urlsafe(24)
+        session['college_oauth_state'] = state
+
+        try:
+            discovery = fetch_json(app.config['GOOGLE_DISCOVERY_URL'])
+            authorization_endpoint = discovery.get('authorization_endpoint')
+            if not authorization_endpoint:
+                raise RuntimeError('Missing Google authorization endpoint')
+
+            query = urlencode(
+                {
+                    'client_id': client_id,
+                    'redirect_uri': google_redirect_uri(),
+                    'scope': 'openid email profile',
+                    'response_type': 'code',
+                    'state': state,
+                    'prompt': 'select_account',
+                }
+            )
+            return redirect(f'{authorization_endpoint}?{query}')
+        except Exception:
+            app.logger.exception('Unable to start college student Google OAuth flow')
+            flash('Unable to start Google login right now. Please try again.', 'error')
+            return redirect(url_for('college_student_login'))
+
     @app.route('/auth/google/callback')
     def google_callback():
+        oauth_context = session.get('oauth_context', 'main')
         incoming_state = request.args.get('state')
-        expected_state = session.pop('google_oauth_state', None)
+        expected_state = session.pop('college_oauth_state' if oauth_context == 'college_student' else 'google_oauth_state', None)
 
         if not incoming_state or incoming_state != expected_state:
             flash('Google login failed (invalid session state). Please try again.', 'error')
+            session.pop('oauth_context', None)
+            if oauth_context == 'college_student':
+                return redirect(url_for('college_student_login'))
             return redirect(url_for('login'))
 
         if request.args.get('error'):
             flash('Google login was cancelled or denied.', 'error')
+            session.pop('oauth_context', None)
+            if oauth_context == 'college_student':
+                return redirect(url_for('college_student_login'))
             return redirect(url_for('login'))
 
         code = request.args.get('code')
         if not code:
             flash('Google login failed because no code was returned.', 'error')
+            session.pop('oauth_context', None)
+            if oauth_context == 'college_student':
+                return redirect(url_for('college_student_login'))
             return redirect(url_for('login'))
 
         client_id = app.config.get('GOOGLE_CLIENT_ID')
         client_secret = app.config.get('GOOGLE_CLIENT_SECRET')
         if not client_id or not client_secret:
             flash('Google login is not configured yet. Add GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET.', 'error')
+            session.pop('oauth_context', None)
+            if oauth_context == 'college_student':
+                return redirect(url_for('college_student_login'))
             return redirect(url_for('login'))
-
-        selected_role = normalize_role(session.pop('oauth_role', 'candidate'))
 
         try:
             discovery = fetch_json(app.config['GOOGLE_DISCOVERY_URL'])
@@ -525,6 +920,43 @@ def register_routes(app):
 
             display_name = (user_info.get('name') or email.split('@')[0]).strip()
 
+            if oauth_context == 'college_student':
+                student_user = None
+                if google_sub:
+                    student_user = CollegeStudent.query.filter_by(google_sub=google_sub).first()
+                if student_user is None:
+                    student_user = CollegeStudent.query.filter_by(email=email).first()
+
+                is_new_user = student_user is None
+                if is_new_user:
+                    username = build_unique_college_username(display_name, CollegeStudent)
+                    generated_password = f'google-oauth-{secrets.token_urlsafe(24)}'
+                    student_user = CollegeStudent(
+                        username=username,
+                        email=email,
+                        password=generated_password,
+                        full_name=display_name,
+                        college_name='',
+                        google_sub=google_sub or None,
+                        auth_provider='google',
+                    )
+                    db.session.add(student_user)
+                    db.session.flush()
+                else:
+                    if display_name and not student_user.full_name:
+                        student_user.full_name = display_name
+                    if google_sub and not student_user.google_sub:
+                        student_user.google_sub = google_sub
+                    student_user.auth_provider = 'google'
+
+                db.session.commit()
+                session.permanent = True
+                session['college_student_id'] = student_user.id
+                session.pop('oauth_context', None)
+                flash('Google login successful! Welcome to the student portal.', 'success')
+                return redirect(url_for('college_student_dashboard'))
+
+            selected_role = normalize_role(session.pop('oauth_role', 'candidate'))
             user = None
             if google_sub:
                 user = User.query.filter_by(google_sub=google_sub).first()
@@ -561,6 +993,7 @@ def register_routes(app):
             session.permanent = True
             session['user_id'] = user.id
             session['role'] = user.role
+            session.pop('oauth_context', None)
 
             destination = next_step_endpoint_for_user(user)
             if is_new_user:
@@ -574,6 +1007,9 @@ def register_routes(app):
             db.session.rollback()
             app.logger.exception('Google OAuth callback failed')
             flash('Google login failed. Please try again.', 'error')
+            session.pop('oauth_context', None)
+            if oauth_context == 'college_student':
+                return redirect(url_for('college_student_login'))
             return redirect(url_for('login'))
 
     @app.route('/price')
